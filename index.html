@@ -343,6 +343,13 @@ h2{font-weight:600;font-size:1.08rem}
 .hero-stats .delta{font-size:.72rem;color:var(--muted)}
 .hero-stats .delta.neg{color:#ff8a80}.hero-stats .delta.pos{color:#8be0a0}
 @media (max-width:640px){.hero-stats>div{padding-inline:9px}.hero-stats b{font-size:1.05rem}.hero-stats .lbl{font-size:.7rem}}
+.fix{border:1px solid var(--line);border-radius:14px;padding:14px;margin:0 0 14px;background:var(--paper)}
+.fix h3{font-size:1rem;margin:0 0 6px}
+.fix p{margin:6px 0}
+.fix .opts{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.fix .opts .btn{min-height:40px;padding:6px 10px;flex:1;white-space:nowrap}
+.fix #fixCard{width:100%}
+.fixprev td{padding:6px 0}
 </style>
 </head>
 <body>
@@ -403,6 +410,7 @@ h2{font-weight:600;font-size:1.08rem}
       <div class="panel">
         <h2 id="mTitle"></h2>
         <div id="mAlerts"></div>
+        <div id="mFix"></div>
         <p class="note" id="mNote"></p>
         <table class="ledger" id="mLedger"></table>
       </div>
@@ -524,6 +532,10 @@ ar:{
  emNeg:n=>`الطوارئ بقت بالسالب (${n}). محتاج تقلل المصروف الشخصي في الشهور الجاية أو تدوّر على دخل زيادة.`,
  schShort:(n,inst)=>`رصيد المدرسة مش هيكفي${inst?" القسط":""}، ناقصه ${n}.`,
  schFuture:(m,n)=>`السحب ده من حساب المدرسة هيخلي قسط ${m} ناقصه ${n}.`,
+ rebH:"خلّي الخطة تتظبط",fixNeg:(m,n)=>`${m} ناقصه ${n}، والفلوس دي لازم تيجي من مكان.`,fixCardBtn:(n,m)=>`ادفع ${n} بالكارد، وتتسدد في ${m}`,
+ fixCardWhy:"الكارد بيأخر الدفع لـ 25 الشهر الجاي من غير فوايد، لو سددته كامل.",fixLost:n=>`الطوارئ آخر الخطة بقت أقل بـ ${n}. ترجّعهم من المصروف الشخصي في الشهور الجاية:`,
+ fixOver:k=>`على ${k} ${k<=10?"شهور":"شهر"}`,fixPreviewH:"المصروف الشخصي هيبقى كده (بحد أقصى نصه كل شهر):",fixApply:"طبّق",fixCancel:"إلغاء",
+ fixLeft:n=>`فاضل ${n} مقدرتش أغطيهم من المصروف الشخصي. قلل حاجة تانية من «عدّل أرقام الشهر».`,fixDone:"اتظبطت الخطة",cardIn:"على الكارد، يتسدد الشهر الجاي",cardOut:"سداد الكارد",
  overflow:n=>`صرفت ${n} أكتر من المصروف الشخصي المخطط، والفرق اتسحب من الطوارئ.`,
  secIn:"داخل",secOut:"خارج",salary:"المرتب",manual:n=>"متعدل يدوي، الخطة "+n,hasRaise:n=>"فيه زيادة "+n,
  extraIncome:"دخل إضافي",loggedIncome:"دخل زيادة",youLogged:"اللي سجّلته",fixed:"المصاريف الثابتة",jam:"الجمعيات",
@@ -579,6 +591,10 @@ en:{
  emNeg:n=>`The emergency fund is negative (${n}). Cut personal spending in the coming months or find extra income.`,
  schShort:(n,inst)=>`The school account won’t cover ${inst?"the installment":"this month"}; it’s short by ${n}.`,
  schFuture:(m,n)=>`This withdrawal leaves the ${m} school installment short by ${n}.`,
+ rebH:"Rebalance the plan",fixNeg:(m,n)=>`${m} is short by ${n}; that money has to come from somewhere.`,fixCardBtn:(n,m)=>`Put ${n} on the card, pay it in ${m}`,
+ fixCardWhy:"The card pushes payment to the 25th of next month with no interest, if you pay it in full.",fixLost:n=>`The emergency fund now ends ${n} below plan. Win it back from personal spending in the coming months:`,
+ fixOver:k=>`Over ${k} months`,fixPreviewH:"Personal spending would become (at most half cut each month):",fixApply:"Apply",fixCancel:"Cancel",
+ fixLeft:n=>`${n} is left that personal spending can’t cover. Lower something else under “Edit this month”.`,fixDone:"Plan rebalanced",cardIn:"On the card, paid next month",cardOut:"Card payment",
  overflow:n=>`You spent ${n} over planned personal spending; the difference came out of the emergency fund.`,
  secIn:"Money in",secOut:"Money out",salary:"Salary",manual:n=>"Edited manually, plan "+n,hasRaise:n=>"Includes a raise of "+n,
  extraIncome:"Extra income",loggedIncome:"Logged extra income",youLogged:"What you logged",fixed:"Fixed expenses",jam:"Savings circles",
@@ -909,6 +925,7 @@ function render(){
   if(r.overflow>0)alerts+=`<p class="caution">${esc(L.overflow(fmt(r.overflow)))}</p>`;
   if(r.houseOver>0)alerts+=`<p class="caution">${esc(L.hOver(fmt(r.houseOver)))}</p>`;
   $("mAlerts").innerHTML=alerts;
+  renderFix(rows,r);
   $("mNote").textContent=tx(CFG.notes)[sel]||"";
   $("mNote").hidden=!$("mNote").textContent;
 
@@ -1013,6 +1030,57 @@ function toast(msg){
   if(navigator.vibrate){try{navigator.vibrate(12)}catch(e){}}
 }
 let newPurchase=null,newEntry=null;
+
+/* ---------- rebalance after overspending ---------- */
+let fixK=null,fixSel=null;
+function cutPlan(rows,T,K,start){
+  const out=[];let left=T;const per=Math.ceil(T/K/50)*50;
+  for(let i=start;i<N&&left>0;i++){
+    const p=rows[i].personal;if(p<=0)continue;
+    const cap=Math.floor(p*0.5/50)*50;const cut=Math.min(per,cap,left);
+    if(cut>0){out.push({i,from:p,to:p-cut});left-=cut}
+  }
+  return {items:out,left};
+}
+function renderFix(rows,r){
+  const L=t(),box=$("mFix");
+  if(fixSel!==sel){fixK=null;fixSel=sel}
+  const neg=r.em<0,over=(r.overflow+r.emx+r.houseOver)>0;
+  const T=BASE_ROWS[N-1].em-rows[N-1].em;
+  if(!neg&&!(over&&T>0)){box.innerHTML="";return}
+  let h=`<div class="fix"><h3>${esc(L.rebH)}</h3>`;
+  if(neg&&sel<N-1){
+    const D=-r.em;
+    h+=`<p>${esc(L.fixNeg(M(sel),fmt(D)))}</p><button type="button" class="btn ghost" id="fixCard">${esc(L.fixCardBtn(fmt(D),M(sel+1)))}</button><p class="muted">${esc(L.fixCardWhy)}</p>`;
+  }
+  let plan=null;
+  if(T>0){
+    h+=`<p>${esc(L.fixLost(fmt(T)))}</p><div class="opts">`+[3,6,12].map(k=>`<button type="button" class="btn ${fixK===k?"":"ghost"}" data-fixk="${k}">${esc(L.fixOver(k))}</button>`).join("")+`</div>`;
+    if(fixK){
+      plan=cutPlan(rows,T,fixK,sel+1);
+      h+=`<p class="muted">${esc(L.fixPreviewH)}</p><table class="ledger fixprev">`+plan.items.map(x=>`<tr><td>${esc(M(x.i))}</td><td><span class="num">${fmt(x.from)} → ${fmt(x.to)}</span></td></tr>`).join("")+`</table>`;
+      if(plan.left>0)h+=`<p class="caution">${esc(L.fixLeft(fmt(plan.left)))}</p>`;
+      if(plan.items.length)h+=`<div class="opts"><button type="button" class="btn" id="fixApply">${esc(L.fixApply)}</button><button type="button" class="btn link" id="fixCancel">${esc(L.fixCancel)}</button></div>`;
+    }
+  }
+  box.innerHTML=h+`</div>`;
+  if($("fixCard"))$("fixCard").onclick=()=>{
+    const D=-r.em;const id=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+    (state.entries[sel]=state.entries[sel]||[]).push({id:id(),amount:D,note:L.cardIn,type:"income",source:"personal"});
+    (state.entries[sel+1]=state.entries[sel+1]||[]).push({id:id(),amount:D,note:L.cardOut,type:"expense",source:"emergency"});
+    persist();render();toast(L.fixDone);
+  };
+  box.querySelectorAll("[data-fixk]").forEach(b=>b.onclick=()=>{fixK=+b.dataset.fixk;render()});
+  if($("fixCancel"))$("fixCancel").onclick=()=>{fixK=null;render()};
+  if($("fixApply"))$("fixApply").onclick=()=>{
+    for(const x of plan.items){
+      const o=state.overrides[x.i]||{};
+      if(x.to===planVal(state,x.i,"personal"))delete o.personal;else o.personal=x.to;
+      if(Object.keys(o).length)state.overrides[x.i]=o;else delete state.overrides[x.i];
+    }
+    fixK=null;persist();render();toast(L.fixDone);
+  };
+}
 
 /* ---------- month editor ---------- */
 function renderEditor(){

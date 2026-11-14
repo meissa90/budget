@@ -233,7 +233,7 @@ input,select{min-height:44px}
 .spark-dot{position:absolute;width:12px;height:12px;border-radius:50%;background:var(--teal);border:3px solid var(--card);box-shadow:0 0 0 1px var(--teal);transform:translate(-50%,-50%);pointer-events:none;transition:left .35s var(--ease),top .35s var(--ease)}
 .spark-x{display:flex;justify-content:space-between;padding:4px 18px 0;font-size:.72rem;color:var(--muted)}
 .spark-x #sxSel{color:var(--ink);font-weight:600}
-.hero-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
 .hero-stats b{display:block;font-size:1.3rem;font-weight:600;line-height:1.3}
 .hero-stats .delta{font-size:.75rem}
 .spark.draw .line{vector-effect:none;stroke-dasharray:var(--len);stroke-dashoffset:var(--len);animation:drawLine 1.1s var(--ease) .1s forwards}
@@ -269,6 +269,9 @@ input,select{min-height:44px}
 @media (max-width:640px){
   .hero{margin:10px 0 14px;padding:16px 16px 12px;border-radius:18px}
   .hero .big{font-size:2.6rem}
+  .hero-stats{gap:6px}
+  .hero-stats b{font-size:1.05rem}
+  .hero-stats .lbl{font-size:.72rem;line-height:1.3;display:block;min-height:2.6em}
   .spark-wrap{margin:10px -16px 0}
   .spark-x{padding:4px 16px 0}
   .ring-row{grid-template-columns:132px 1fr;gap:12px}
@@ -279,6 +282,56 @@ input,select{min-height:44px}
   *,*::before,*::after{animation:none!important;transition:none!important}
   .spark.draw .line{stroke-dasharray:none;stroke-dashoffset:0}.spark.draw .area{opacity:1}
 }
+/* ---------- professional theme ---------- */
+@property --ang{syntax:"<angle>";inherits:false;initial-value:0deg}
+:root{--paper:#f3f5f7;--card:#ffffff;--line:#e3e8ec;--ink:#0f1d26;--muted:#5f6f78;--accent-hi:#5cc2bd;
+  --shadow:0 1px 2px rgba(15,29,38,.04),0 6px 20px rgba(15,29,38,.06)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--paper:#0a1116;--card:#111b21;--line:#1f2c33;--ink:#e8eef0;--muted:#8fa0a7;--shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25)}}
+:root[data-theme="dark"]{--paper:#0a1116;--card:#111b21;--line:#1f2c33;--ink:#e8eef0;--muted:#8fa0a7;--shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25)}
+body{letter-spacing:-.003em}
+h1{font-weight:700;letter-spacing:-.015em}
+h2{font-weight:600;font-size:1.08rem}
+.panel,details,table.all{border-color:var(--line);box-shadow:var(--shadow)}
+.panel{border-radius:16px}
+.mbtn{border-radius:12px;box-shadow:var(--shadow);border-color:transparent}
+.iconbtn{box-shadow:var(--shadow);border-color:transparent;border-radius:12px}
+/* statement card: dark in both modes */
+.hero{--ink:#eef4f6;--muted:#93a6ad;--line:rgba(255,255,255,.09);--card:#13222b;
+  color:var(--ink);background:radial-gradient(120% 140% at 100% 0%,#1a3440 0%,#12212a 45%,#0d181f 100%);border:0;box-shadow:0 10px 30px rgba(8,18,24,.25)}
+.hero .pill{background:rgba(255,255,255,.08);color:var(--accent-hi)}
+.hero .pill.neg{background:rgba(255,107,97,.15);color:#ff8a80}
+.hero .pill.pos{color:#8be0a0}
+.hero .delta.neg{color:#ff8a80}.hero .delta.pos{color:#8be0a0}
+.hero .spark .line{stroke:var(--accent-hi)}
+.hero .spark .area{fill:url(#sparkFill)}
+.hero .spark-dot{background:var(--accent-hi);box-shadow:0 0 0 1px var(--accent-hi),0 0 14px var(--accent-hi)}
+.spark .beam{fill:none;stroke:#fff;stroke-width:3;stroke-linecap:round;stroke-dasharray:60 940;stroke-dashoffset:1000;filter:drop-shadow(0 0 4px var(--accent-hi)) drop-shadow(0 0 8px var(--accent-hi));animation:beam 4.5s linear infinite;opacity:.9}
+@keyframes beam{to{stroke-dashoffset:0}}
+/* moving light border */
+.glow{position:relative;isolation:isolate}
+.glow::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.5px;pointer-events:none;
+  background:conic-gradient(from var(--ang),transparent 0 62%,color-mix(in srgb,var(--accent-hi) 70%,transparent) 74%,#fff 80%,color-mix(in srgb,var(--accent-hi) 70%,transparent) 86%,transparent 98%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:spinAng 7s linear infinite}
+#hPhotoBtn.glow::after{padding:2px;animation-duration:3.5s}
+@keyframes spinAng{to{--ang:360deg}}
+.mbtn[aria-pressed="true"]{position:relative;isolation:isolate;border-color:transparent;background:var(--teal-soft)}
+.mbtn[aria-pressed="true"]::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.5px;pointer-events:none;
+  background:conic-gradient(from var(--ang),var(--teal) 0 55%,#fff 70%,var(--teal) 85%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:spinAng 5s linear infinite}
+.mbtn[aria-pressed="true"]{box-shadow:0 6px 18px color-mix(in srgb,var(--teal) 22%,transparent)}
+/* light line running across the nav */
+@media (min-width:641px){.tabs{position:relative}}
+.navlight{position:absolute;inset:0 0 auto 0;height:1.5px;overflow:hidden;pointer-events:none}
+.navlight::before{content:"";position:absolute;top:0;width:35%;height:100%;background:linear-gradient(90deg,transparent,var(--accent-hi),#fff,var(--accent-hi),transparent);animation:navRun 5s ease-in-out infinite;left:-35%}
+@keyframes navRun{0%{left:-35%}60%,100%{left:100%}}
+@media (min-width:641px){.navlight{inset:auto 0 -1px 0}}
+.tabs button[aria-selected="true"]{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--teal) 25%,transparent)}
+.btn{box-shadow:0 1px 2px rgba(15,29,38,.08)}
+.btn:not(.ghost):not(.link){background:linear-gradient(180deg,color-mix(in srgb,var(--teal) 88%,#fff),var(--teal))}
+.ring-fg{filter:drop-shadow(0 0 6px color-mix(in srgb,var(--teal) 45%,transparent))}
+.ring-shine{fill:none;stroke:#fff;stroke-width:12;stroke-linecap:round;stroke-dasharray:6 308;opacity:.55;transform-box:fill-box;transform-origin:center;animation:ringRun 3.2s linear infinite}
+@keyframes ringRun{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spark .beam,.navlight,.ring-shine{display:none}.glow::after,.mbtn[aria-pressed="true"]::before{animation:none}}
 </style>
 </head>
 <body>
@@ -308,9 +361,9 @@ input,select{min-height:44px}
     <div class="srow col"><button class="btn link danger" id="resetAll" type="button" data-t="resetAll"></button></div>
   </dialog>
 
-  <section class="hero" aria-live="polite">
+  <section class="hero glow" aria-live="polite">
     <div class="hero-main">
-      <div class="lbl" data-t="tEm"></div>
+      <div class="lbl" id="tEmL"></div>
       <div class="big num" id="tEm"></div>
       <div class="delta pill" id="tEmD"></div>
     </div>
@@ -320,11 +373,12 @@ input,select{min-height:44px}
     </div>
     <div class="hero-stats">
       <div><span class="lbl" data-t="tSch"></span><b class="num" id="tSch"></b><span class="delta" id="tSchD"></span></div>
+      <div><span class="lbl" data-t="tEnd"></span><b class="num" id="tEnd"></b><span class="delta" id="tEndD"></span></div>
       <div><span class="lbl" data-t="tLow"></span><b class="num" id="tLow"></b><span class="delta" id="tLowM"></span></div>
     </div>
   </section>
 
-  <nav class="tabs" role="tablist">
+  <nav class="tabs" role="tablist"><span class="navlight" aria-hidden="true"></span>
     <button type="button" role="tab" data-tab="month"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z"/></g></svg><span data-t="tabMonth"></span></button>
     <button type="button" role="tab" data-tab="house"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5M5.5 9v11h13V9M9.5 20v-6h5v6"/></g></svg><span data-t="tabHouse"></span></button>
     <button type="button" role="tab" data-tab="all"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></g></svg><span data-t="tabAll"></span></button>
@@ -375,7 +429,7 @@ input,select{min-height:44px}
         <div class="hhead"><h2 id="hTitle"></h2><select id="hMonth" class="hsel"></select></div>
         <div class="ring-row">
           <div class="ring-wrap">
-            <svg viewBox="0 0 120 120" class="ring" aria-hidden="true"><circle class="ring-bg" cx="60" cy="60" r="50"/><circle id="hRing" class="ring-fg" cx="60" cy="60" r="50"/></svg>
+            <svg viewBox="0 0 120 120" class="ring" aria-hidden="true"><circle class="ring-bg" cx="60" cy="60" r="50"/><circle id="hRing" class="ring-fg" cx="60" cy="60" r="50"/><circle class="ring-shine" cx="60" cy="60" r="50"/></svg>
             <div class="ring-c"><span class="lbl" data-t="hLeft"></span><b class="num" id="hLe"></b></div>
           </div>
           <div class="hstats">
@@ -390,7 +444,7 @@ input,select{min-height:44px}
       <div class="panel">
         <h2 data-t="hAddH"></h2>
         <input type="file" id="hPhoto" accept="image/*" hidden>
-        <button type="button" class="btn" id="hPhotoBtn"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13.5" r="3.5"/></g></svg><span data-t="hPhoto"></span></button>
+        <button type="button" class="btn glow" id="hPhotoBtn"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13.5" r="3.5"/></g></svg><span data-t="hPhoto"></span></button>
         <p class="save" id="hPhotoMsg" aria-live="polite"></p>
         <div class="row">
           <div><label for="hAmt" data-t="amount"></label><input id="hAmt" type="number" inputmode="decimal" min="0" step="1"></div>
@@ -453,7 +507,7 @@ const T={
 ar:{
  title:"خطة المصاريف",sub:"لو صرفت أكتر من المتوقع في أي شهر، سجّله في الشهر ده، والخطة كلها هتتعدل لوحدها.",langBtn:"English",
  saving:"بيحفظ…",saved:"محفوظ",saveFail:"متحفظش، اتأكد من النت وجرب تاني",
- tEm:"الطوارئ آخر الخطة",tSch:"حساب المدرسة آخر الخطة",tLow:"أقل رصيد طوارئ",
+ tEm:"الطوارئ آخر الخطة",tEmM:m=>"الطوارئ آخر "+m,tEnd:"الطوارئ آخر الخطة",tSch:"حساب المدرسة",tLow:"أقل رصيد طوارئ",
  same:"زي الخطة",belowPlan:n=>"أقل من الخطة بـ "+n,abovePlan:n=>"أكتر من الخطة بـ "+n,down:n=>"أقل بـ "+n,up:n=>"أكتر بـ "+n,
  monthsAria:"الشهور",emTip:m=>"رصيد الطوارئ آخر "+m,
  emNeg:n=>`الطوارئ بقت بالسالب (${n}). محتاج تقلل المصروف الشخصي في الشهور الجاية أو تدوّر على دخل زيادة.`,
@@ -508,7 +562,7 @@ ar:{
 en:{
  title:"Budget plan",sub:"If you spend more than expected in a month, log it in that month and the whole plan updates.",langBtn:"العربية",
  saving:"Saving…",saved:"Saved",saveFail:"Not saved. Check your connection and try again.",
- tEm:"Emergency fund, end of plan",tSch:"School account, end of plan",tLow:"Lowest emergency balance",
+ tEm:"Emergency fund, end of plan",tEmM:m=>"Emergency fund, end of "+m,tEnd:"Emergency, end of plan",tSch:"School account",tLow:"Lowest emergency balance",
  same:"Same as plan",belowPlan:n=>"Below plan by "+n,abovePlan:n=>"Above plan by "+n,down:n=>"Down by "+n,up:n=>"Up by "+n,
  monthsAria:"Months",emTip:m=>"Emergency balance at end of "+m,
  emNeg:n=>`The emergency fund is negative (${n}). Cut personal spending in the coming months or find extra income.`,
@@ -805,15 +859,20 @@ function render(){
   const L=t();
   const rows=compute(state,purchases);const r=rows[sel];const b=BASE_ROWS[sel];
   const last=rows[N-1],bl=BASE_ROWS[N-1];
-  tween($("tEm"),last.em);
+  $("tEmL").textContent=L.tEmM(M(sel));
+  tween($("tEm"),r.em);
   renderSpark(rows);
-  const dEm=last.em-bl.em;
+  const dEm=r.em-b.em;
   $("tEmD").textContent=dEm===0?L.same:(dEm<0?L.belowPlan(fmt(-dEm)):L.abovePlan(fmt(dEm)));
   $("tEmD").className="delta pill "+(dEm<0?"neg":dEm>0?"pos":"");
-  tween($("tSch"),last.sch);
-  const dS=last.sch-bl.sch;
+  tween($("tSch"),r.sch);
+  const dS=r.sch-b.sch;
   $("tSchD").textContent=dS===0?L.same:(dS<0?L.down(fmt(-dS)):L.up(fmt(dS)));
   $("tSchD").className="delta "+(dS<0?"neg":dS>0?"pos":"");
+  tween($("tEnd"),last.em);
+  const dE=last.em-bl.em;
+  $("tEndD").textContent=dE===0?L.same:(dE<0?L.down(fmt(-dE)):L.up(fmt(dE)));
+  $("tEndD").className="delta "+(dE<0?"neg":dE>0?"pos":"");
   let low=rows[0];for(const x of rows)if(x.em<low.em)low=x;
   tween($("tLow"),low.em);$("tLowM").textContent=M(low.i);
   $("tLowM").className="delta "+(low.em<0?"neg":"");
@@ -915,7 +974,7 @@ function renderSpark(rows){
   const zy=y(0).toFixed(1);
   svg.innerHTML=`<defs><linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--teal);stop-opacity:.28"/><stop offset="1" style="stop-color:var(--teal);stop-opacity:0"/></linearGradient></defs>`+
     (lo<0?`<line class="zero" x1="0" x2="${W}" y1="${zy}" y2="${zy}"/>`:"")+
-    `<path class="area" d="${area}"/><path class="plan" d="${ppath}"/><path class="line" d="${path}" pathLength="1000"/>`+
+    `<path class="area" d="${area}"/><path class="plan" d="${ppath}"/><path class="line" d="${path}" pathLength="1000"/><path class="beam" d="${path}" pathLength="1000"/>`+
     `<line class="cursor" x1="${pts[sel][0].toFixed(1)}" x2="${pts[sel][0].toFixed(1)}" y1="0" y2="${H}"/>`;
   svg.style.setProperty("--len","1000");
   if(!sparkDrawn&&!reduceMotion()&&svg.offsetParent!==null){sparkDrawn=true;svg.classList.remove("draw");void svg.getBoundingClientRect();svg.classList.add("draw");setTimeout(()=>svg.classList.remove("draw"),1500)}
@@ -923,7 +982,7 @@ function renderSpark(rows){
   if(!dot){dot=document.createElement("span");dot.className="spark-dot";svg.parentElement.appendChild(dot)}
   dot.style.left=(pts[sel][0]/W*100)+"%";dot.style.top=(pts[sel][1]/H*svg.getBoundingClientRect().height||pts[sel][1])+"px";
   $("sxStart").textContent=M(0);$("sxEnd").textContent=M(N-1);
-  $("sxSel").textContent=M(sel)+": "+fmt(vals[sel]);
+  $("sxSel").textContent=M(sel);
 }
 function sparkPick(ev){
   const svg=$("spark");const r=svg.getBoundingClientRect();if(!r.width)return;
@@ -1158,7 +1217,7 @@ function applyTheme(){
   if(theme.mode==="auto")root.removeAttribute("data-theme");else root.setAttribute("data-theme",theme.mode);
   const dark=theme.mode==="dark"||(theme.mode==="auto"&&mq&&mq.matches);
   const a=ACC[theme.accent];
-  root.style.setProperty("--teal",dark?a[2]:a[0]);root.style.setProperty("--teal-soft",dark?a[3]:a[1]);
+  root.style.setProperty("--teal",dark?a[2]:a[0]);root.style.setProperty("--teal-soft",dark?a[3]:a[1]);root.style.setProperty("--accent-hi",a[2]);
   document.querySelectorAll("#modeSeg [data-mode]").forEach(b=>b.setAttribute("aria-checked",b.dataset.mode===theme.mode?"true":"false"));
   document.querySelectorAll("#swatches [data-acc]").forEach(b=>b.setAttribute("aria-checked",b.dataset.acc===theme.accent?"true":"false"));
   const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=getComputedStyle(root).getPropertyValue("--paper").trim();

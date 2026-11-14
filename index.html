@@ -348,7 +348,8 @@ input,select{min-height:44px}
     <details><summary data-t="evH"></summary><div class="tablewrap"><table class="all" id="evT"></table></div></details>
     <details><summary data-t="condH"></summary><div id="condBody"></div></details>
     <details><summary data-t="backupH"></summary><p data-t="backupP"></p>
-      <div class="who"><button type="button" class="btn ghost" id="expBtn" data-t="exportBtn"></button><button type="button" class="btn link" id="impBtn" data-t="importBtn"></button></div>
+      <div class="who"><button type="button" class="btn ghost" id="expBtn" data-t="exportBtn"></button><button type="button" class="btn ghost" id="impPlanBtn" data-t="importPlanBtn"></button><button type="button" class="btn link danger" id="impBtn" data-t="importBtn"></button></div>
+      <p class="muted" data-t="backupHelp"></p>
       <p class="err" id="bErr"></p></details>
   </div>
 
@@ -359,18 +360,9 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebas
 import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 import { getFirestore, doc, collection, onSnapshot, setDoc, addDoc, deleteDoc, writeBatch, getDocs } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-/* ============ 1) PASTE YOUR FIREBASE CONFIG HERE ============ */
-const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyBN-t6cd9ClmNizwyyP71oQGrdx_w5MMUU",
-  authDomain: "budget-family-7ebb9.firebaseapp.com",
-  projectId: "budget-family-7ebb9",
-  storageBucket: "budget-family-7ebb9.firebasestorage.app",
-  messagingSenderId: "504239343550",
-  appId: "1:504239343550:web:8fa903853d1f63d6685bef"
-};
-/* Gemini model used to read receipts (Firebase AI Logic, free tier) */
-const GEMINI_MODEL = "gemini-2.5-flash";
-/* ============================================================= */
+import { FIREBASE_CONFIG } from "./firebase-config.js";
+/* Gemini models tried in order to read receipts (Firebase AI Logic). The first one that works is remembered. */
+const GEMINI_MODELS = ["gemini-3.5-flash","gemini-3.5-flash-lite","gemini-3.6-flash","gemini-2.5-flash"];
 
 const LANG_KEY="budget-plan-lang",TAB_KEY="budget-plan-tab",THEME_KEY="budget-plan-theme";
 let lang="ar";
@@ -420,7 +412,7 @@ ar:{
  accents:{teal:"أخضر مزرق",blue:"أزرق",violet:"بنفسجي",green:"أخضر",rose:"وردي"},
  hTitle:m=>"مصاريف البيت",hBudget:"الميزانية",hSpent:"اتصرف",hLeft:"فاضل",
  hOver:n=>`عدّيتوا ميزانية البيت بـ ${n}، والفرق اتسحب من الطوارئ.`,hAddH:"ضيف مشتريات",hPhoto:"صوّر الفاتورة أو ارفعها",
- hReading:"بقرا الفاتورة…",hRead:"اتقرت. اتأكد من المبلغ قبل ما تحفظ.",hReadFail:"مقدرتش أقرا الفاتورة. اكتب المبلغ بإيدك.",
+ hReading:"بقرا الفاتورة…",hRead:"اتقرت. اتأكد من المبلغ قبل ما تحفظ.",hReadFail:"مقدرتش أقرا الفاتورة. اكتب المبلغ بإيدك.",hReadingOcr:"بدوّر على الإجمالي في الصورة…",hReadOcr:"لقيت الإجمالي بس. اتأكد منه قبل ما تحفظ.",hNoTotal:"ملقتش الإجمالي",
  hItem:"اشتريت إيه",hItemPh:"مثلًا: خضار وفاكهة",hDate:"التاريخ",hAdd:"احفظ",
  hErrDate:(a,b)=>`التاريخ لازم يكون بين ${a} و${b}.`,hEmpty:m=>`مفيش مشتريات متسجلة في ${m}.`,hBy:n=>"ضافها "+n,hByMe:"إنت ضفتها",hFromPhoto:"من فاتورة",
  hNote:"لو اتصرف أقل من الميزانية، الخطة مش بتتغير. لو اتصرف أكتر، الزيادة بتتخصم من الطوارئ.",houseLine:"زيادة عن ميزانية البيت",hDefItem:"مشتريات",
@@ -429,7 +421,7 @@ ar:{
  gDeniedH:"الحساب ده مش مسموحله",gDeniedP:e=>`إنت داخل بـ ${e}. لو ده مش الحساب الصح، اخرج وادخل بحساب تاني.`,
  gImportH:"أول مرة: حمّل الخطة",gImportP:"اختار ملف plan-data.json، أو ملف نسخة احتياطية اتعمل قبل كده. ده بيتعمل مرة واحدة بس.",gImportBtn:"اختار الملف",gImportErr:"الملف ده مش ملف خطة صالح.",
  signOut:"اخرج",signedAs:e=>"داخل بـ "+e,
- backupH:"نسخة احتياطية",backupP:"النسخة فيها الخطة وكل اللي سجلتوه، وتقدر ترجعلها في أي وقت.",exportBtn:"نزّل نسخة",importBtn:"استرجع من نسخة",
+ backupH:"نسخة احتياطية",backupP:"النسخة فيها الخطة وكل اللي سجلتوه، وتقدر ترجعلها في أي وقت.",exportBtn:"نزّل نسخة",importBtn:"استرجاع كامل",importPlanBtn:"حدّث الخطة بس",backupHelp:"«حدّث الخطة بس» بيغيّر الشهور والجمعيات والأقساط، وكل اللي سجلتوه بيفضل. «استرجاع كامل» بيمسح كل حاجة ويحط مكانها اللي في الملف، وقبلها بينزّل نسخة من اللي موجود.",confirmPlan:"هيتغير شكل الخطة بس (الشهور، والجمعيات، والأقساط). كل اللي سجلتوه هيفضل زي ما هو. نكمّل؟",planUpdated:"اتحدثت الخطة، وكل اللي سجلتوه زي ما هو.",
  confirmImport:"هيتمسح كل اللي في الخطة دلوقتي، بما فيها مصاريف البيت، ويتحط مكانه اللي في الملف. متأكد؟",imported:"اترجعت."
 },
 en:{
@@ -476,7 +468,7 @@ en:{
  accents:{teal:"Teal",blue:"Blue",violet:"Violet",green:"Green",rose:"Rose"},
  hTitle:m=>"Household",hBudget:"Budget",hSpent:"Spent",hLeft:"Left",
  hOver:n=>`You’re ${n} over the household budget; the difference came out of the emergency fund.`,hAddH:"Add a purchase",hPhoto:"Take or upload a receipt photo",
- hReading:"Reading the receipt…",hRead:"Done. Check the amount before saving.",hReadFail:"Couldn’t read the receipt. Enter the amount by hand.",
+ hReading:"Reading the receipt…",hRead:"Done. Check the amount before saving.",hReadFail:"Couldn’t read the receipt. Enter the amount by hand.",hReadingOcr:"Looking for the total in the photo…",hReadOcr:"Found the total only. Check it before saving.",hNoTotal:"no total found",
  hItem:"What you bought",hItemPh:"e.g. groceries",hDate:"Date",hAdd:"Save",
  hErrDate:(a,b)=>`The date must be between ${a} and ${b}.`,hEmpty:m=>`No purchases logged for ${m}.`,hBy:n=>"Added by "+n,hByMe:"Added by you",hFromPhoto:"from receipt",
  hNote:"Spending under budget doesn’t change the plan. Spending over it comes out of the emergency fund.",houseLine:"Over household budget",hDefItem:"Purchase",
@@ -485,7 +477,7 @@ en:{
  gDeniedH:"This account doesn’t have access",gDeniedP:e=>`You’re signed in as ${e}. If that’s the wrong account, sign out and use another one.`,
  gImportH:"First time: load the plan",gImportP:"Choose plan-data.json, or a backup file made earlier. You only do this once.",gImportBtn:"Choose file",gImportErr:"This isn’t a valid plan file.",
  signOut:"Sign out",signedAs:e=>"Signed in as "+e,
- backupH:"Backup",backupP:"The backup has the plan and everything you’ve logged. You can restore it at any time.",exportBtn:"Download backup",importBtn:"Restore from backup",
+ backupH:"Backup",backupP:"The backup has the plan and everything you’ve logged. You can restore it at any time.",exportBtn:"Download backup",importBtn:"Full restore",importPlanBtn:"Update plan only",backupHelp:"“Update plan only” changes the months, savings circles and installments, and keeps everything you’ve logged. “Full restore” replaces everything with the file’s contents, and downloads a backup of what’s there first.",confirmPlan:"Only the plan’s structure changes (months, savings circles, installments). Everything you’ve logged stays. Continue?",planUpdated:"Plan updated; everything you logged is kept.",
  confirmImport:"This replaces everything in the plan, household purchases included, with the file’s contents. Continue?",imported:"Restored."
 }};
 
@@ -611,7 +603,7 @@ function gate(kind,extra){
   $("gateBody").innerHTML=h;gateKind=kind;
   if($("gSign"))$("gSign").onclick=doSignIn;
   if($("gOut"))$("gOut").onclick=()=>signOut(auth);
-  if($("gImp"))$("gImp").onclick=()=>$("impFile").click();
+  if($("gImp"))$("gImp").onclick=()=>{importMode="full";$("impFile").click()};
 }
 let gateKind="loading";
 async function doSignIn(){
@@ -664,12 +656,19 @@ function doExport(){
   document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);
 }
 const readText=f=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result));r.onerror=rej;r.readAsText(f)});
+let importMode="full";
 async function doImport(file){
   const L=t();const errEl=$("gErr")||$("bErr");
   let data;
   try{data=JSON.parse(await readText(file))}catch(e){if(errEl)errEl.textContent=L.gImportErr;return}
   if(!data||!validConfig(data.config)){if(errEl)errEl.textContent=L.gImportErr;return}
-  if(CFG&&!confirm(L.confirmImport))return;
+  if(importMode==="plan"&&CFG){
+    if(!confirm(L.confirmPlan))return;
+    try{await setDoc(doc(db,"config","plan"),JSON.parse(JSON.stringify(data.config)));if($("bErr"))$("bErr").textContent=L.planUpdated}
+    catch(e){if(errEl)errEl.textContent=(e&&e.code==="permission-denied")?L.gDeniedH:L.saveFail}
+    return;
+  }
+  if(CFG){if(!confirm(L.confirmImport))return;doExport()}
   const saveCfg=CFG;setConfig(data.config);const st=sanitize(data.state||{});
   try{
     const old=await getDocs(collection(db,"purchases"));
@@ -890,30 +889,78 @@ async function shrink(file){
   }catch(e){return file}
 }
 const toB64=blob=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(",")[1]);r.onerror=rej;r.readAsDataURL(blob)});
+let aiMod=null,aiInst=null;
+const MODEL_KEY="budget-plan-model";
 async function readReceipt(blob){
-  if(!aiModel){
-    const m=await import("https://www.gstatic.com/firebasejs/12.0.0/firebase-ai.js");
-    const ai=m.getAI(app,{backend:new m.GoogleAIBackend()});
-    aiModel=m.getGenerativeModel(ai,{model:GEMINI_MODEL,generationConfig:{responseMimeType:"application/json"}});
-  }
+  if(!aiMod){aiMod=await import("https://www.gstatic.com/firebasejs/12.0.0/firebase-ai.js");aiInst=aiMod.getAI(app,{backend:new aiMod.GoogleAIBackend()})}
   const prompt=`The image is a photo of a shopping receipt or invoice from Egypt. It may be in Arabic or English. Find the final total actually paid, in Egyptian pounds. Reply with only JSON: {"total": number or null, "date": "YYYY-MM-DD" or null, "summary": string}. "summary" says what was bought in at most 5 words, written in ${lang==="ar"?"Egyptian Arabic":"English"}. Use null for any value you cannot read clearly.`;
-  const res=await aiModel.generateContent([prompt,{inlineData:{data:await toB64(blob),mimeType:blob.type||"image/jpeg"}}]);
-  return JSON.parse(res.response.text().replace(/```json|```/g,"").trim());
+  const part={inlineData:{data:await toB64(blob),mimeType:blob.type||"image/jpeg"}};
+  let saved=null;try{saved=localStorage.getItem(MODEL_KEY)}catch(e){}
+  const order=saved&&GEMINI_MODELS.includes(saved)?[saved].concat(GEMINI_MODELS.filter(m=>m!==saved)):GEMINI_MODELS;
+  let lastErr=null;
+  for(const name of order){
+    try{
+      const model=aiMod.getGenerativeModel(aiInst,{model:name,generationConfig:{responseMimeType:"application/json"}});
+      const res=await model.generateContent([prompt,part]);
+      const txt=res.response.text().replace(/```json|```/g,"").trim();
+      try{localStorage.setItem(MODEL_KEY,name)}catch(e){}
+      return JSON.parse(txt.slice(txt.indexOf("{"),txt.lastIndexOf("}")+1));
+    }catch(e){
+      lastErr=e;const m=String(e&&e.message||"");
+      if(/404|not found|not supported|retired|unknown model|NOT_FOUND/i.test(m))continue;
+      throw e;
+    }
+  }
+  throw lastErr||new Error("no model");
 }
+function errText(e){const c=e&&(e.code||e.status)||"";const m=String(e&&e.message||e||"").replace(/\s+/g," ").slice(0,160);return(c?c+": ":"")+m}
 $("hPhotoBtn").onclick=()=>$("hPhoto").click();
+/* on-device fallback: read only the total with OCR when Gemini fails */
+let tessLoading=null;
+function loadTesseract(){
+  if(window.Tesseract)return Promise.resolve();
+  if(!tessLoading)tessLoading=new Promise((res,rej)=>{const sc=document.createElement("script");sc.src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js";sc.onload=res;sc.onerror=rej;document.head.appendChild(sc)});
+  return tessLoading;
+}
+function normDigits(x){return x.replace(/[٠-٩]/g,d=>"٠١٢٣٤٥٦٧٨٩".indexOf(d)).replace(/[۰-۹]/g,d=>"۰۱۲۳۴۵۶۷۸۹".indexOf(d)).replace(/٫/g,".").replace(/٬/g,",")}
+function nums(line){
+  const out=[];const re=/\d{1,3}(?:,\d{3})+(?:\.\d{1,2})?|\d+(?:\.\d{1,2})?/g;let m;
+  while((m=re.exec(line))){const v=parseFloat(m[0].replace(/,/g,""));if(v>0&&v<500000&&m[0].replace(/[,.]/g,"").length<=8)out.push(v)}
+  return out;
+}
+function findTotal(text){
+  const lines=normDigits(text).split(/\n+/).map(x=>x.trim()).filter(Boolean);
+  const strong=/(grand\s*total|net\s*total|total\s*due|amount\s*due|to\s*pay|الصافي|صافى|صافي|المطلوب|الاجمالي\s*النهائي|الإجمالي\s*النهائي|المستحق)/i;
+  const weak=/(total|الإجمالي|الاجمالي|اجمالي|إجمالي|الاجمالى|اجمالى|الإجمالى|المجموع|جملة|الجملة)/i;
+  const sub=/(sub\s*-?\s*total|الفرعي|فرعي|قبل|vat|tax|ضريبة|خصم|discount|change|الباقي|نقدي|cash|paid)/i;
+  const pick=rx=>{let best=null;lines.forEach((ln,k)=>{if(!rx.test(ln)||sub.test(ln))return;let c=nums(ln);if(!c.length&&lines[k+1])c=nums(lines[k+1]);if(c.length){const v=Math.max(...c);if(best===null||v>=best)best=v}});return best};
+  return pick(strong)??pick(weak);
+}
+async function ocrTotal(blob){
+  await loadTesseract();
+  const w=await window.Tesseract.createWorker(["ara","eng"]);
+  try{const r=await w.recognize(blob);return findTotal(r.data.text||"")}finally{try{await w.terminate()}catch(e){}}
+}
 $("hPhoto").onchange=async()=>{
   const f=$("hPhoto").files&&$("hPhoto").files[0];$("hPhoto").value="";if(!f)return;
   const L=t(),msg=$("hPhotoMsg");
   msg.textContent=L.hReading;$("hPhotoBtn").disabled=true;
+  let blob=null,why="";
   try{
-    const res=await readReceipt(await shrink(f));
+    blob=await shrink(f);
+    const res=await readReceipt(blob);
     const tot=res&&+res.total;
-    if(tot>0)$("hAmt").value=Math.round(tot*100)/100;
     if(res&&typeof res.summary==="string"&&res.summary.trim())$("hItem").value=res.summary.trim().slice(0,60);
     if(res&&monthOf(res.date)>=0)$("hDate").value=res.date;
-    lastFromPhoto=tot>0;msg.textContent=tot>0?L.hRead:L.hReadFail;
-    if(tot>0)$("hAmt").focus();
-  }catch(e){console.error(e);msg.textContent=L.hReadFail}
+    if(tot>0){$("hAmt").value=Math.round(tot*100)/100;lastFromPhoto=true;msg.textContent=L.hRead;$("hAmt").focus();return}
+    why=L.hNoTotal;
+  }catch(e){console.error(e);why=errText(e)}
+  try{
+    msg.textContent=L.hReadingOcr;
+    const tot=await ocrTotal(blob||f);
+    if(tot>0){$("hAmt").value=Math.round(tot*100)/100;lastFromPhoto=true;msg.textContent=L.hReadOcr;$("hAmt").focus();return}
+    msg.textContent=L.hReadFail+(why?" ("+why+")":"");
+  }catch(e){console.error(e);msg.textContent=L.hReadFail+(why?" ("+why+")":"")}
   finally{$("hPhotoBtn").disabled=false}
 };
 
@@ -939,7 +986,8 @@ $("rSplit").onchange=()=>{if(state.raise)applyRaise()};
 $("rClear").onclick=()=>{state.raise=null;$("rAmt").value="";persist();render()};
 $("resetAll").onclick=()=>{if(!confirm(t().confirmReset))return;state={entries:{},overrides:{},raise:null};persist();render()};
 $("expBtn").onclick=doExport;
-$("impBtn").onclick=()=>$("impFile").click();
+$("impBtn").onclick=()=>{importMode="full";$("impFile").click()};
+$("impPlanBtn").onclick=()=>{importMode="plan";$("impFile").click()};
 $("impFile").onchange=async()=>{const f=$("impFile").files&&$("impFile").files[0];$("impFile").value="";if(f)await doImport(f)};
 $("outBtn").onclick=()=>signOut(auth);
 

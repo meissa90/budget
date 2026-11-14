@@ -673,7 +673,7 @@ function defaults(st,i){
 }
 function planVal(st,i,key){
   if(key==="salary"||key==="personal")return defaults(st,i)[key];
-  if(key.startsWith("fix"))return FIXED_AMT[+key.slice(3)];
+  if(key.startsWith("fix")){const f=CFG.fixed[+key.slice(3)];return Array.isArray(f.byMonth)&&Number.isFinite(+f.byMonth[i])?+f.byMonth[i]:FIXED_AMT[+key.slice(3)]}
   if(key.startsWith("jam")){const k=+key.slice(3);return jamActive(k,i)?JAMS[k].a:0}
   return BASE[key][i];
 }
@@ -826,7 +826,23 @@ async function doImport(file){
   if(!data||!validConfig(data.config)){if(errEl)errEl.textContent=L.gImportErr;return}
   if(importMode==="plan"&&CFG){
     if(!confirm(L.confirmPlan))return;
-    try{await setDoc(doc(db,"config","plan"),JSON.parse(JSON.stringify(data.config)));if($("bErr"))$("bErr").textContent=L.planUpdated}
+    try{
+      const oldStart=CFG.startYear*12+CFG.startMonth,newStart=data.config.startYear*12+data.config.startMonth;
+      const delta=oldStart-newStart;
+      const batch=writeBatch(db);
+      batch.set(doc(db,"config","plan"),JSON.parse(JSON.stringify(data.config)));
+      if(delta!==0){
+        const sh=o=>{const n={};for(const k of Object.keys(o||{})){const j=+k+delta;if(j>=0)n[j]=o[k]}return n};
+        const st=JSON.parse(JSON.stringify(state));
+        st.entries=sh(st.entries);st.overrides=sh(st.overrides);
+        if(st.raise)st.raise.from=Math.max(0,st.raise.from+delta);
+        state=st;rawState=st;
+        batch.set(doc(db,"state","main"),{entries:st.entries,overrides:st.overrides,raise:st.raise||null,updated:Date.now()});
+        purchases.forEach(q=>batch.set(doc(db,"purchases",q.id),{month:q.month+delta},{merge:true}));
+        sel=Math.max(0,sel+delta);hSel=Math.max(0,hSel+delta);
+      }
+      await batch.commit();
+      if($("bErr"))$("bErr").textContent=L.planUpdated}
     catch(e){if(errEl)errEl.textContent=(e&&e.code==="permission-denied")?L.gDeniedH:L.saveFail}
     return;
   }
@@ -874,7 +890,7 @@ function applyLang(){
   const fixTotal=FIXED_AMT.reduce((a,b)=>a+b,0);
   $("fixH").textContent=L.fixH(fmt(fixTotal));
   $("fixT").innerHTML=CFG.fixed.map(f=>`<tr><td>${esc(tx(f.name))}</td><td><span class="num">${fmt(f.amount)}</span></td></tr>`).join("")+`<tr class="result"><td>${esc(L.total)}</td><td><span class="num">${fmt(fixTotal)}</span></td></tr>`;
-  $("jamT").innerHTML=`<thead><tr>${L.jamTh.map(h=>`<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>`+JAMS.map(j=>`<tr><td>${esc(tx(j.name))}</td><td class="n"><span class="num">${fmt(j.a)}</span></td><td>${j.s===0?esc(L.ongoing):esc(M(j.s))}</td><td>${esc(tx(j.to))}</td><td>${esc(tx(j.rec))}</td></tr>`).join("")+
+  $("jamT").innerHTML=`<thead><tr>${L.jamTh.map(h=>`<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>`+JAMS.map(j=>`<tr><td>${esc(tx(j.name))}</td><td class="n"><span class="num">${fmt(j.a)}</span></td><td>${j.ongoing||j.s===0?esc(L.ongoing):esc(M(j.s))}</td><td>${esc(tx(j.to))}</td><td>${esc(tx(j.rec))}</td></tr>`).join("")+
    `</tbody><tbody><tr><th colspan="5">${esc(L.perMonth)}</th></tr>`+months.map((m,i)=>`<tr><td>${esc(m)}</td><td class="n"><span class="num">${fmt(jamTotal(i))}</span></td><td colspan="3">${esc(jamIdx(i).map(k=>tx(JAMS[k].name)).join(L.sep))}</td></tr>`).join("")+"</tbody>";
   $("evT").innerHTML=`<thead><tr>${L.evTh.map(h=>`<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>`+tx(CFG.events).map(e=>`<tr><td>${esc(e.d)}</td><td>${esc(e.w)}</td><td class="n"><span class="num">${esc(e.a)}</span></td></tr>`).join("")+"</tbody>";
   render();

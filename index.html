@@ -160,6 +160,7 @@ table.all tr.click:hover td{background:var(--teal-soft)}
 .gate .btn{margin-top:6px}
 .who{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 /* ---------- mobile / iPhone ---------- */
+body::before{content:"";position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);background:var(--paper);z-index:40;pointer-events:none}
 html{-webkit-text-size-adjust:100%}
 button,select,input,summary,.mbtn{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .iconbtn{font:inherit;font-weight:600;min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:10px;cursor:pointer;padding:0 10px}
@@ -206,7 +207,7 @@ input,select{min-height:44px}
   #pane-house .grid>.panel:last-child{order:-1}
   #hPhotoBtn{min-height:56px;font-size:1.05rem}
   #hAdd,#fAdd{width:100%}
-  body[data-tab="house"] .totals,body[data-tab="raise"] .totals,body[data-tab="plan"] .totals{display:none}
+  body[data-tab="house"] .hero,body[data-tab="raise"] .hero,body[data-tab="plan"] .hero{display:none}
   .hstats b{font-size:1.1rem}
   .ed{grid-template-columns:1fr 110px}
   .seg.wide button{min-height:40px}
@@ -214,10 +215,75 @@ input,select{min-height:44px}
   summary{min-height:32px;display:flex;align-items:center}
   .sheet{margin:auto auto 0;border-radius:18px 18px 0 0;width:100%;max-width:100%;padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px))}
 }
+/* ---------- polish & motion ---------- */
+:root{--ease:cubic-bezier(.2,.8,.2,1)}
+.hero{position:relative;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px 18px 14px;margin:16px 0 22px;overflow:hidden}
+.hero .lbl{font-size:.85rem;color:var(--muted)}
+.hero .big{font-size:3rem;font-weight:700;line-height:1.05;letter-spacing:-.02em;margin:2px 0 8px}
+.pill{display:inline-block;font-size:.78rem;font-weight:500;padding:2px 10px;border-radius:999px;background:var(--teal-soft);color:var(--teal)}
+.pill.neg{background:var(--red-soft);color:var(--red)}
+.pill.pos{background:var(--teal-soft);color:var(--green)}
+.spark-wrap{margin:12px -18px 0;position:relative}
+.spark{display:block;width:100%;height:110px;touch-action:pan-y;cursor:pointer}
+.spark .area{fill:url(#sparkFill)}
+.spark .line{fill:none;stroke:var(--teal);stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.spark .plan{fill:none;stroke:var(--muted);stroke-width:1.2;stroke-dasharray:4 4;opacity:.6;vector-effect:non-scaling-stroke}
+.spark .zero{stroke:var(--red);stroke-width:1;opacity:.5;vector-effect:non-scaling-stroke}
+.spark .cursor{stroke:var(--ink);stroke-width:1;opacity:.25;vector-effect:non-scaling-stroke}
+.spark-dot{position:absolute;width:12px;height:12px;border-radius:50%;background:var(--teal);border:3px solid var(--card);box-shadow:0 0 0 1px var(--teal);transform:translate(-50%,-50%);pointer-events:none;transition:left .35s var(--ease),top .35s var(--ease)}
+.spark-x{display:flex;justify-content:space-between;padding:4px 18px 0;font-size:.72rem;color:var(--muted)}
+.spark-x #sxSel{color:var(--ink);font-weight:600}
+.hero-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.hero-stats b{display:block;font-size:1.3rem;font-weight:600;line-height:1.3}
+.hero-stats .delta{font-size:.75rem}
+.spark.draw .line{vector-effect:none;stroke-dasharray:var(--len);stroke-dashoffset:var(--len);animation:drawLine 1.1s var(--ease) .1s forwards}
+.spark.draw .area{opacity:0;animation:fadeIn .6s ease .7s forwards}
+@keyframes drawLine{to{stroke-dashoffset:0}}
+@keyframes fadeIn{to{opacity:1}}
+.ring-row{display:grid;grid-template-columns:150px 1fr;gap:16px;align-items:center;margin:4px 0 14px}
+.ring-wrap{position:relative;width:150px;height:150px}
+.ring{width:100%;height:100%;transform:rotate(-90deg)}
+[dir="rtl"] .ring{transform:rotate(-90deg) scaleY(-1)}
+.ring-bg{fill:none;stroke:var(--teal-soft);stroke-width:12}
+.ring-fg{fill:none;stroke:var(--teal);stroke-width:12;stroke-linecap:round;stroke-dasharray:314.16;stroke-dashoffset:314.16;transition:stroke-dashoffset .9s var(--ease),stroke .3s}
+.ring-fg.warn{stroke:var(--amber)}.ring-fg.over{stroke:var(--red)}
+.ring-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.ring-c .lbl{font-size:.75rem;color:var(--muted)}
+.ring-c b{font-size:1.45rem;font-weight:700}
+.ring-row .hstats{grid-template-columns:1fr;gap:8px;margin:0}
+.toast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;background:var(--ink);color:var(--paper);padding:10px 18px;border-radius:999px;font-weight:600;font-size:.95rem;z-index:60;pointer-events:none;transition:opacity .25s ease,transform .3s var(--ease);display:flex;gap:8px;align-items:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media (min-width:641px){.toast{bottom:28px}}
+.pane.enter{animation:paneIn .28s var(--ease)}
+@keyframes paneIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.btn,.mbtn,.tabs button,.seg button,.iconbtn{transition:transform .12s ease,background-color .2s ease,color .2s ease,border-color .2s ease}
+.btn:active,.mbtn:active,.iconbtn:active,.seg button:active{transform:scale(.96)}
+.tabs button[aria-selected="true"] svg{animation:pop .35s var(--ease)}
+@keyframes pop{0%{transform:scale(.8)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+.sheet[open]{animation:sheetUp .32s var(--ease)}
+.sheet[open]::backdrop{animation:fadeIn .25s ease forwards;opacity:0}
+@keyframes sheetUp{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.entries li.new{animation:rowIn .45s var(--ease)}
+@keyframes rowIn{from{opacity:0;transform:translateY(-6px);background:var(--teal-soft)}to{opacity:1;transform:none;background:transparent}}
+.mbtn[aria-pressed="true"]{background:var(--teal-soft)}
+@media (max-width:640px){
+  .hero{margin:10px 0 14px;padding:16px 16px 12px;border-radius:18px}
+  .hero .big{font-size:2.6rem}
+  .spark-wrap{margin:10px -16px 0}
+  .spark-x{padding:4px 16px 0}
+  .ring-row{grid-template-columns:132px 1fr;gap:12px}
+  .ring-wrap{width:132px;height:132px}
+  .ring-c b{font-size:1.25rem}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .spark.draw .line{stroke-dasharray:none;stroke-dashoffset:0}.spark.draw .area{opacity:1}
+}
 </style>
 </head>
 <body>
 <input type="file" id="impFile" accept="application/json,.json" hidden>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
 <div class="wrap" id="gate"><div class="gate" id="gateBody"></div></div>
 <div class="wrap" id="app" hidden>
   <header class="top">
@@ -242,11 +308,21 @@ input,select{min-height:44px}
     <div class="srow col"><button class="btn link danger" id="resetAll" type="button" data-t="resetAll"></button></div>
   </dialog>
 
-  <div class="totals" aria-live="polite">
-    <div><div class="lbl" data-t="tEm"></div><div class="big num" id="tEm"></div><div class="delta" id="tEmD"></div></div>
-    <div><div class="lbl" data-t="tSch"></div><div class="mid num" id="tSch"></div><div class="delta" id="tSchD"></div></div>
-    <div><div class="lbl" data-t="tLow"></div><div class="mid num" id="tLow"></div><div class="delta" id="tLowM"></div></div>
-  </div>
+  <section class="hero" aria-live="polite">
+    <div class="hero-main">
+      <div class="lbl" data-t="tEm"></div>
+      <div class="big num" id="tEm"></div>
+      <div class="delta pill" id="tEmD"></div>
+    </div>
+    <div class="spark-wrap">
+      <svg id="spark" class="spark" viewBox="0 0 320 96" preserveAspectRatio="none" aria-hidden="true"></svg>
+      <div class="spark-x"><span id="sxStart"></span><span id="sxSel"></span><span id="sxEnd"></span></div>
+    </div>
+    <div class="hero-stats">
+      <div><span class="lbl" data-t="tSch"></span><b class="num" id="tSch"></b><span class="delta" id="tSchD"></span></div>
+      <div><span class="lbl" data-t="tLow"></span><b class="num" id="tLow"></b><span class="delta" id="tLowM"></span></div>
+    </div>
+  </section>
 
   <nav class="tabs" role="tablist">
     <button type="button" role="tab" data-tab="month"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z"/></g></svg><span data-t="tabMonth"></span></button>
@@ -297,11 +373,16 @@ input,select{min-height:44px}
     <div class="grid">
       <div class="panel">
         <div class="hhead"><h2 id="hTitle"></h2><select id="hMonth" class="hsel"></select></div>
-        <div class="hbar" aria-hidden="true"><div id="hFill"></div></div>
-        <div class="hstats">
-          <div><span class="lbl" data-t="hBudget"></span><b class="num" id="hBud"></b></div>
-          <div><span class="lbl" data-t="hSpent"></span><b class="num" id="hSp"></b></div>
-          <div><span class="lbl" data-t="hLeft"></span><b class="num" id="hLe"></b></div>
+        <div class="ring-row">
+          <div class="ring-wrap">
+            <svg viewBox="0 0 120 120" class="ring" aria-hidden="true"><circle class="ring-bg" cx="60" cy="60" r="50"/><circle id="hRing" class="ring-fg" cx="60" cy="60" r="50"/></svg>
+            <div class="ring-c"><span class="lbl" data-t="hLeft"></span><b class="num" id="hLe"></b></div>
+          </div>
+          <div class="hstats">
+            <div><span class="lbl" data-t="hBudget"></span><b class="num" id="hBud"></b></div>
+            <div><span class="lbl" data-t="hSpent"></span><b class="num" id="hSp"></b></div>
+            <div><span class="lbl" data-t="hPct"></span><b class="num" id="hPct"></b></div>
+          </div>
         </div>
         <div id="hAlert"></div>
         <ul class="entries" id="hList"></ul>
@@ -410,7 +491,7 @@ ar:{
  tabMonth:"الشهر",tabHouse:"البيت",tabAll:"الشهور",tabRaise:"الزيادة",tabPlan:"الخطة",settingsH:"الإعدادات",close:"تم",langL:"اللغة",settingsAria:"الإعدادات",subLog:"سجّل مصروف أو دخل",subEdit:"عدّل أرقام الشهر",
  allSub:"دوس على أي شهر عشان تفتح تفاصيله.",themeL:"المظهر",modeAuto:"تلقائي",modeLight:"فاتح",modeDark:"غامق",accentL:"اللون",
  accents:{teal:"أخضر مزرق",blue:"أزرق",violet:"بنفسجي",green:"أخضر",rose:"وردي"},
- hTitle:m=>"مصاريف البيت",hBudget:"الميزانية",hSpent:"اتصرف",hLeft:"فاضل",
+ hTitle:m=>"مصاريف البيت",hBudget:"الميزانية",hPct:"اتصرف منها",toastSaved:"اتحفظ",toastDeleted:"اتمسح",hSpent:"اتصرف",hLeft:"فاضل",
  hOver:n=>`عدّيتوا ميزانية البيت بـ ${n}، والفرق اتسحب من الطوارئ.`,hAddH:"ضيف مشتريات",hPhoto:"صوّر الفاتورة أو ارفعها",
  hReading:"بقرا الفاتورة…",hRead:"اتقرت. اتأكد من المبلغ قبل ما تحفظ.",hReadFail:"مقدرتش أقرا الفاتورة. اكتب المبلغ بإيدك.",hReadingOcr:"بدوّر على الإجمالي في الصورة…",hReadOcr:"لقيت الإجمالي بس. اتأكد منه قبل ما تحفظ.",hNoTotal:"ملقتش الإجمالي",
  hItem:"اشتريت إيه",hItemPh:"مثلًا: خضار وفاكهة",hDate:"التاريخ",hAdd:"احفظ",
@@ -466,7 +547,7 @@ en:{
  tabMonth:"Month",tabHouse:"Home",tabAll:"Months",tabRaise:"Raise",tabPlan:"Plan",settingsH:"Settings",close:"Done",langL:"Language",settingsAria:"Settings",subLog:"Log spending or income",subEdit:"Edit this month",
  allSub:"Click a month to open it.",themeL:"Theme",modeAuto:"Auto",modeLight:"Light",modeDark:"Dark",accentL:"Color",
  accents:{teal:"Teal",blue:"Blue",violet:"Violet",green:"Green",rose:"Rose"},
- hTitle:m=>"Household",hBudget:"Budget",hSpent:"Spent",hLeft:"Left",
+ hTitle:m=>"Household",hBudget:"Budget",hPct:"Used",toastSaved:"Saved",toastDeleted:"Deleted",hSpent:"Spent",hLeft:"Left",
  hOver:n=>`You’re ${n} over the household budget; the difference came out of the emergency fund.`,hAddH:"Add a purchase",hPhoto:"Take or upload a receipt photo",
  hReading:"Reading the receipt…",hRead:"Done. Check the amount before saving.",hReadFail:"Couldn’t read the receipt. Enter the amount by hand.",hReadingOcr:"Looking for the total in the photo…",hReadOcr:"Found the total only. Check it before saving.",hNoTotal:"no total found",
  hItem:"What you bought",hItemPh:"e.g. groceries",hDate:"Date",hAdd:"Save",
@@ -724,16 +805,17 @@ function render(){
   const L=t();
   const rows=compute(state,purchases);const r=rows[sel];const b=BASE_ROWS[sel];
   const last=rows[N-1],bl=BASE_ROWS[N-1];
-  $("tEm").textContent=fmt(last.em);
+  tween($("tEm"),last.em);
+  renderSpark(rows);
   const dEm=last.em-bl.em;
   $("tEmD").textContent=dEm===0?L.same:(dEm<0?L.belowPlan(fmt(-dEm)):L.abovePlan(fmt(dEm)));
-  $("tEmD").className="delta "+(dEm<0?"neg":dEm>0?"pos":"");
-  $("tSch").textContent=fmt(last.sch);
+  $("tEmD").className="delta pill "+(dEm<0?"neg":dEm>0?"pos":"");
+  tween($("tSch"),last.sch);
   const dS=last.sch-bl.sch;
   $("tSchD").textContent=dS===0?L.same:(dS<0?L.down(fmt(-dS)):L.up(fmt(dS)));
   $("tSchD").className="delta "+(dS<0?"neg":dS>0?"pos":"");
   let low=rows[0];for(const x of rows)if(x.em<low.em)low=x;
-  $("tLow").textContent=fmt(low.em);$("tLowM").textContent=M(low.i);
+  tween($("tLow"),low.em);$("tLowM").textContent=M(low.i);
   $("tLowM").className="delta "+(low.em<0?"neg":"");
 
   const ms=$("months");ms.innerHTML="";
@@ -788,7 +870,7 @@ function render(){
   $("mLedger").innerHTML=out.join("");
 
   const ents=state.entries[sel]||[];
-  $("mEntries").innerHTML=ents.length?ents.map(e=>`<li><span>${esc(e.note||(e.type==="income"?L.incDef:L.expDef))}<span class="meta">${esc(e.type==="income"?L.incDef:L.paidFrom(L.src[e.source]))}</span></span><span><span class="num" style="color:var(${e.type==="income"?"--green":"--red"})">${e.type==="income"?"+":"−"}${fmt(e.amount)}</span> <button type="button" class="btn link" data-del="${esc(e.id)}">${esc(L.del)}</button></span></li>`).join(""):`<li class="empty">${esc(L.empty(M(sel)))}</li>`;
+  $("mEntries").innerHTML=ents.length?ents.map(e=>`<li${e.id===newEntry?' class="new"':""}><span>${esc(e.note||(e.type==="income"?L.incDef:L.expDef))}<span class="meta">${esc(e.type==="income"?L.incDef:L.paidFrom(L.src[e.source]))}</span></span><span><span class="num" style="color:var(${e.type==="income"?"--green":"--red"})">${e.type==="income"?"+":"−"}${fmt(e.amount)}</span> <button type="button" class="btn link" data-del="${esc(e.id)}">${esc(L.del)}</button></span></li>`).join(""):`<li class="empty">${esc(L.empty(M(sel)))}</li>`;
   $("mEntries").querySelectorAll("[data-del]").forEach(bt=>bt.onclick=()=>{
     state.entries[sel]=(state.entries[sel]||[]).filter(e=>e.id!==bt.dataset.del);
     if(!state.entries[sel].length)delete state.entries[sel];
@@ -808,6 +890,59 @@ function render(){
   $("allT").innerHTML=h+"</tbody>";
   renderHouse(rows);
 }
+
+/* ---------- motion helpers ---------- */
+const reduceMotion=()=>window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function tween(el,to){
+  const from=Number.isFinite(el._v)?el._v:0;el._v=to;
+  if(reduceMotion()||from===to||!el.isConnected||el.offsetParent===null){el.textContent=fmt(to);return}
+  const t0=performance.now(),dur=700;cancelAnimationFrame(el._raf);
+  const step=now=>{const k=Math.min(1,(now-t0)/dur);const e=1-Math.pow(1-k,3);el.textContent=fmt(from+(to-from)*e);if(k<1)el._raf=requestAnimationFrame(step)};
+  el._raf=requestAnimationFrame(step);
+}
+let sparkDrawn=false;
+function renderSpark(rows){
+  const svg=$("spark");if(!svg)return;
+  const W=320,H=96,pad=10;
+  const vals=rows.map(r=>r.em),plan=BASE_ROWS.map(r=>r.em);
+  const all=vals.concat(plan,[0]);const lo=Math.min(...all),hi=Math.max(...all)||1;
+  const x=i=>N<2?W/2:8+(i/(N-1))*(W-16);const y=v=>pad+(H-2*pad)*(1-(v-lo)/((hi-lo)||1));
+  const xp=i=>document.documentElement.dir==="rtl"?W-x(i):x(i);
+  const pts=vals.map((v,i)=>[xp(i),y(v)]);
+  const path=pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+","+p[1].toFixed(1)).join("");
+  const ppath=plan.map((v,i)=>(i?"L":"M")+xp(i).toFixed(1)+","+y(v).toFixed(1)).join("");
+  const area=path+"L"+pts[pts.length-1][0].toFixed(1)+","+H+"L"+pts[0][0].toFixed(1)+","+H+"Z";
+  const zy=y(0).toFixed(1);
+  svg.innerHTML=`<defs><linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--teal);stop-opacity:.28"/><stop offset="1" style="stop-color:var(--teal);stop-opacity:0"/></linearGradient></defs>`+
+    (lo<0?`<line class="zero" x1="0" x2="${W}" y1="${zy}" y2="${zy}"/>`:"")+
+    `<path class="area" d="${area}"/><path class="plan" d="${ppath}"/><path class="line" d="${path}" pathLength="1000"/>`+
+    `<line class="cursor" x1="${pts[sel][0].toFixed(1)}" x2="${pts[sel][0].toFixed(1)}" y1="0" y2="${H}"/>`;
+  svg.style.setProperty("--len","1000");
+  if(!sparkDrawn&&!reduceMotion()&&svg.offsetParent!==null){sparkDrawn=true;svg.classList.remove("draw");void svg.getBoundingClientRect();svg.classList.add("draw");setTimeout(()=>svg.classList.remove("draw"),1500)}
+  let dot=svg.parentElement.querySelector(".spark-dot");
+  if(!dot){dot=document.createElement("span");dot.className="spark-dot";svg.parentElement.appendChild(dot)}
+  dot.style.left=(pts[sel][0]/W*100)+"%";dot.style.top=(pts[sel][1]/H*svg.getBoundingClientRect().height||pts[sel][1])+"px";
+  $("sxStart").textContent=M(0);$("sxEnd").textContent=M(N-1);
+  $("sxSel").textContent=M(sel)+": "+fmt(vals[sel]);
+}
+function sparkPick(ev){
+  const svg=$("spark");const r=svg.getBoundingClientRect();if(!r.width)return;
+  let f=((ev.clientX-r.left)/r.width*320-8)/(320-16);if(document.documentElement.dir==="rtl")f=1-f;
+  const i=Math.max(0,Math.min(N-1,Math.round(f*(N-1))));
+  if(i!==sel){sel=i;render()}
+}
+let sparkDown=false;
+$("spark").addEventListener("pointerdown",e=>{sparkDown=true;sparkPick(e)});
+$("spark").addEventListener("pointermove",e=>{if(sparkDown)sparkPick(e)});
+window.addEventListener("pointerup",()=>{sparkDown=false});
+window.addEventListener("resize",()=>{if(CFG&&!$("app").hidden)render()});
+let toastTimer=null;
+function toast(msg){
+  const el=$("toast");el.innerHTML=`<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>${esc(msg)}</span>`;
+  el.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove("show"),1800);
+  if(navigator.vibrate){try{navigator.vibrate(12)}catch(e){}}
+}
+let newPurchase=null,newEntry=null;
 
 /* ---------- month editor ---------- */
 function renderEditor(){
@@ -851,17 +986,19 @@ function renderHouse(rows){
   $("hTitle").textContent=L.hTitle(M(hSel));
   $("hMonth").value=String(hSel);
   if(!$("hDate").value||monthOf($("hDate").value)<0)$("hDate").value=defaultDate(hSel);
-  $("hBud").textContent=fmt(r.houseBudget);$("hSp").textContent=fmt(r.houseSpent);
-  const left=r.houseBudget-r.houseSpent;$("hLe").textContent=fmt(left);$("hLe").style.color=left<0?"var(--red)":"";
+  $("hBud").textContent=fmt(r.houseBudget);tween($("hSp"),r.houseSpent);
+  const left=r.houseBudget-r.houseSpent;tween($("hLe"),left);$("hLe").style.color=left<0?"var(--red)":"";
   const pct=r.houseBudget>0?Math.min(100,r.houseSpent/r.houseBudget*100):(r.houseSpent>0?100:0);
-  $("hFill").style.width=pct+"%";$("hFill").parentElement.classList.toggle("over",r.houseOver>0);
+  const ring=$("hRing");ring.style.strokeDashoffset=String(314.16*(1-pct/100));
+  ring.classList.toggle("over",r.houseOver>0);ring.classList.toggle("warn",r.houseOver<=0&&pct>=85);
+  $("hPct").textContent=Math.round(r.houseBudget>0?r.houseSpent/r.houseBudget*100:0)+"%";
   $("hAlert").innerHTML=r.houseOver>0?`<p class="warn">${esc(L.hOver(fmt(r.houseOver)))}</p>`:"";
   const list=purchases.filter(q=>q.month===hSel).sort((a,b)=>(b.date||"").localeCompare(a.date||"")||b.created-a.created);
   $("hList").innerHTML=list.length?list.map(q=>{
     const who=q.by?(me&&q.by===me.uid?L.hByMe:(q.byName?L.hBy(q.byName):"")):"";
     const meta=[q.date,who].filter(Boolean).join(L.sep);
-    return `<li><span>${esc(q.item||L.hDefItem)}${q.photo?`<span class="tag">${esc(L.hFromPhoto)}</span>`:""}<span class="meta">${esc(meta)}</span></span><span><span class="num">${fmt(q.amount)}</span> <button type="button" class="btn link" data-hdel="${esc(q.id)}">${esc(L.del)}</button></span></li>`}).join(""):`<li class="empty">${esc(L.hEmpty(M(hSel)))}</li>`;
-  $("hList").querySelectorAll("[data-hdel]").forEach(b=>b.onclick=async()=>{b.disabled=true;try{await deleteDoc(doc(db,"purchases",b.dataset.hdel))}catch(e){b.disabled=false}});
+    return `<li${q.created===newPurchase?' class="new"':""}><span>${esc(q.item||L.hDefItem)}${q.photo?`<span class="tag">${esc(L.hFromPhoto)}</span>`:""}<span class="meta">${esc(meta)}</span></span><span><span class="num">${fmt(q.amount)}</span> <button type="button" class="btn link" data-hdel="${esc(q.id)}">${esc(L.del)}</button></span></li>`}).join(""):`<li class="empty">${esc(L.hEmpty(M(hSel)))}</li>`;
+  $("hList").querySelectorAll("[data-hdel]").forEach(b=>b.onclick=async()=>{b.disabled=true;try{await deleteDoc(doc(db,"purchases",b.dataset.hdel));toast(t().toastDeleted)}catch(e){b.disabled=false}});
 }
 $("hMonth").onchange=()=>{hSel=+$("hMonth").value;$("hDate").value=defaultDate(hSel);render()};
 $("hAdd").onclick=async()=>{
@@ -872,7 +1009,9 @@ $("hAdd").onclick=async()=>{
   if(mi<0){$("hErr").textContent=L.hErrDate(M(0),M(N-1));$("hDate").focus();return}
   $("hErr").textContent="";$("hAdd").disabled=true;
   try{
-    await addDoc(collection(db,"purchases"),{month:mi,amount:amt,item:$("hItem").value.trim().slice(0,60),date:ds,by:me.uid,byName:(me.displayName||me.email||"").split(" ")[0],photo:lastFromPhoto,created:Date.now()});
+    const created=Date.now();newPurchase=created;
+    await addDoc(collection(db,"purchases"),{month:mi,amount:amt,item:$("hItem").value.trim().slice(0,60),date:ds,by:me.uid,byName:(me.displayName||me.email||"").split(" ")[0],photo:lastFromPhoto,created});
+    toast(t().toastSaved);
     $("hAmt").value="";$("hItem").value="";$("hPhotoMsg").textContent="";lastFromPhoto=false;
     hSel=mi;render();
   }catch(e){$("hErr").textContent=L.saveFail}
@@ -971,9 +1110,9 @@ $("fAdd").onclick=()=>{
   if(!(amt>0)){$("fErr").textContent=t().errAmt;$("fAmt").focus();return}
   $("fErr").textContent="";
   const e={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),amount:amt,note:$("fNote").value.trim().slice(0,60),type:$("fType").value,source:$("fSrc").value};
-  (state.entries[sel]=state.entries[sel]||[]).push(e);
+  (state.entries[sel]=state.entries[sel]||[]).push(e);newEntry=e.id;
   $("fAmt").value="";$("fNote").value="";
-  persist();render();
+  persist();render();toast(t().toastSaved);
 };
 function applyRaise(){
   const a=Math.round(parseFloat($("rAmt").value));
@@ -994,10 +1133,11 @@ $("outBtn").onclick=()=>signOut(auth);
 /* ---------- tabs ---------- */
 function showTab(name){
   document.querySelectorAll(".tabs [data-tab]").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===name?"true":"false"));
-  ["month","house","all","raise","plan"].forEach(n=>{$("pane-"+n).hidden=n!==name});
+  ["month","house","all","raise","plan"].forEach(n=>{const p=$("pane-"+n);const was=p.hidden;p.hidden=n!==name;if(n===name&&was&&tabReady){p.classList.remove("enter");void p.offsetWidth;p.classList.add("enter")}});
   document.body.dataset.tab=name;
   try{localStorage.setItem(TAB_KEY,name)}catch(e){}
   if(typeof window.scrollTo==="function"&&tabReady)window.scrollTo({top:0});
+  if(tabReady&&CFG&&!$("app").hidden)render();
 }
 let tabReady=false;
 document.querySelectorAll(".tabs [data-tab]").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));

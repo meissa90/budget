@@ -332,6 +332,17 @@ h2{font-weight:600;font-size:1.08rem}
 .ring-shine{fill:none;stroke:#fff;stroke-width:12;stroke-linecap:round;stroke-dasharray:6 308;opacity:.55;transform-box:fill-box;transform-origin:center;animation:ringRun 3.2s linear infinite}
 @keyframes ringRun{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.spark .beam,.navlight,.ring-shine{display:none}.glow::after,.mbtn[aria-pressed="true"]::before{animation:none}}
+/* hero stats: align label, number and note on one edge */
+.hero-stats{gap:0}
+.hero-stats>div{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding-inline:12px;min-width:0}
+.hero-stats>div:first-child{padding-inline-start:0}
+.hero-stats>div:last-child{padding-inline-end:0}
+.hero-stats>div+div{border-inline-start:1px solid var(--line)}
+.hero-stats .lbl{display:block;min-height:0!important;font-size:.74rem;line-height:1.35;color:var(--muted)}
+.hero-stats b{display:inline-block;font-size:1.2rem;font-weight:700;line-height:1.25;margin-top:2px}
+.hero-stats .delta{font-size:.72rem;color:var(--muted)}
+.hero-stats .delta.neg{color:#ff8a80}.hero-stats .delta.pos{color:#8be0a0}
+@media (max-width:640px){.hero-stats>div{padding-inline:9px}.hero-stats b{font-size:1.05rem}.hero-stats .lbl{font-size:.7rem}}
 </style>
 </head>
 <body>

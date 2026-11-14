@@ -350,6 +350,17 @@ h2{font-weight:600;font-size:1.08rem}
 .fix .opts .btn{min-height:40px;padding:6px 10px;flex:1;white-space:nowrap}
 .fix #fixCard{width:100%}
 .fixprev td{padding:6px 0}
+.row{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.row>div{min-width:0}
+details *,details *::before,details *::after{box-sizing:border-box}
+details.pe{padding:0}
+.pe>summary{padding:12px 16px}
+.pe-body{display:block;padding:0 16px 16px}
+.pe .row{margin-top:10px}
+.pe #peApply{width:100%;margin-top:4px}
+.bake{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+.bake h3{font-size:1rem;margin:0 0 4px}
+.bake .btn{width:100%}
 </style>
 </head>
 <body>
@@ -496,7 +507,27 @@ h2{font-weight:600;font-size:1.08rem}
   </div>
 
   <div class="pane" id="pane-plan" role="tabpanel" hidden>
-    <details open><summary data-t="howH"></summary><div id="howBody"></div></details>
+    <details open class="pe"><summary data-t="peH"></summary>
+      <div class="pe-body">
+      <p class="muted" data-t="peP"></p>
+      <div class="row">
+        <div><label for="peItem" data-t="peItem"></label><select id="peItem"></select></div>
+        <div><label for="peAmt" data-t="peAmt"></label><input id="peAmt" type="number" inputmode="numeric" min="0" step="50"></div>
+      </div>
+      <div class="row">
+        <div><label for="peFrom" data-t="peFrom"></label><select id="peFrom"></select></div>
+        <div><label for="peTo" data-t="peTo"></label><select id="peTo"></select></div>
+      </div>
+      <button class="btn" id="peApply" type="button" data-t="peApply"></button>
+      <p class="err" id="peErr"></p>
+      <div class="bake">
+        <h3 data-t="bakeH"></h3>
+        <p class="muted" id="bakeP"></p>
+        <button class="btn ghost" id="bakeBtn" type="button" data-t="bakeBtn"></button>
+      </div>
+      </div>
+    </details>
+    <details><summary data-t="howH"></summary><div id="howBody"></div></details>
     <details><summary id="fixH"></summary><table class="ledger" id="fixT"></table></details>
     <details><summary data-t="jamH"></summary><div class="tablewrap"><table class="all" id="jamT"></table></div></details>
     <details><summary data-t="evH"></summary><div class="tablewrap"><table class="all" id="evT"></table></div></details>
@@ -548,7 +579,11 @@ ar:{
  src:{personal:"المصروف الشخصي",emergency:"الطوارئ",school:"حساب المدرسة"},
  add:"أضف للشهر",errAmt:"اكتب المبلغ بالأرقام، أكبر من صفر.",incDef:"دخل زيادة",expDef:"مصروف زيادة",paidFrom:s=>"اتدفع من "+s,
  del:"امسح",empty:m=>`مفيش حاجة متسجلة في ${m}.`,
- ovSub:"عدّل أي رقم في الشهر ده، والخطة كلها هتتحسب تاني. الخانات المتعدلة بتتعلّم بالأصفر.",ovFwd:"طبّق التعديل على الشهر ده وكل الشهور اللي بعده",ovReset:"رجّع أرقام الشهر للخطة",
+ ovSub:"عدّل أي رقم في الشهر ده، والخطة كلها هتتحسب تاني. الخانات المتعدلة بتتعلّم بالأصفر.",peH:"عدّل الخطة نفسها",peP:"التعديل هنا بيغيّر الخطة الأساسية، فمش هيظهر كفرق عن الخطة ولا بالأصفر. استخدمه للحاجات اللي اتغيرت فعلًا، زي إيجار زاد أو مصروف بيت جديد.",
+ peItem:"البند",peAmt:"المبلغ في الشهر",peFrom:"من",peTo:"لحد",peApply:"غيّر الخطة",peConfirm:(it,n,a,b)=>`${it} هيبقى ${n} في الخطة من ${a} لحد ${b}. نكمّل؟`,peDone:"اتغيرت الخطة",
+ bakeH:"خلّي تعديلاتك جزء من الخطة",bakeP:n=>`عندك تعديلات في ${n} ${n<=10?"شهور":"شهر"} من «عدّل أرقام الشهر». لو حولتها للخطة، الأصفر والفرق عن الخطة هيختفوا.`,bakeNone:"مفيش تعديلات دلوقتي.",bakeBtn:"حوّلها للخطة",
+ bakeConfirm:"كل الأرقام اللي عدلتها هتبقى هي الخطة، ومش هتقدر ترجعها بزرار «رجّع». هنزّل نسخة احتياطية الأول عشان تقدر ترجعلها. نكمّل؟",
+ ovFwd:"طبّق التعديل على الشهر ده وكل الشهور اللي بعده",fwdApplied:"اتطبق على الشهور اللي بعده",ovReset:"رجّع أرقام الشهر للخطة",
  gIn:"الدخل",gFix:"المصاريف الثابتة",gJam:"الجمعيات",gSch:"المدرسة",gOther:"دفعات ومصروف",
  fExtra:"دخل إضافي",fSchool:"إيداع المدرسة الشهري",fSchoolX:"إيداع إضافي للمدرسة",fInst:"قسط المدرسة",fSpecial:"دفعات خاصة",
  planWas:n=>"الخطة "+n,resetOne:"رجّع",changed:"اتعدل: ",
@@ -607,7 +642,11 @@ en:{
  src:{personal:"Personal spending",emergency:"Emergency fund",school:"School account"},
  add:"Add to month",errAmt:"Enter an amount greater than zero.",incDef:"Extra income",expDef:"Extra spending",paidFrom:s=>"Paid from "+s.toLowerCase(),
  del:"Delete",empty:m=>`Nothing logged for ${m} yet.`,
- ovSub:"Edit any number for this month and the whole plan recalculates. Edited fields are highlighted.",ovFwd:"Apply changes to this month and every month after",ovReset:"Reset this month to plan",
+ ovSub:"Edit any number for this month and the whole plan recalculates. Edited fields are highlighted.",peH:"Edit the plan itself",peP:"Changes here update the base plan, so they don’t show as a difference from plan or in yellow. Use it for things that really changed, like higher rent or a new household budget.",
+ peItem:"Item",peAmt:"Monthly amount",peFrom:"From",peTo:"Until",peApply:"Change the plan",peConfirm:(it,n,a,b)=>`${it} becomes ${n} in the plan from ${a} to ${b}. Continue?`,peDone:"Plan changed",
+ bakeH:"Make your edits part of the plan",bakeP:n=>`You have edits in ${n} months from “Edit this month”. Turning them into the plan removes the yellow and the difference from plan.`,bakeNone:"No edits right now.",bakeBtn:"Make them the plan",
+ bakeConfirm:"Every number you edited becomes the plan, and the Reset buttons won’t bring the old values back. A backup downloads first so you can return to it. Continue?",
+ ovFwd:"Apply changes to this month and every month after",fwdApplied:"Applied to the following months",ovReset:"Reset this month to plan",
  gIn:"Income",gFix:"Fixed expenses",gJam:"Savings circles",gSch:"School",gOther:"Payments and spending",
  fExtra:"Extra income",fSchool:"Monthly school deposit",fSchoolX:"Extra school deposit",fInst:"School installment",fSpecial:"One-off payments",
  planWas:n=>"Plan "+n,resetOne:"Reset",changed:"Changed: ",
@@ -664,7 +703,7 @@ function validConfig(c){
 }
 function jamActive(k,i){return i>=JAMS[k].s&&i<=JAMS[k].e}
 function jamIdx(i){return JAMS.map((j,k)=>k).filter(k=>jamActive(k,i))}
-function jamTotal(i){return jamIdx(i).reduce((a,k)=>a+JAMS[k].a,0)}
+function jamTotal(i){return jamIdx(i).reduce((a,k)=>a+planVal({raise:null},i,"jam"+k),0)}
 function defaults(st,i){
   const R=st.raise;const rz=(R&&R.amount>0&&i>=R.from)?R.amount:0;
   let pAdd=0;
@@ -674,7 +713,7 @@ function defaults(st,i){
 function planVal(st,i,key){
   if(key==="salary"||key==="personal")return defaults(st,i)[key];
   if(key.startsWith("fix")){const f=CFG.fixed[+key.slice(3)];return Array.isArray(f.byMonth)&&Number.isFinite(+f.byMonth[i])?+f.byMonth[i]:FIXED_AMT[+key.slice(3)]}
-  if(key.startsWith("jam")){const k=+key.slice(3);return jamActive(k,i)?JAMS[k].a:0}
+  if(key.startsWith("jam")){const k=+key.slice(3);if(!jamActive(k,i))return 0;const bm=JAMS[k].byMonth;return Array.isArray(bm)&&bm[i]!=null&&Number.isFinite(+bm[i])?+bm[i]:JAMS[k].a}
   return BASE[key][i];
 }
 function isOv(st,i,key){const o=(st.overrides||{})[i]||{};return Number.isFinite(o[key])}
@@ -892,6 +931,7 @@ function applyLang(){
   $("fixT").innerHTML=CFG.fixed.map(f=>`<tr><td>${esc(tx(f.name))}</td><td><span class="num">${fmt(f.amount)}</span></td></tr>`).join("")+`<tr class="result"><td>${esc(L.total)}</td><td><span class="num">${fmt(fixTotal)}</span></td></tr>`;
   $("jamT").innerHTML=`<thead><tr>${L.jamTh.map(h=>`<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>`+JAMS.map(j=>`<tr><td>${esc(tx(j.name))}</td><td class="n"><span class="num">${fmt(j.a)}</span></td><td>${j.ongoing||j.s===0?esc(L.ongoing):esc(M(j.s))}</td><td>${esc(tx(j.to))}</td><td>${esc(tx(j.rec))}</td></tr>`).join("")+
    `</tbody><tbody><tr><th colspan="5">${esc(L.perMonth)}</th></tr>`+months.map((m,i)=>`<tr><td>${esc(m)}</td><td class="n"><span class="num">${fmt(jamTotal(i))}</span></td><td colspan="3">${esc(jamIdx(i).map(k=>tx(JAMS[k].name)).join(L.sep))}</td></tr>`).join("")+"</tbody>";
+  peBuild();
   $("evT").innerHTML=`<thead><tr>${L.evTh.map(h=>`<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>`+tx(CFG.events).map(e=>`<tr><td>${esc(e.d)}</td><td>${esc(e.w)}</td><td class="n"><span class="num">${esc(e.a)}</span></td></tr>`).join("")+"</tbody>";
   render();
 }
@@ -992,6 +1032,7 @@ function render(){
     h+=`<tr class="click${x.i===sel?" sel":""}" data-i="${x.i}"><td>${esc(M(x.i))}</td><td class="n opt"><span class="num">${signed(x.toEm)}</span></td><td class="n ${x.em<0?"bad":x.em<=3000?"tight":""}"><span class="num">${fmt(x.em)}</span></td><td class="n ${d<0?"bad":""}"><span class="num">${d===0?"-":signed(d)}</span></td><td class="n opt"><span class="num">${fmt(x.personal)}</span></td><td class="n ${x.sch<0?"bad":""}"><span class="num">${fmt(x.sch)}</span></td></tr>`});
   $("allT").innerHTML=h+"</tbody>";
   renderHouse(rows);
+  renderPlanEditor();
 }
 
 /* ---------- motion helpers ---------- */
@@ -1098,6 +1139,75 @@ function renderFix(rows,r){
   };
 }
 
+/* ---------- plan editor ---------- */
+function peKeys(){
+  const L=t();
+  return [["salary",L.salary]].concat(CFG.fixed.map((f,k)=>["fix"+k,tx(f.name)]),[["school",L.fSchool],["personal",L.personal]],JAMS.map((j,k)=>["jam"+k,tx(j.name)]));
+}
+function peFill(){
+  const key=$("peItem").value,a=+$("peFrom").value;if(!key||!(a>=0))return;
+  let v=planVal({raise:null},a,key);
+  if(key.startsWith("jam")&&!jamActive(+key.slice(3),a))v=JAMS[+key.slice(3)].a;
+  $("peAmt").value=v;
+}
+function peBuild(){
+  const months=tx(CFG.months);
+  const keep=[$("peItem").value,$("peFrom").value,$("peTo").value];
+  $("peItem").innerHTML=peKeys().map(([k,n])=>`<option value="${k}">${esc(n)}</option>`).join("");
+  const opts=months.map((m,i)=>`<option value="${i}">${esc(m)}</option>`).join("");
+  $("peFrom").innerHTML=opts;$("peTo").innerHTML=opts;
+  $("peItem").value=keep[0]&&peKeys().some(x=>x[0]===keep[0])?keep[0]:"fix"+CFG.houseIdx;
+  $("peFrom").value=keep[1]!==""&&+keep[1]<N?keep[1]:String(Math.max(0,currentIdx()));
+  $("peTo").value=keep[2]!==""&&+keep[2]<N?keep[2]:String(N-1);
+  peFill();
+}
+function renderPlanEditor(){
+  const L=t(),n=Object.keys(state.overrides||{}).length;
+  $("bakeP").textContent=n?L.bakeP(n):L.bakeNone;$("bakeBtn").disabled=!n;
+}
+function setCfgVal(cfg,i,key,v){
+  const full=(arr,dflt)=>Array.from({length:N},(_,j)=>Array.isArray(arr)&&arr[j]!=null&&Number.isFinite(+arr[j])?+arr[j]:dflt(j));
+  if(key.startsWith("fix")){const f=cfg.fixed[+key.slice(3)];f.byMonth=full(f.byMonth,()=>+f.amount);f.byMonth[i]=v}
+  else if(key.startsWith("jam")){const j=cfg.jams[+key.slice(3)];if(i<j.s||i>j.e)return;j.byMonth=full(j.byMonth,()=>j.a);j.byMonth[i]=v}
+  else cfg.base[key][i]=v;
+}
+async function writePlan(cfg){
+  clearTimeout(saveTimer);saveTimer=null;
+  const st=JSON.parse(JSON.stringify(state));
+  const batch=writeBatch(db);
+  batch.set(doc(db,"config","plan"),JSON.parse(JSON.stringify(cfg)));
+  batch.set(doc(db,"state","main"),{entries:st.entries,overrides:st.overrides,raise:st.raise||null,updated:Date.now()});
+  await batch.commit();
+}
+$("peItem").onchange=peFill;$("peFrom").onchange=peFill;
+$("peApply").onclick=async()=>{
+  const L=t();$("peErr").textContent="";
+  const key=$("peItem").value,v=Math.round(parseFloat($("peAmt").value));
+  if(!(v>=0)){$("peErr").textContent=L.errAmt;$("peAmt").focus();return}
+  let a=+$("peFrom").value,b=+$("peTo").value;if(b<a)[a,b]=[b,a];
+  if(!confirm(L.peConfirm($("peItem").selectedOptions[0].textContent,fmt(v),M(a),M(b))))return;
+  const cfg=JSON.parse(JSON.stringify(CFG));
+  for(let i=a;i<=b;i++){
+    let bv=v;const d=defaults(state,i);
+    if(key==="salary")bv=v;if(key==="personal")bv=v;
+    setCfgVal(cfg,i,key,bv);
+    const o=state.overrides[i];if(o&&key in o){delete o[key];if(!Object.keys(o).length)delete state.overrides[i]}
+  }
+  try{await writePlan(cfg);toast(L.peDone)}catch(e){$("peErr").textContent=L.saveFail}
+};
+$("bakeBtn").onclick=async()=>{
+  const L=t();const months=Object.keys(state.overrides||{});if(!months.length)return;
+  if(!confirm(L.bakeConfirm))return;
+  doExport();
+  const cfg=JSON.parse(JSON.stringify(CFG));
+  for(const k of months){
+    const i=+k,o=state.overrides[k],d=defaults(state,i);
+    for(const key of Object.keys(o)){let v=o[key];if(key==="salary")v-=d.rz;if(key==="personal")v-=d.pAdd;setCfgVal(cfg,i,key,Math.max(0,v))}
+  }
+  state.overrides={};
+  try{await writePlan(cfg);toast(L.peDone)}catch(e){$("peErr").textContent=L.saveFail}
+};
+
 /* ---------- month editor ---------- */
 function renderEditor(){
   const L=t();
@@ -1131,6 +1241,18 @@ function setKey(key,v){
 }
 $("oEdit").addEventListener("change",e=>{const k=e.target.dataset&&e.target.dataset.k;if(!k)return;const v=Math.round(parseFloat(e.target.value));setKey(k,(v>=0)?v:null)});
 $("oEdit").addEventListener("click",e=>{const k=e.target.dataset&&e.target.dataset.r;if(!k)return;setKey(k,null)});
+$("oFwd").addEventListener("change",()=>{
+  if(!$("oFwd").checked)return;
+  const o=state.overrides[sel];if(!o||!Object.keys(o).length)return;
+  for(const k of Object.keys(o)){
+    for(const i of targetMonths(k)){
+      const oi=state.overrides[i]||{};
+      if(o[k]===planVal(state,i,k))delete oi[k];else oi[k]=o[k];
+      if(Object.keys(oi).length)state.overrides[i]=oi;else delete state.overrides[i];
+    }
+  }
+  persist();render();toast(t().fwdApplied);
+});
 $("oReset").onclick=()=>{const to=$("oFwd").checked?N-1:sel;for(let i=sel;i<=to;i++)delete state.overrides[i];persist();render()};
 
 /* ---------- household ---------- */

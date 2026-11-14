@@ -521,6 +521,16 @@ details.pe{padding:0}
       <button class="btn" id="peApply" type="button" data-t="peApply"></button>
       <p class="err" id="peErr"></p>
       <div class="bake">
+        <h3 data-t="addH"></h3>
+        <div class="row">
+          <div><label for="addName" data-t="addName"></label><input id="addName" type="text" maxlength="40"></div>
+          <div><label for="addAmt" data-t="peAmt"></label><input id="addAmt" type="number" inputmode="numeric" min="0" step="50" value="0"></div>
+        </div>
+        <div style="margin-bottom:10px"><label for="addFrom" data-t="peFrom"></label><select id="addFrom"></select></div>
+        <button class="btn ghost" id="addBtn" type="button" data-t="addBtn"></button>
+        <p class="err" id="addErr"></p>
+      </div>
+      <div class="bake">
         <h3 data-t="bakeH"></h3>
         <p class="muted" id="bakeP"></p>
         <button class="btn ghost" id="bakeBtn" type="button" data-t="bakeBtn"></button>
@@ -579,7 +589,7 @@ ar:{
  src:{personal:"المصروف الشخصي",emergency:"الطوارئ",school:"حساب المدرسة"},
  add:"أضف للشهر",errAmt:"اكتب المبلغ بالأرقام، أكبر من صفر.",incDef:"دخل زيادة",expDef:"مصروف زيادة",paidFrom:s=>"اتدفع من "+s,
  del:"امسح",empty:m=>`مفيش حاجة متسجلة في ${m}.`,
- ovSub:"عدّل أي رقم في الشهر ده، والخطة كلها هتتحسب تاني. الخانات المتعدلة بتتعلّم بالأصفر.",peH:"عدّل الخطة نفسها",peP:"التعديل هنا بيغيّر الخطة الأساسية، فمش هيظهر كفرق عن الخطة ولا بالأصفر. استخدمه للحاجات اللي اتغيرت فعلًا، زي إيجار زاد أو مصروف بيت جديد.",
+ ovSub:"عدّل أي رقم في الشهر ده، والخطة كلها هتتحسب تاني. الخانات المتعدلة بتتعلّم بالأصفر.",addH:"ضيف بند ثابت جديد",addName:"اسم البند",addNamePh:"مثلًا: تمارين الأولاد",addBtn:"ضيف البند",addDone:"البند اتضاف",addErrName:"اكتب اسم البند.",peH:"عدّل الخطة نفسها",peP:"التعديل هنا بيغيّر الخطة الأساسية، فمش هيظهر كفرق عن الخطة ولا بالأصفر. استخدمه للحاجات اللي اتغيرت فعلًا، زي إيجار زاد أو مصروف بيت جديد.",
  peItem:"البند",peAmt:"المبلغ في الشهر",peFrom:"من",peTo:"لحد",peApply:"غيّر الخطة",peConfirm:(it,n,a,b)=>`${it} هيبقى ${n} في الخطة من ${a} لحد ${b}. نكمّل؟`,peDone:"اتغيرت الخطة",
  bakeH:"خلّي تعديلاتك جزء من الخطة",bakeP:n=>`عندك تعديلات في ${n} ${n<=10?"شهور":"شهر"} من «عدّل أرقام الشهر». لو حولتها للخطة، الأصفر والفرق عن الخطة هيختفوا.`,bakeNone:"مفيش تعديلات دلوقتي.",bakeBtn:"حوّلها للخطة",
  bakeConfirm:"كل الأرقام اللي عدلتها هتبقى هي الخطة، ومش هتقدر ترجعها بزرار «رجّع». هنزّل نسخة احتياطية الأول عشان تقدر ترجعلها. نكمّل؟",
@@ -642,7 +652,7 @@ en:{
  src:{personal:"Personal spending",emergency:"Emergency fund",school:"School account"},
  add:"Add to month",errAmt:"Enter an amount greater than zero.",incDef:"Extra income",expDef:"Extra spending",paidFrom:s=>"Paid from "+s.toLowerCase(),
  del:"Delete",empty:m=>`Nothing logged for ${m} yet.`,
- ovSub:"Edit any number for this month and the whole plan recalculates. Edited fields are highlighted.",peH:"Edit the plan itself",peP:"Changes here update the base plan, so they don’t show as a difference from plan or in yellow. Use it for things that really changed, like higher rent or a new household budget.",
+ ovSub:"Edit any number for this month and the whole plan recalculates. Edited fields are highlighted.",addH:"Add a new fixed item",addName:"Item name",addNamePh:"e.g. kids’ training",addBtn:"Add item",addDone:"Item added",addErrName:"Enter the item name.",peH:"Edit the plan itself",peP:"Changes here update the base plan, so they don’t show as a difference from plan or in yellow. Use it for things that really changed, like higher rent or a new household budget.",
  peItem:"Item",peAmt:"Monthly amount",peFrom:"From",peTo:"Until",peApply:"Change the plan",peConfirm:(it,n,a,b)=>`${it} becomes ${n} in the plan from ${a} to ${b}. Continue?`,peDone:"Plan changed",
  bakeH:"Make your edits part of the plan",bakeP:n=>`You have edits in ${n} months from “Edit this month”. Turning them into the plan removes the yellow and the difference from plan.`,bakeNone:"No edits right now.",bakeBtn:"Make them the plan",
  bakeConfirm:"Every number you edited becomes the plan, and the Reset buttons won’t bring the old values back. A backup downloads first so you can return to it. Continue?",
@@ -1156,6 +1166,8 @@ function peBuild(){
   $("peItem").innerHTML=peKeys().map(([k,n])=>`<option value="${k}">${esc(n)}</option>`).join("");
   const opts=months.map((m,i)=>`<option value="${i}">${esc(m)}</option>`).join("");
   $("peFrom").innerHTML=opts;$("peTo").innerHTML=opts;
+  const af=$("addFrom").value;$("addFrom").innerHTML=opts;$("addFrom").value=af!==""&&+af<N?af:String(Math.max(0,currentIdx()));
+  $("addName").placeholder=t().addNamePh;
   $("peItem").value=keep[0]&&peKeys().some(x=>x[0]===keep[0])?keep[0]:"fix"+CFG.houseIdx;
   $("peFrom").value=keep[1]!==""&&+keep[1]<N?keep[1]:String(Math.max(0,currentIdx()));
   $("peTo").value=keep[2]!==""&&+keep[2]<N?keep[2]:String(N-1);
@@ -1179,6 +1191,17 @@ async function writePlan(cfg){
   batch.set(doc(db,"state","main"),{entries:st.entries,overrides:st.overrides,raise:st.raise||null,updated:Date.now()});
   await batch.commit();
 }
+$("addBtn").onclick=async()=>{
+  const L=t();$("addErr").textContent="";
+  const name=$("addName").value.trim().slice(0,40);
+  if(!name){$("addErr").textContent=L.addErrName;$("addName").focus();return}
+  const amt=Math.round(parseFloat($("addAmt").value||"0"));
+  if(!(amt>=0)){$("addErr").textContent=L.errAmt;$("addAmt").focus();return}
+  const from=+$("addFrom").value;
+  const cfg=JSON.parse(JSON.stringify(CFG));
+  cfg.fixed.push({amount:amt,name:{ar:name,en:name},byMonth:Array.from({length:N},(_,i)=>i>=from?amt:0)});
+  try{await writePlan(cfg);$("addName").value="";$("addAmt").value="0";toast(L.addDone)}catch(e){$("addErr").textContent=L.saveFail}
+};
 $("peItem").onchange=peFill;$("peFrom").onchange=peFill;
 $("peApply").onclick=async()=>{
   const L=t();$("peErr").textContent="";

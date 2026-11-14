@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>خطة المصاريف</title>
+<meta name="theme-color" content="#f7f9f8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="الميزانية">
+<meta name="format-detection" content="telephone=no">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="manifest" href="manifest.json">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#16252d; --muted:#5b6b72; --paper:#f7f9f8; --card:#ffffff; --line:#d8e1df;
+  --teal:#0e6b6b; --teal-soft:#e2f0ef; --amber:#a86f00; --amber-soft:#fbf0d9;
+  --red:#b3261e; --red-soft:#fbe5e3; --green:#2d7a3a;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#e6eeec; --muted:#9aaaa8; --paper:#0f1719; --card:#172226; --line:#2a3a3e;
+    --teal:#5cc2bd; --teal-soft:#16302f; --amber:#e3aa3a; --amber-soft:#33280f;
+    --red:#ff8a80; --red-soft:#3a1c1a; --green:#7fcf8a;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#e6eeec; --muted:#9aaaa8; --paper:#0f1719; --card:#172226; --line:#2a3a3e;
+  --teal:#5cc2bd; --teal-soft:#16302f; --amber:#e3aa3a; --amber-soft:#33280f;
+  --red:#ff8a80; --red-soft:#3a1c1a; --green:#7fcf8a;
+  color-scheme:dark;
+}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Readex Pro","Segoe UI",Tahoma,Arial,sans-serif;font-size:15px;line-height:1.7}
+.wrap{max-width:1080px;margin:0 auto;padding:24px 18px 64px}
+.num{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate;display:inline-block}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+h1{font-size:1.9rem;font-weight:700;margin:0 0 4px;letter-spacing:-.01em}
+h2{font-size:1.15rem;font-weight:600;margin:0 0 12px}
+.sub{color:var(--muted);margin:0 0 20px;max-width:70ch}
+.save{font-size:.85rem;color:var(--muted)}
+.lang{font:inherit;font-weight:600;background:var(--card);color:var(--teal);border:1px solid var(--teal);border-radius:6px;padding:6px 14px;cursor:pointer;flex:0 0 auto;margin-top:6px}
+
+.totals{display:grid;grid-template-columns:2fr 1fr 1fr;border:2px solid var(--ink);background:var(--card);margin:18px 0 26px}
+.totals>div{padding:16px 18px;border-inline-start:1px solid var(--line)}
+.totals>div:first-child{border-inline-start:0}
+.totals .lbl{font-size:.85rem;color:var(--muted)}
+.totals .big{font-size:2.4rem;font-weight:700;line-height:1.15}
+.totals .mid{font-size:1.5rem;font-weight:600;line-height:1.2}
+.delta{font-size:.85rem}
+.delta.neg{color:var(--red)} .delta.pos{color:var(--green)}
+@media (max-width:720px){.totals{grid-template-columns:1fr 1fr}.totals>div:first-child{grid-column:1/-1;border-bottom:1px solid var(--line)}}
+
+.months{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:16px}
+.mbtn{flex:0 0 auto;min-width:96px;text-align:start;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:8px 10px;font:inherit;cursor:pointer}
+.mbtn small{display:block;color:var(--muted);font-size:.75rem}
+.mbtn b{font-weight:600}
+.mbtn[aria-pressed="true"]{border-color:var(--teal);box-shadow:inset 0 -3px 0 var(--teal)}
+.mbtn.tight b{color:var(--amber)} .mbtn.bad b{color:var(--red)}
+.mbtn.changed::after{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--teal);margin-inline-start:6px;vertical-align:middle}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+
+.grid{display:grid;grid-template-columns:1.1fr 1fr;gap:18px}
+@media (max-width:860px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:18px}
+.note{background:var(--teal-soft);border-radius:6px;padding:10px 12px;margin:0 0 14px}
+.warn{background:var(--red-soft);color:var(--red);border-radius:6px;padding:10px 12px;margin:0 0 14px;font-weight:500}
+.caution{background:var(--amber-soft);color:var(--amber);border-radius:6px;padding:10px 12px;margin:0 0 14px}
+
+.ledger{width:100%;border-collapse:collapse}
+.ledger td{padding:6px 0;border-bottom:1px dashed var(--line);vertical-align:top}
+.ledger td:last-child{text-align:end;white-space:nowrap;padding-inline-start:12px}
+.ledger .why{display:block;color:var(--muted);font-size:.8rem}
+.ledger tr.sec td{border-bottom:0;padding-top:12px;font-weight:600;color:var(--muted);font-size:.85rem}
+.ledger tr.extra td{color:var(--red)}
+.ledger tr.extrain td{color:var(--green)}
+.ledger tr.result td{border-top:2px solid var(--ink);border-bottom:0;font-weight:700;padding-top:10px}
+.ledger tr.bal td{border-bottom:0;font-weight:600}
+
+label{display:block;font-size:.85rem;color:var(--muted);margin-bottom:4px}
+input,select{font:inherit;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:8px 10px;width:100%}
+input[type=number]{direction:ltr;text-align:right}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.btn{font:inherit;font-weight:600;background:var(--teal);color:var(--card);border:0;border-radius:6px;padding:9px 16px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--teal);border:1px solid var(--teal)}
+.btn.link{background:none;color:var(--muted);padding:0;font-weight:400;text-decoration:underline;border:0;cursor:pointer;font:inherit;font-size:.85rem}
+.entries{list-style:none;margin:12px 0 0;padding:0}
+.entries li{display:flex;justify-content:space-between;align-items:center;gap:10px;border-top:1px solid var(--line);padding:8px 0}
+.entries .meta{color:var(--muted);font-size:.8rem;display:block}
+.empty{color:var(--muted);font-size:.9rem}
+.err{color:var(--red);font-size:.85rem;min-height:1.2em;margin:6px 0 0}
+
+.chk{display:flex;gap:8px;align-items:center;color:var(--ink);font-size:.9rem;margin-bottom:6px;cursor:pointer}
+.chk input{width:auto;margin:0}
+.ed{display:grid;grid-template-columns:1fr 128px;gap:2px 10px;align-items:center;padding:5px 0;border-bottom:1px dashed var(--line)}
+.ed label{margin:0;color:var(--ink);font-size:.9rem}
+.ed input{padding:5px 8px}
+.ed.chg input{border-color:var(--amber);background:var(--amber-soft)}
+.ed .pl{grid-column:1/-1;font-size:.78rem;color:var(--amber);display:flex;gap:10px;align-items:center}
+.edh{font-weight:600;color:var(--muted);font-size:.85rem;padding-top:12px}
+.tablewrap{overflow-x:auto}
+table.all{width:100%;border-collapse:collapse;min-width:640px;background:var(--card)}
+table.all th,table.all td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:start;white-space:nowrap}
+table.all th{font-size:.8rem;color:var(--muted);font-weight:500}
+table.all td.n{text-align:end}
+table.all tr.sel td{background:var(--teal-soft)}
+table.all .bad{color:var(--red);font-weight:600} table.all .tight{color:var(--amber);font-weight:600}
+section{margin-top:28px}
+details{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin-bottom:10px}
+summary{cursor:pointer;font-weight:600}
+details table{margin-top:10px}
+details p{max-width:75ch}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:28px;color:var(--muted);font-size:.85rem}
+[hidden]{display:none!important}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.hd{flex:1 1 420px}
+.hd .sub{margin-bottom:6px}
+.ctrls{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.ctrls .lang{margin-top:0}
+.ctl{display:flex;align-items:center;gap:8px}
+.ctll{font-size:.8rem;color:var(--muted)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:7px;padding:2px;background:var(--card)}
+.seg button{font:inherit;font-size:.85rem;background:none;border:0;color:var(--muted);padding:4px 10px;border-radius:5px;cursor:pointer}
+.seg button[aria-checked="true"],.seg button[aria-selected="true"]{background:var(--teal);color:var(--card)}
+.seg.wide{display:flex;margin-bottom:16px}
+.seg.wide button{flex:1;padding:7px 10px;font-size:.9rem}
+.sw{display:flex;gap:7px}
+.sw button{width:22px;height:22px;border-radius:50%;border:2px solid var(--card);box-shadow:0 0 0 1px var(--line);cursor:pointer;padding:0}
+.sw button[aria-checked="true"]{box-shadow:0 0 0 2px var(--ink)}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:18px;overflow-x:auto}
+.tabs button{font:inherit;background:none;border:0;border-bottom:3px solid transparent;color:var(--muted);padding:10px 14px;cursor:pointer;white-space:nowrap;font-weight:500}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--teal);font-weight:600}
+.narrow{max-width:600px}
+table.all tr.click{cursor:pointer}
+table.all tr.click:hover td{background:var(--teal-soft)}
+@media (max-width:640px){.ctrls{align-items:flex-start;width:100%}}
+.hhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+.hhead h2{margin:0}
+.hsel{width:auto}
+.hbar{height:10px;background:var(--teal-soft);border-radius:5px;overflow:hidden;margin-bottom:12px}
+.hbar div{height:100%;background:var(--teal);width:0;transition:width .3s}
+.hbar.over div{background:var(--red)}
+.hstats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.hstats .lbl{display:block;font-size:.8rem;color:var(--muted)}
+.hstats b{font-size:1.25rem;font-weight:600}
+#hPhotoBtn{width:100%;margin-bottom:4px;display:flex;align-items:center;justify-content:center;gap:8px}
+.tag{font-size:.72rem;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:0 5px;margin-inline-start:6px}
+@media (prefers-reduced-motion:reduce){.hbar div{transition:none}}
+.gate{max-width:460px;margin:12vh auto 0;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:26px}
+.gate h2{font-size:1.3rem}
+.gate .btn{margin-top:6px}
+.who{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+/* ---------- mobile / iPhone ---------- */
+html{-webkit-text-size-adjust:100%}
+button,select,input,summary,.mbtn{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.iconbtn{font:inherit;font-weight:600;min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:10px;cursor:pointer;padding:0 10px}
+.top{align-items:center;flex-wrap:nowrap}
+.muted{color:var(--muted);font-size:.85rem}
+.sheet{border:0;border-radius:16px;padding:18px;width:min(460px,calc(100% - 24px));background:var(--card);color:var(--ink);box-shadow:0 10px 40px rgba(0,0,0,.25)}
+.sheet::backdrop{background:rgba(0,0,0,.35)}
+.sheet-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.sheet-h h2{margin:0}
+.srow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.srow.col{flex-direction:column;align-items:stretch}
+.srow .lang{margin:0;min-height:40px}
+.danger{color:var(--red)!important}
+.tabs button{display:flex;align-items:center;gap:6px}
+input,select{min-height:44px}
+.ed input{min-height:40px}
+.btn{min-height:44px}
+.btn.link{min-height:36px;padding:4px 2px}
+.months{scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.months::-webkit-scrollbar{display:none}
+.mbtn{scroll-snap-align:center}
+@media (max-width:640px){
+  body{font-size:16px}
+  .wrap{padding:12px 14px calc(84px + env(safe-area-inset-bottom,0px))}
+  h1{font-size:1.45rem}
+  .hd .sub{display:none}
+  input,select,textarea{font-size:16px}
+  .totals{margin:12px 0 14px;grid-template-columns:1fr 1fr}
+  .totals>div{padding:12px}
+  .totals .big{font-size:2rem}
+  .totals .mid{font-size:1.2rem}
+  .panel{padding:14px;border-radius:12px}
+  .grid{gap:12px}
+  .row{gap:8px}
+  .tabs{position:fixed;inset:auto 0 0 0;z-index:20;margin:0;border:0;border-top:1px solid var(--line);background:var(--card);padding:4px 4px calc(4px + env(safe-area-inset-bottom,0px));gap:0;justify-content:space-around;overflow:visible}
+  .tabs button{flex:1;flex-direction:column;gap:2px;padding:6px 2px;border-bottom:0;font-size:.72rem;min-height:52px;border-radius:10px}
+  .tabs button[aria-selected="true"]{color:var(--teal);background:var(--teal-soft)}
+  .ledger td{padding:8px 0}
+  .entries li{padding:10px 0}
+  table.all{min-width:0}
+  table.all .opt{display:none}
+  table.all th,table.all td{padding:10px 6px;font-size:.92rem}
+  table.all th{white-space:normal;font-size:.75rem;vertical-align:bottom}
+  #pane-house .grid>.panel:last-child{order:-1}
+  #hPhotoBtn{min-height:56px;font-size:1.05rem}
+  #hAdd,#fAdd{width:100%}
+  body[data-tab="house"] .totals,body[data-tab="raise"] .totals,body[data-tab="plan"] .totals{display:none}
+  .hstats b{font-size:1.1rem}
+  .ed{grid-template-columns:1fr 110px}
+  .seg.wide button{min-height:40px}
+  details{padding:12px 14px}
+  summary{min-height:32px;display:flex;align-items:center}
+  .sheet{margin:auto auto 0;border-radius:18px 18px 0 0;width:100%;max-width:100%;padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px))}
+}
+</style>
+</head>
+<body>
+<input type="file" id="impFile" accept="application/json,.json" hidden>
+<div class="wrap" id="gate"><div class="gate" id="gateBody"></div></div>
+<div class="wrap" id="app" hidden>
+  <header class="top">
+    <div class="hd">
+      <h1 data-t="title"></h1>
+      <p class="sub" data-t="sub"></p>
+      <span class="save" id="save"></span>
+    </div>
+    <button class="iconbtn" id="setBtn" type="button" aria-haspopup="dialog"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg></button>
+  </header>
+  <dialog id="setDlg" class="sheet">
+    <div class="sheet-h"><h2 data-t="settingsH"></h2><button type="button" class="iconbtn" id="setClose" data-t="close"></button></div>
+    <div class="srow"><span data-t="langL"></span><button class="lang" id="langBtn" type="button"></button></div>
+    <div class="srow"><span data-t="themeL"></span>
+      <div class="seg" id="modeSeg" role="radiogroup">
+        <button type="button" role="radio" data-mode="auto" data-t="modeAuto"></button>
+        <button type="button" role="radio" data-mode="light" data-t="modeLight"></button>
+        <button type="button" role="radio" data-mode="dark" data-t="modeDark"></button>
+      </div></div>
+    <div class="srow"><span data-t="accentL"></span><div class="sw" id="swatches" role="radiogroup"></div></div>
+    <div class="srow col"><span id="who" class="muted"></span><button type="button" class="btn ghost" id="outBtn" data-t="signOut"></button></div>
+    <div class="srow col"><button class="btn link danger" id="resetAll" type="button" data-t="resetAll"></button></div>
+  </dialog>
+
+  <div class="totals" aria-live="polite">
+    <div><div class="lbl" data-t="tEm"></div><div class="big num" id="tEm"></div><div class="delta" id="tEmD"></div></div>
+    <div><div class="lbl" data-t="tSch"></div><div class="mid num" id="tSch"></div><div class="delta" id="tSchD"></div></div>
+    <div><div class="lbl" data-t="tLow"></div><div class="mid num" id="tLow"></div><div class="delta" id="tLowM"></div></div>
+  </div>
+
+  <nav class="tabs" role="tablist">
+    <button type="button" role="tab" data-tab="month"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z"/></g></svg><span data-t="tabMonth"></span></button>
+    <button type="button" role="tab" data-tab="house"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5M5.5 9v11h13V9M9.5 20v-6h5v6"/></g></svg><span data-t="tabHouse"></span></button>
+    <button type="button" role="tab" data-tab="all"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></g></svg><span data-t="tabAll"></span></button>
+    <button type="button" role="tab" data-tab="raise"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17l6-6 4 4 6-7M14 8h6v6"/></g></svg><span data-t="tabRaise"></span></button>
+    <button type="button" role="tab" data-tab="plan"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8h.01M11 12h1v5h1M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"/></g></svg><span data-t="tabPlan"></span></button>
+  </nav>
+
+  <div class="pane" id="pane-month" role="tabpanel">
+    <div class="months" id="months" role="toolbar"></div>
+    <div class="grid">
+      <div class="panel">
+        <h2 id="mTitle"></h2>
+        <div id="mAlerts"></div>
+        <p class="note" id="mNote"></p>
+        <table class="ledger" id="mLedger"></table>
+      </div>
+      <div class="panel">
+        <div class="seg wide" id="subSeg" role="tablist">
+          <button type="button" role="tab" data-sub="log" data-t="subLog"></button>
+          <button type="button" role="tab" data-sub="edit" data-t="subEdit"></button>
+        </div>
+        <div id="sub-log">
+          <div class="row">
+            <div><label for="fAmt" data-t="amount"></label><input id="fAmt" type="number" inputmode="numeric" min="0" step="50"></div>
+            <div><label for="fType" data-t="type"></label><select id="fType"></select></div>
+          </div>
+          <div class="row">
+            <div><label for="fNote" data-t="noteL"></label><input id="fNote" type="text" maxlength="60"></div>
+            <div id="fSrcWrap"><label for="fSrc" data-t="srcL"></label><select id="fSrc"></select></div>
+          </div>
+          <button class="btn" id="fAdd" type="button" data-t="add"></button>
+          <p class="err" id="fErr"></p>
+          <ul class="entries" id="mEntries"></ul>
+        </div>
+        <div id="sub-edit" hidden>
+          <p class="sub" style="margin:0 0 10px" data-t="ovSub"></p>
+          <label class="chk"><input type="checkbox" id="oFwd"><span data-t="ovFwd"></span></label>
+          <div id="oEdit"></div>
+          <button class="btn link" id="oReset" type="button" data-t="ovReset" style="margin-top:12px"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pane" id="pane-house" role="tabpanel" hidden>
+    <div class="grid">
+      <div class="panel">
+        <div class="hhead"><h2 id="hTitle"></h2><select id="hMonth" class="hsel"></select></div>
+        <div class="hbar" aria-hidden="true"><div id="hFill"></div></div>
+        <div class="hstats">
+          <div><span class="lbl" data-t="hBudget"></span><b class="num" id="hBud"></b></div>
+          <div><span class="lbl" data-t="hSpent"></span><b class="num" id="hSp"></b></div>
+          <div><span class="lbl" data-t="hLeft"></span><b class="num" id="hLe"></b></div>
+        </div>
+        <div id="hAlert"></div>
+        <ul class="entries" id="hList"></ul>
+      </div>
+      <div class="panel">
+        <h2 data-t="hAddH"></h2>
+        <input type="file" id="hPhoto" accept="image/*" hidden>
+        <button type="button" class="btn" id="hPhotoBtn"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13.5" r="3.5"/></g></svg><span data-t="hPhoto"></span></button>
+        <p class="save" id="hPhotoMsg" aria-live="polite"></p>
+        <div class="row">
+          <div><label for="hAmt" data-t="amount"></label><input id="hAmt" type="number" inputmode="decimal" min="0" step="1"></div>
+          <div><label for="hDate" data-t="hDate"></label><input id="hDate" type="date" min="2026-12-01" max="2027-12-31"></div>
+        </div>
+        <div style="margin-bottom:10px"><label for="hItem" data-t="hItem"></label><input id="hItem" type="text" maxlength="60"></div>
+        <button type="button" class="btn ghost" id="hAdd" data-t="hAdd"></button>
+        <p class="err" id="hErr"></p>
+        <p class="save" data-t="hNote"></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="pane" id="pane-all" role="tabpanel" hidden>
+    <p class="sub" data-t="allSub"></p>
+    <div class="tablewrap"><table class="all" id="allT"></table></div>
+  </div>
+
+  <div class="pane" id="pane-raise" role="tabpanel" hidden>
+    <div class="panel narrow">
+      <p class="sub" style="margin:0 0 12px" data-t="rSub"></p>
+      <div class="row">
+        <div><label for="rAmt" data-t="rAmt"></label><input id="rAmt" type="number" inputmode="numeric" min="0" step="100"></div>
+        <div><label for="rFrom" data-t="rFrom"></label><select id="rFrom"></select></div>
+      </div>
+      <div style="margin-bottom:10px"><label for="rSplit" data-t="rSplit"></label><select id="rSplit"></select></div>
+      <p class="save" id="rInfo"></p>
+      <button class="btn link" id="rClear" type="button" data-t="rClear"></button>
+    </div>
+  </div>
+
+  <div class="pane" id="pane-plan" role="tabpanel" hidden>
+    <details open><summary data-t="howH"></summary><div id="howBody"></div></details>
+    <details><summary id="fixH"></summary><table class="ledger" id="fixT"></table></details>
+    <details><summary data-t="jamH"></summary><div class="tablewrap"><table class="all" id="jamT"></table></div></details>
+    <details><summary data-t="evH"></summary><div class="tablewrap"><table class="all" id="evT"></table></div></details>
+    <details><summary data-t="condH"></summary><div id="condBody"></div></details>
+    <details><summary data-t="backupH"></summary><p data-t="backupP"></p>
+      <div class="who"><button type="button" class="btn ghost" id="expBtn" data-t="exportBtn"></button><button type="button" class="btn link" id="impBtn" data-t="importBtn"></button></div>
+      <p class="err" id="bErr"></p></details>
+  </div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+import { getFirestore, doc, collection, onSnapshot, setDoc, addDoc, deleteDoc, writeBatch, getDocs } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+/* ============ 1) PASTE YOUR FIREBASE CONFIG HERE ============ */
+const FIREBASE_CONFIG = {
+  apiKey: "PASTE_HERE",
+  authDomain: "PASTE_HERE",
+  projectId: "PASTE_HERE",
+  storageBucket: "PASTE_HERE",
+  messagingSenderId: "PASTE_HERE",
+  appId: "PASTE_HERE"
+};
+/* Gemini model used to read receipts (Firebase AI Logic, free tier) */
+const GEMINI_MODEL = "gemini-2.5-flash";
+/* ============================================================= */
+
+const LANG_KEY="budget-plan-lang",TAB_KEY="budget-plan-tab",THEME_KEY="budget-plan-theme";
+let lang="ar";
+try{const l=localStorage.getItem(LANG_KEY);if(l==="en"||l==="ar")lang=l}catch(e){}
+
+const T={
+ar:{
+ title:"خطة المصاريف",sub:"لو صرفت أكتر من المتوقع في أي شهر، سجّله في الشهر ده، والخطة كلها هتتعدل لوحدها.",langBtn:"English",
+ saving:"بيحفظ…",saved:"محفوظ",saveFail:"متحفظش، اتأكد من النت وجرب تاني",
+ tEm:"الطوارئ آخر الخطة",tSch:"حساب المدرسة آخر الخطة",tLow:"أقل رصيد طوارئ",
+ same:"زي الخطة",belowPlan:n=>"أقل من الخطة بـ "+n,abovePlan:n=>"أكتر من الخطة بـ "+n,down:n=>"أقل بـ "+n,up:n=>"أكتر بـ "+n,
+ monthsAria:"الشهور",emTip:m=>"رصيد الطوارئ آخر "+m,
+ emNeg:n=>`الطوارئ بقت بالسالب (${n}). محتاج تقلل المصروف الشخصي في الشهور الجاية أو تدوّر على دخل زيادة.`,
+ schShort:(n,inst)=>`رصيد المدرسة مش هيكفي${inst?" القسط":""}، ناقصه ${n}.`,
+ schFuture:(m,n)=>`السحب ده من حساب المدرسة هيخلي قسط ${m} ناقصه ${n}.`,
+ overflow:n=>`صرفت ${n} أكتر من المصروف الشخصي المخطط، والفرق اتسحب من الطوارئ.`,
+ secIn:"داخل",secOut:"خارج",salary:"المرتب",manual:n=>"متعدل يدوي، الخطة "+n,hasRaise:n=>"فيه زيادة "+n,
+ extraIncome:"دخل إضافي",loggedIncome:"دخل زيادة",youLogged:"اللي سجّلته",fixed:"المصاريف الثابتة",jam:"الجمعيات",
+ schoolDep:"إيداع المدرسة",schoolDepWhy:(a,n)=>a+" + "+n+" زيادة",special:"دفعات خاصة",personal:"المصروف الشخصي",
+ fromRaise:n=>"منهم "+n+" من الزيادة",spentLeft:(a,b)=>"صرفت منه "+a+"، فاضل "+b,
+ emX:"مصاريف زيادة من الطوارئ",overLine:"زيادة عن المصروف الشخصي",overWhy:"اتسحبت من الطوارئ",
+ toEm:"اللي بيروح للطوارئ الشهر ده",plan:n=>"الخطة "+n,emBal:"رصيد الطوارئ آخر الشهر",schBal:"رصيد المدرسة",
+ afterInst:n=>"بعد قسط "+n,withdrew:n=>"سحبت "+n,sep:"، ",
+ amount:"المبلغ",type:"النوع",tExp:"صرفت زيادة",tInc:"دخلي فلوس زيادة",noteL:"على إيه",notePh:"مثلًا: تصليح",srcL:"اتدفع من",
+ src:{personal:"المصروف الشخصي",emergency:"الطوارئ",school:"حساب المدرسة"},
+ add:"أضف للشهر",errAmt:"اكتب المبلغ بالأرقام، أكبر من صفر.",incDef:"دخل زيادة",expDef:"مصروف زيادة",paidFrom:s=>"اتدفع من "+s,
+ del:"امسح",empty:m=>`مفيش حاجة متسجلة في ${m}.`,
+ ovSub:"عدّل أي رقم في الشهر ده، والخطة كلها هتتحسب تاني. الخانات المتعدلة بتتعلّم بالأصفر.",ovFwd:"طبّق التعديل على الشهر ده وكل الشهور اللي بعده",ovReset:"رجّع أرقام الشهر للخطة",
+ gIn:"الدخل",gFix:"المصاريف الثابتة",gJam:"الجمعيات",gSch:"المدرسة",gOther:"دفعات ومصروف",
+ fExtra:"دخل إضافي",fSchool:"إيداع المدرسة الشهري",fSchoolX:"إيداع إضافي للمدرسة",fInst:"قسط المدرسة",fSpecial:"دفعات خاصة",
+ planWas:n=>"الخطة "+n,resetOne:"رجّع",changed:"اتعدل: ",
+ rSub:"الزيادة بتتطبق على الشهر اللي تختاره وكل الشهور اللي بعده. المرتب بينزل آخر الشهر، فزيادة بتبدأ أول الشهر بتتصرف في الشهر اللي بعده.",
+ rAmt:"الزيادة في الشهر",rPh:"مثلًا 2000",rFrom:"من أول",rFromOpt:(p,m)=>`مرتب آخر ${p}، يتصرف في ${m}`,
+ rSplit:"الزيادة تروح فين",splits:{plan:"زي الخطة: الأول للطوارئ، وبعدها نص طوارئ ونص مصروف",emergency:"كلها للطوارئ",personal:"كلها مصروف شخصي"},
+ rInfo:(m,n)=>`شغالة من ${m}: المرتب بقى ${n}.`,rNone:"مفيش زيادة متسجلة.",rClear:"شيل الزيادة",
+ th:["الشهر","للطوارئ","رصيد الطوارئ","الفرق عن الخطة","المصروف الشخصي","رصيد المدرسة"],
+ howH:"إزاي الخطة شغالة",
+ how:["المرتب بينزل آخر يوم في الشهر، وبيتصرف منه الشهر اللي بعده.",
+  "كل شهر: الدخل ناقص الثابت والجمعيات وإيداع المدرسة والدفعات الخاصة والمصروف الشخصي، والباقي بيروح للطوارئ.",
+  "لما تسجّل مصروف زيادة من المصروف الشخصي، بيتخصم منه. لو عدّى المصروف المخطط، الزيادة بتتسحب من الطوارئ لوحدها. مصروف من حساب المدرسة بيقلل رصيد المدرسة، والصفحة بتنبهك لو الرصيد مش هيكفي القسط."],
+ fixH:n=>`المصاريف الثابتة (${n} كل شهر)`,total:"المجموع",
+ jamH:"الجمعيات",jamTh:["الجمعية","القسط","من","لحد","هتقبض"],ongoing:"جارية",perMonth:"المجموع كل شهر",
+ evH:"المواعيد بالترتيب",evTh:["التاريخ","الحركة","المبلغ"],condH:"شروط الخطة",
+ resetAll:"امسح كل التعديلات",confirmReset:"هيتمسح كل اللي سجّلته وكل الأرقام اللي غيرتها (مصاريف البيت مش هتتمسح)، والخطة ترجع زي الأول. متأكد؟",
+ tabMonth:"الشهر",tabHouse:"البيت",tabAll:"الشهور",tabRaise:"الزيادة",tabPlan:"الخطة",settingsH:"الإعدادات",close:"تم",langL:"اللغة",settingsAria:"الإعدادات",subLog:"سجّل مصروف أو دخل",subEdit:"عدّل أرقام الشهر",
+ allSub:"دوس على أي شهر عشان تفتح تفاصيله.",themeL:"المظهر",modeAuto:"تلقائي",modeLight:"فاتح",modeDark:"غامق",accentL:"اللون",
+ accents:{teal:"أخضر مزرق",blue:"أزرق",violet:"بنفسجي",green:"أخضر",rose:"وردي"},
+ hTitle:m=>"مصاريف البيت",hBudget:"الميزانية",hSpent:"اتصرف",hLeft:"فاضل",
+ hOver:n=>`عدّيتوا ميزانية البيت بـ ${n}، والفرق اتسحب من الطوارئ.`,hAddH:"ضيف مشتريات",hPhoto:"صوّر الفاتورة أو ارفعها",
+ hReading:"بقرا الفاتورة…",hRead:"اتقرت. اتأكد من المبلغ قبل ما تحفظ.",hReadFail:"مقدرتش أقرا الفاتورة. اكتب المبلغ بإيدك.",
+ hItem:"اشتريت إيه",hItemPh:"مثلًا: خضار وفاكهة",hDate:"التاريخ",hAdd:"احفظ",
+ hErrDate:(a,b)=>`التاريخ لازم يكون بين ${a} و${b}.`,hEmpty:m=>`مفيش مشتريات متسجلة في ${m}.`,hBy:n=>"ضافها "+n,hByMe:"إنت ضفتها",hFromPhoto:"من فاتورة",
+ hNote:"لو اتصرف أقل من الميزانية، الخطة مش بتتغير. لو اتصرف أكتر، الزيادة بتتخصم من الطوارئ.",houseLine:"زيادة عن ميزانية البيت",hDefItem:"مشتريات",
+ gLoading:"بيحمّل…",gSetupH:"لسه محتاج تحط إعدادات Firebase",gSetupP:"افتح ملف index.html، ودوّر على FIREBASE_CONFIG، وحط مكانها البيانات اللي في Firebase console.",
+ gSignH:"سجّل دخول",gSignP:"ادخل بحساب Google اللي متضاف في الصلاحيات.",gSignBtn:"ادخل بحساب Google",gSignErr:"الدخول مكملش. جرّب تاني.",
+ gDeniedH:"الحساب ده مش مسموحله",gDeniedP:e=>`إنت داخل بـ ${e}. لو ده مش الحساب الصح، اخرج وادخل بحساب تاني.`,
+ gImportH:"أول مرة: حمّل الخطة",gImportP:"اختار ملف plan-data.json، أو ملف نسخة احتياطية اتعمل قبل كده. ده بيتعمل مرة واحدة بس.",gImportBtn:"اختار الملف",gImportErr:"الملف ده مش ملف خطة صالح.",
+ signOut:"اخرج",signedAs:e=>"داخل بـ "+e,
+ backupH:"نسخة احتياطية",backupP:"النسخة فيها الخطة وكل اللي سجلتوه، وتقدر ترجعلها في أي وقت.",exportBtn:"نزّل نسخة",importBtn:"استرجع من نسخة",
+ confirmImport:"هيتمسح كل اللي في الخطة دلوقتي، بما فيها مصاريف البيت، ويتحط مكانه اللي في الملف. متأكد؟",imported:"اترجعت."
+},
+en:{
+ title:"Budget plan",sub:"If you spend more than expected in a month, log it in that month and the whole plan updates.",langBtn:"العربية",
+ saving:"Saving…",saved:"Saved",saveFail:"Not saved. Check your connection and try again.",
+ tEm:"Emergency fund, end of plan",tSch:"School account, end of plan",tLow:"Lowest emergency balance",
+ same:"Same as plan",belowPlan:n=>"Below plan by "+n,abovePlan:n=>"Above plan by "+n,down:n=>"Down by "+n,up:n=>"Up by "+n,
+ monthsAria:"Months",emTip:m=>"Emergency balance at end of "+m,
+ emNeg:n=>`The emergency fund is negative (${n}). Cut personal spending in the coming months or find extra income.`,
+ schShort:(n,inst)=>`The school account won’t cover ${inst?"the installment":"this month"}; it’s short by ${n}.`,
+ schFuture:(m,n)=>`This withdrawal leaves the ${m} school installment short by ${n}.`,
+ overflow:n=>`You spent ${n} over planned personal spending; the difference came out of the emergency fund.`,
+ secIn:"Money in",secOut:"Money out",salary:"Salary",manual:n=>"Edited manually, plan "+n,hasRaise:n=>"Includes a raise of "+n,
+ extraIncome:"Extra income",loggedIncome:"Logged extra income",youLogged:"What you logged",fixed:"Fixed expenses",jam:"Savings circles",
+ schoolDep:"School deposit",schoolDepWhy:(a,n)=>a+" + "+n+" extra",special:"One-off payments",personal:"Personal spending",
+ fromRaise:n=>n+" of it from the raise",spentLeft:(a,b)=>"Spent "+a+", "+b+" left",
+ emX:"Extra spending from emergency fund",overLine:"Over personal budget",overWhy:"Taken from the emergency fund",
+ toEm:"Going to the emergency fund this month",plan:n=>"Plan "+n,emBal:"Emergency balance, end of month",schBal:"School account balance",
+ afterInst:n=>"After the "+n+" installment",withdrew:n=>"withdrew "+n,sep:", ",
+ amount:"Amount",type:"Type",tExp:"I spent extra",tInc:"I got extra money",noteL:"What for",notePh:"e.g. a repair",srcL:"Paid from",
+ src:{personal:"Personal spending",emergency:"Emergency fund",school:"School account"},
+ add:"Add to month",errAmt:"Enter an amount greater than zero.",incDef:"Extra income",expDef:"Extra spending",paidFrom:s=>"Paid from "+s.toLowerCase(),
+ del:"Delete",empty:m=>`Nothing logged for ${m} yet.`,
+ ovSub:"Edit any number for this month and the whole plan recalculates. Edited fields are highlighted.",ovFwd:"Apply changes to this month and every month after",ovReset:"Reset this month to plan",
+ gIn:"Income",gFix:"Fixed expenses",gJam:"Savings circles",gSch:"School",gOther:"Payments and spending",
+ fExtra:"Extra income",fSchool:"Monthly school deposit",fSchoolX:"Extra school deposit",fInst:"School installment",fSpecial:"One-off payments",
+ planWas:n=>"Plan "+n,resetOne:"Reset",changed:"Changed: ",
+ rSub:"The raise applies to the month you choose and every month after. Salary arrives at the end of the month, so a raise starting on the 1st is spent the following month.",
+ rAmt:"Monthly raise",rPh:"e.g. 2000",rFrom:"Starting from",rFromOpt:(p,m)=>`Salary paid end of ${p}, spent in ${m}`,
+ rSplit:"Where the raise goes",splits:{plan:"As planned: emergency fund first, then half emergency, half personal",emergency:"All to the emergency fund",personal:"All to personal spending"},
+ rInfo:(m,n)=>`Active from ${m}: salary is now ${n}.`,rNone:"No raise logged.",rClear:"Remove raise",
+ th:["Month","To emergency","Emergency balance","Vs plan","Personal spending","School balance"],
+ howH:"How the plan works",
+ how:["Salary arrives on the last day of the month and pays for the following month.",
+  "Each month: income minus fixed expenses, savings circles, the school deposit, one-off payments and personal spending. Whatever is left goes to the emergency fund.",
+  "A savings circle (gam’eya) is a group where everyone pays a fixed amount every month and one member collects the whole pot each month.",
+  "Extra spending logged from personal spending comes out of it. If it goes over the plan, the excess comes out of the emergency fund automatically. Spending from the school account lowers its balance, and the page warns you if an installment won’t be covered."],
+ fixH:n=>`Fixed expenses (${n} a month)`,total:"Total",
+ jamH:"Savings circles",jamTh:["Circle","Monthly","From","Until","Payout"],ongoing:"Ongoing",perMonth:"Total per month",
+ evH:"Timeline",evTh:["Date","What happens","Amount"],condH:"What the plan depends on",
+ resetAll:"Clear all changes",confirmReset:"This clears everything you logged and every number you changed (household purchases stay), and resets the plan. Continue?",
+ tabMonth:"Month",tabHouse:"Home",tabAll:"Months",tabRaise:"Raise",tabPlan:"Plan",settingsH:"Settings",close:"Done",langL:"Language",settingsAria:"Settings",subLog:"Log spending or income",subEdit:"Edit this month",
+ allSub:"Click a month to open it.",themeL:"Theme",modeAuto:"Auto",modeLight:"Light",modeDark:"Dark",accentL:"Color",
+ accents:{teal:"Teal",blue:"Blue",violet:"Violet",green:"Green",rose:"Rose"},
+ hTitle:m=>"Household",hBudget:"Budget",hSpent:"Spent",hLeft:"Left",
+ hOver:n=>`You’re ${n} over the household budget; the difference came out of the emergency fund.`,hAddH:"Add a purchase",hPhoto:"Take or upload a receipt photo",
+ hReading:"Reading the receipt…",hRead:"Done. Check the amount before saving.",hReadFail:"Couldn’t read the receipt. Enter the amount by hand.",
+ hItem:"What you bought",hItemPh:"e.g. groceries",hDate:"Date",hAdd:"Save",
+ hErrDate:(a,b)=>`The date must be between ${a} and ${b}.`,hEmpty:m=>`No purchases logged for ${m}.`,hBy:n=>"Added by "+n,hByMe:"Added by you",hFromPhoto:"from receipt",
+ hNote:"Spending under budget doesn’t change the plan. Spending over it comes out of the emergency fund.",houseLine:"Over household budget",hDefItem:"Purchase",
+ gLoading:"Loading…",gSetupH:"Firebase settings are missing",gSetupP:"Open index.html, find FIREBASE_CONFIG, and replace it with the settings from the Firebase console.",
+ gSignH:"Sign in",gSignP:"Sign in with a Google account that has access.",gSignBtn:"Sign in with Google",gSignErr:"Sign-in didn’t finish. Try again.",
+ gDeniedH:"This account doesn’t have access",gDeniedP:e=>`You’re signed in as ${e}. If that’s the wrong account, sign out and use another one.`,
+ gImportH:"First time: load the plan",gImportP:"Choose plan-data.json, or a backup file made earlier. You only do this once.",gImportBtn:"Choose file",gImportErr:"This isn’t a valid plan file.",
+ signOut:"Sign out",signedAs:e=>"Signed in as "+e,
+ backupH:"Backup",backupP:"The backup has the plan and everything you’ve logged. You can restore it at any time.",exportBtn:"Download backup",importBtn:"Restore from backup",
+ confirmImport:"This replaces everything in the plan, household purchases included, with the file’s contents. Continue?",imported:"Restored."
+}};
+
+const $=id=>document.getElementById(id);
+const t=()=>T[lang];
+const tx=o=>o?(o[lang]??o.ar):"";
+const fmt=n=>{const s=Math.abs(Math.round(n)).toLocaleString("en-US");return n<0?"−"+s:s};
+const signed=n=>n>0?"+"+fmt(n):fmt(n);
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+const SRC_KEYS=["personal","emergency","school"];
+
+/* ---------- plan config (loaded from Firestore) ---------- */
+let CFG=null,N=0,FIXED_AMT=[],JAMS=[],BASE={},OKEYS=[],BASE_ROWS=[];
+function setConfig(c){
+  CFG=c;N=c.months.ar.length;FIXED_AMT=c.fixed.map(f=>+f.amount);JAMS=c.jams;BASE=c.base;
+  OKEYS=["salary","extra","school","schoolX","special","personal","inst"].concat(FIXED_AMT.map((x,k)=>"fix"+k),JAMS.map((x,k)=>"jam"+k));
+  BASE_ROWS=compute({entries:{},overrides:{},raise:null},[]);
+}
+const M=i=>tx(CFG.months)[i];
+function validConfig(c){
+  try{const n=c.months.ar.length;return n>0&&Array.isArray(c.fixed)&&Array.isArray(c.jams)&&["salary","extra","school","schoolX","special","personal","inst"].every(k=>Array.isArray(c.base[k])&&c.base[k].length===n)}catch(e){return false}
+}
+function jamActive(k,i){return i>=JAMS[k].s&&i<=JAMS[k].e}
+function jamIdx(i){return JAMS.map((j,k)=>k).filter(k=>jamActive(k,i))}
+function jamTotal(i){return jamIdx(i).reduce((a,k)=>a+JAMS[k].a,0)}
+function defaults(st,i){
+  const R=st.raise;const rz=(R&&R.amount>0&&i>=R.from)?R.amount:0;
+  let pAdd=0;
+  if(rz){if(R.split==="personal")pAdd=rz;else if(R.split==="plan"&&i>=CFG.raiseSplitFrom)pAdd=Math.round(rz/2);}
+  return {salary:BASE.salary[i]+rz,personal:BASE.personal[i]+pAdd,rz,pAdd};
+}
+function planVal(st,i,key){
+  if(key==="salary"||key==="personal")return defaults(st,i)[key];
+  if(key.startsWith("fix"))return FIXED_AMT[+key.slice(3)];
+  if(key.startsWith("jam")){const k=+key.slice(3);return jamActive(k,i)?JAMS[k].a:0}
+  return BASE[key][i];
+}
+function isOv(st,i,key){const o=(st.overrides||{})[i]||{};return Number.isFinite(o[key])}
+function val(st,i,key){const o=(st.overrides||{})[i]||{};return Number.isFinite(o[key])?o[key]:planVal(st,i,key)}
+function compute(st,purch){
+  purch=purch||[];
+  let em=0,sch=CFG.schoolOpen;const rows=[];
+  for(let i=0;i<N;i++){
+    const o=(st.overrides||{})[i]||{};
+    const d=defaults(st,i);
+    const v=k=>val(st,i,k);
+    const salary=v("salary"),personal=v("personal"),extra=v("extra"),school=v("school"),schoolX=v("schoolX"),special=v("special"),inst=v("inst");
+    let fixTot=0;for(let k=0;k<FIXED_AMT.length;k++)fixTot+=v("fix"+k);
+    let jam=0;for(const k of jamIdx(i))jam+=v("jam"+k);
+    const ents=((st.entries||{})[i])||[];
+    let inc=0,pers=0,emx=0,schx=0;
+    for(const e of ents){
+      if(e.type==="income")inc+=e.amount;
+      else if(e.source==="personal")pers+=e.amount;
+      else if(e.source==="school")schx+=e.amount;
+      else emx+=e.amount;
+    }
+    const overflow=Math.max(0,pers-personal);
+    const houseBudget=v("fix"+CFG.houseIdx);
+    const houseSpent=purch.reduce((a,q)=>a+(q.month===i?q.amount:0),0);
+    const houseOver=Math.max(0,houseSpent-houseBudget);
+    const toEm=salary+extra+inc-fixTot-jam-school-schoolX-special-personal-emx-overflow-houseOver;
+    em+=toEm;
+    sch=sch+school+schoolX-schx-inst;
+    rows.push({i,houseBudget,houseSpent,houseOver,salary,personal,extra,school,schoolX,special,inst,fixTot,rz:d.rz,pAdd:d.pAdd,inc,pers,emx,schx,overflow,jam,toEm,em,sch,personalLeft:Math.max(0,personal-pers),
+      changed:ents.length>0||Object.keys(o).length>0});
+  }
+  return rows;
+}
+function monthOf(ds){
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(ds||""))return -1;
+  const i=(+ds.slice(0,4)-CFG.startYear)*12+(+ds.slice(5,7))-CFG.startMonth;return(i>=0&&i<N)?i:-1;
+}
+function ymOf(i){const z=CFG.startMonth-1+i;return[CFG.startYear+Math.floor(z/12),(z%12)+1]}
+const pad=n=>String(n).padStart(2,"0");
+function isoToday(){const d=new Date();return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
+function defaultDate(i){const td=isoToday();if(monthOf(td)===i)return td;const[y,m]=ymOf(i);return y+"-"+pad(m)+"-01"}
+function lastDate(){const[y,m]=ymOf(N-1);return y+"-"+pad(m)+"-"+pad(new Date(y,m,0).getDate())}
+function currentIdx(){return monthOf(isoToday())}
+
+/* ---------- state ---------- */
+let state={entries:{},overrides:{},raise:null};
+let purchases=[];
+let sel=0,hSel=0;
+function sanitize(p){
+  const out={entries:{},overrides:{},raise:null};
+  if(p&&p.raise&&typeof p.raise==="object"){const R=p.raise;const a=Math.round(+R.amount),f=Math.round(+R.from);
+    if(a>0&&f>=0&&f<N)out.raise={amount:a,from:f,split:["plan","emergency","personal"].includes(R.split)?R.split:"plan"};}
+  if(p&&p.entries&&typeof p.entries==="object")for(const k of Object.keys(p.entries)){
+    const i=+k;if(!(i>=0&&i<N)||!Array.isArray(p.entries[k]))continue;
+    const arr=p.entries[k].filter(e=>e&&Number.isFinite(+e.amount)&&+e.amount>0).map(e=>({id:String(e.id||Math.random().toString(36).slice(2)),amount:+e.amount,note:String(e.note||"").slice(0,60),type:e.type==="income"?"income":"expense",source:SRC_KEYS.includes(e.source)?e.source:"personal"}));
+    if(arr.length)out.entries[i]=arr;
+  }
+  if(p&&p.overrides&&typeof p.overrides==="object")for(const k of Object.keys(p.overrides)){
+    const i=+k;if(!(i>=0&&i<N))continue;const o=p.overrides[k]||{};const r={};
+    for(const key of OKEYS)if(Number.isFinite(+o[key])&&o[key]!==null&&+o[key]>=0)r[key]=Math.round(+o[key]);
+    if(Object.keys(r).length)out.overrides[i]=r;
+  }
+  return out;
+}
+
+/* ---------- firebase ---------- */
+const configured=!Object.values(FIREBASE_CONFIG).some(v=>String(v).includes("PASTE"));
+let app,auth,db,me=null,saveTimer=null,saveKey="saved",unsubs=[];
+function setSave(k){saveKey=k;$("save").textContent=t()[k]}
+function persist(){
+  setSave("saving");clearTimeout(saveTimer);
+  saveTimer=setTimeout(async()=>{
+    const snapshot=JSON.parse(JSON.stringify(state));
+    try{await setDoc(doc(db,"state","main"),{entries:snapshot.entries,overrides:snapshot.overrides,raise:snapshot.raise||null,updated:Date.now()});setSave("saved")}
+    catch(e){setSave("saveFail")}
+    finally{saveTimer=null}
+  },600);
+}
+function gate(kind,extra){
+  const L=t();$("app").hidden=true;$("gate").hidden=false;
+  let h="";
+  if(kind==="loading")h=`<p>${esc(L.gLoading)}</p>`;
+  if(kind==="setup")h=`<h2>${esc(L.gSetupH)}</h2><p>${esc(L.gSetupP)}</p>`;
+  if(kind==="signin")h=`<h2>${esc(L.gSignH)}</h2><p>${esc(L.gSignP)}</p><button class="btn" id="gSign" type="button">${esc(L.gSignBtn)}</button><p class="err" id="gErr">${extra?esc(L.gSignErr):""}</p>`;
+  if(kind==="denied")h=`<h2>${esc(L.gDeniedH)}</h2><p>${esc(L.gDeniedP(me&&me.email||""))}</p><button class="btn ghost" id="gOut" type="button">${esc(L.signOut)}</button>`;
+  if(kind==="import")h=`<h2>${esc(L.gImportH)}</h2><p>${esc(L.gImportP)}</p><button class="btn" id="gImp" type="button">${esc(L.gImportBtn)}</button><p class="err" id="gErr"></p>`;
+  $("gateBody").innerHTML=h;gateKind=kind;
+  if($("gSign"))$("gSign").onclick=doSignIn;
+  if($("gOut"))$("gOut").onclick=()=>signOut(auth);
+  if($("gImp"))$("gImp").onclick=()=>$("impFile").click();
+}
+let gateKind="loading";
+async function doSignIn(){
+  const p=new GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});
+  try{await signInWithPopup(auth,p)}
+  catch(e){
+    if(e&&(e.code==="auth/popup-blocked"||e.code==="auth/operation-not-supported-in-this-environment"||e.code==="auth/cancelled-popup-request")){try{await signInWithRedirect(auth,p)}catch(e2){gate("signin",true)}}
+    else if(e&&e.code!=="auth/popup-closed-by-user")gate("signin",true);
+  }
+}
+function stopListeners(){unsubs.forEach(u=>{try{u()}catch(e){}});unsubs=[]}
+function startListeners(){
+  stopListeners();
+  const denied=e=>{if(e&&e.code==="permission-denied")gate("denied")};
+  unsubs.push(onSnapshot(doc(db,"config","plan"),sn=>{
+    if(!sn.exists()){gate("import");return}
+    const c=sn.data();if(!validConfig(c)){gate("import");return}
+    const first=!CFG;setConfig(c);
+    if(first){const ci=currentIdx();sel=ci>=0?ci:0;hSel=sel;}
+    state=sanitize(state);
+    showApp();
+  },denied));
+  unsubs.push(onSnapshot(doc(db,"state","main"),sn=>{
+    if(saveTimer)return;
+    rawState=sn.exists()?sn.data():{};
+    if(CFG){state=sanitize(rawState);render()}
+  },denied));
+  unsubs.push(onSnapshot(collection(db,"purchases"),qs=>{
+    purchases=qs.docs.map(d=>{const x=d.data()||{};return{id:d.id,month:Math.round(+x.month),amount:+x.amount,item:String(x.item||"").slice(0,60),date:String(x.date||""),by:String(x.by||""),byName:String(x.byName||""),photo:!!x.photo,created:+x.created||0}})
+      .filter(q=>q.month>=0&&q.amount>0);
+    if(CFG)render();
+  },denied));
+}
+let rawState={};
+function showApp(){
+  if(rawState&&CFG)state=sanitize(rawState);
+  $("gate").hidden=true;$("app").hidden=false;
+  $("who").textContent=t().signedAs(me.email||"");
+  applyLang();
+}
+
+/* ---------- import / export ---------- */
+function backupObj(){
+  return {version:1,exported:new Date().toISOString(),config:CFG,state:JSON.parse(JSON.stringify(state)),
+    purchases:purchases.map(({id,...q})=>q)};
+}
+function doExport(){
+  const blob=new Blob([JSON.stringify(backupObj(),null,1)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="budget-backup-"+isoToday()+".json";
+  document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);
+}
+const readText=f=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result));r.onerror=rej;r.readAsText(f)});
+async function doImport(file){
+  const L=t();const errEl=$("gErr")||$("bErr");
+  let data;
+  try{data=JSON.parse(await readText(file))}catch(e){if(errEl)errEl.textContent=L.gImportErr;return}
+  if(!data||!validConfig(data.config)){if(errEl)errEl.textContent=L.gImportErr;return}
+  if(CFG&&!confirm(L.confirmImport))return;
+  const saveCfg=CFG;setConfig(data.config);const st=sanitize(data.state||{});
+  try{
+    const old=await getDocs(collection(db,"purchases"));
+    const batch=writeBatch(db);
+    old.docs.forEach(d=>batch.delete(d.ref));
+    batch.set(doc(db,"config","plan"),JSON.parse(JSON.stringify(data.config)));
+    batch.set(doc(db,"state","main"),{entries:st.entries,overrides:st.overrides,raise:st.raise||null,updated:Date.now()});
+    (Array.isArray(data.purchases)?data.purchases:[]).slice(0,400).forEach(q=>{
+      const mi=Math.round(+q.month),amt=+q.amount;if(!(mi>=0&&mi<N&&amt>0))return;
+      batch.set(doc(collection(db,"purchases")),{month:mi,amount:amt,item:String(q.item||"").slice(0,60),date:String(q.date||""),by:String(q.by||""),byName:String(q.byName||""),photo:!!q.photo,created:+q.created||Date.now()});
+    });
+    await batch.commit();
+    state=st;rawState=st;
+    if($("bErr"))$("bErr").textContent=L.imported;
+  }catch(e){if(saveCfg)setConfig(saveCfg);if(errEl)errEl.textContent=(e&&e.code==="permission-denied")?L.gDeniedH:L.saveFail}
+}
+
+/* ---------- language ---------- */
+function applyLang(){
+  const L=t();
+  document.documentElement.lang=lang;document.documentElement.dir=lang==="ar"?"rtl":"ltr";
+  document.title=L.title;
+  document.querySelectorAll("[data-t]").forEach(el=>{const v=L[el.dataset.t];if(typeof v==="string")el.textContent=v});
+  $("langBtn").textContent=L.langBtn;$("setBtn").setAttribute("aria-label",L.settingsAria);$("langBtn").lang=lang==="ar"?"en":"ar";
+  $("save").textContent=L[saveKey]||"";
+  buildSwatches();
+  if(!CFG||$("app").hidden){if(gateKind!=="loading"||!configured)gate(configured?gateKind:"setup");return}
+  $("who").textContent=L.signedAs(me&&me.email||"");
+  $("months").setAttribute("aria-label",L.monthsAria);
+  $("fNote").placeholder=L.notePh;$("rAmt").placeholder=L.rPh;$("hItem").placeholder=L.hItemPh;
+  const ft=$("fType").value||"expense",fs=$("fSrc").value||"personal",rs=$("rSplit").value;
+  $("fType").innerHTML=`<option value="expense">${esc(L.tExp)}</option><option value="income">${esc(L.tInc)}</option>`;$("fType").value=ft;
+  $("fSrc").innerHTML=SRC_KEYS.map(k=>`<option value="${k}">${esc(L.src[k])}</option>`).join("");$("fSrc").value=fs;
+  $("rSplit").innerHTML=["plan","emergency","personal"].map(k=>`<option value="${k}">${esc(L.splits[k])}</option>`).join("");if(rs)$("rSplit").value=rs;
+  const months=tx(CFG.months);const prev=[tx(CFG.prevFirst)].concat(months.slice(0,N-1));
+  $("rFrom").innerHTML=months.map((m,k)=>`<option value="${k}">${esc(L.rFromOpt(prev[k],m))}</option>`).join("");
+  $("hMonth").innerHTML=months.map((m,k)=>`<option value="${k}">${esc(m)}</option>`).join("");
+  $("hDate").min=defaultDate(0).slice(0,8)+"01";$("hDate").max=lastDate();
+  $("howBody").innerHTML=L.how.map(p=>`<p>${esc(p)}</p>`).join("");
+  $("condBody").innerHTML=tx(CFG.conds).map(p=>`<p>${esc(p)}</p>`).join("");
+  const fixTotal=FIXED_AMT.reduce((a,b)=>a+b,0);
+  $("fixH").textContent=L.fixH(fmt(fixTotal));
+  $("fixT").innerHTML=CFG.fixed.map(f=>`<tr><td>${esc(tx(f.name))}</td><td><span class="num">${fmt(f.amount)}</span></td></tr>`).join("")+`<tr class="result"><td>${esc(L.total)}</td><td><span class="num">${fmt(fixTotal)}</span></td></tr>`;
+  $("jamT").innerHTML=`<thead><tr>${L.jamTh.map(h=>`<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>`+JAMS.map(j=>`<tr><td>${esc(tx(j.name))}</td><td class="n"><span class="num">${fmt(j.a)}</span></td><td>${j.s===0?esc(L.ongoing):esc(M(j.s))}</td><td>${esc(tx(j.to))}</td><td>${esc(tx(j.rec))}</td></tr>`).join("")+
+   `</tbody><tbody><tr><th colspan="5">${esc(L.perMonth)}</th></tr>`+months.map((m,i)=>`<tr><td>${esc(m)}</td><td class="n"><span class="num">${fmt(jamTotal(i))}</span></td><td colspan="3">${esc(jamIdx(i).map(k=>tx(JAMS[k].name)).join(L.sep))}</td></tr>`).join("")+"</tbody>";
+  $("evT").innerHTML=`<thead><tr>${L.evTh.map(h=>`<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>`+tx(CFG.events).map(e=>`<tr><td>${esc(e.d)}</td><td>${esc(e.w)}</td><td class="n"><span class="num">${esc(e.a)}</span></td></tr>`).join("")+"</tbody>";
+  render();
+}
+
+/* ---------- render ---------- */
+function render(){
+  if(!CFG||$("app").hidden)return;
+  const L=t();
+  const rows=compute(state,purchases);const r=rows[sel];const b=BASE_ROWS[sel];
+  const last=rows[N-1],bl=BASE_ROWS[N-1];
+  $("tEm").textContent=fmt(last.em);
+  const dEm=last.em-bl.em;
+  $("tEmD").textContent=dEm===0?L.same:(dEm<0?L.belowPlan(fmt(-dEm)):L.abovePlan(fmt(dEm)));
+  $("tEmD").className="delta "+(dEm<0?"neg":dEm>0?"pos":"");
+  $("tSch").textContent=fmt(last.sch);
+  const dS=last.sch-bl.sch;
+  $("tSchD").textContent=dS===0?L.same:(dS<0?L.down(fmt(-dS)):L.up(fmt(dS)));
+  $("tSchD").className="delta "+(dS<0?"neg":dS>0?"pos":"");
+  let low=rows[0];for(const x of rows)if(x.em<low.em)low=x;
+  $("tLow").textContent=fmt(low.em);$("tLowM").textContent=M(low.i);
+  $("tLowM").className="delta "+(low.em<0?"neg":"");
+
+  const ms=$("months");ms.innerHTML="";
+  rows.forEach(x=>{
+    const btn=document.createElement("button");btn.type="button";
+    btn.className="mbtn"+(x.em<0||x.sch<0?" bad":x.em<=3000?" tight":"")+(x.changed?" changed":"");
+    btn.setAttribute("aria-pressed",x.i===sel?"true":"false");
+    btn.innerHTML=`<small>${esc(M(x.i))}</small><b class="num">${fmt(x.em)}</b>`;
+    btn.title=L.emTip(M(x.i));
+    btn.onclick=()=>{sel=x.i;render()};
+    ms.appendChild(btn);
+  });
+  const sb=ms.querySelector('[aria-pressed="true"]');
+  if(sb&&ms.dataset.sel!==String(sel)){ms.dataset.sel=String(sel);requestAnimationFrame(()=>{try{sb.scrollIntoView({inline:"center",block:"nearest",behavior:"smooth"})}catch(e){}})}
+
+  $("mTitle").textContent=M(sel);
+  let alerts="";
+  if(r.em<0)alerts+=`<p class="warn">${esc(L.emNeg(fmt(r.em)))}</p>`;
+  if(r.sch<0)alerts+=`<p class="warn">${esc(L.schShort(fmt(-r.sch),!!r.inst))}</p>`;
+  else{const bad=rows.find(x=>x.i>sel&&x.sch<0);if(bad&&r.schx)alerts+=`<p class="warn">${esc(L.schFuture(M(bad.i),fmt(-bad.sch)))}</p>`}
+  if(r.overflow>0)alerts+=`<p class="caution">${esc(L.overflow(fmt(r.overflow)))}</p>`;
+  if(r.houseOver>0)alerts+=`<p class="caution">${esc(L.hOver(fmt(r.houseOver)))}</p>`;
+  $("mAlerts").innerHTML=alerts;
+  $("mNote").textContent=tx(CFG.notes)[sel]||"";
+  $("mNote").hidden=!$("mNote").textContent;
+
+  const out=[];
+  const line=(name,amt,why,cls)=>out.push(`<tr class="${cls||""}"><td>${esc(name)}${why?`<span class="why">${esc(why)}</span>`:""}</td><td><span class="num">${amt}</span></td></tr>`);
+  const oS=state.overrides[sel]||{};
+  const cw=k=>isOv(state,sel,k)?L.planWas(fmt(planVal(state,sel,k))):"";
+  out.push(`<tr class="sec"><td colspan="2">${esc(L.secIn)}</td></tr>`);
+  line(L.salary,fmt(r.salary),Number.isFinite(oS.salary)?L.manual(fmt(planVal(state,sel,"salary"))):(r.rz?L.hasRaise(fmt(r.rz)):""));
+  if(r.extra||BASE.extra[sel])line(L.extraIncome,fmt(r.extra),cw("extra")||tx(CFG.extraN)[sel]);
+  if(r.inc)line(L.loggedIncome,fmt(r.inc),L.youLogged,"extrain");
+  out.push(`<tr class="sec"><td colspan="2">${esc(L.secOut)}</td></tr>`);
+  const fixCh=FIXED_AMT.map((a,k)=>k).filter(k=>isOv(state,sel,"fix"+k)).map(k=>tx(CFG.fixed[k].name)+" "+fmt(val(state,sel,"fix"+k)));
+  line(L.fixed,"−"+fmt(r.fixTot),fixCh.length?L.changed+fixCh.join(L.sep):"");
+  line(L.jam,"−"+fmt(r.jam),jamIdx(sel).map(k=>tx(JAMS[k].name)+(isOv(state,sel,"jam"+k)?" "+fmt(val(state,sel,"jam"+k)):"")).join(L.sep));
+  line(L.schoolDep,"−"+fmt(r.school+r.schoolX),r.schoolX?L.schoolDepWhy(fmt(r.school),fmt(r.schoolX)):cw("school"));
+  if(r.special||BASE.special[sel])line(L.special,"−"+fmt(r.special),cw("special")||tx(CFG.specialN)[sel]);
+  const pw=[];
+  if(Number.isFinite(oS.personal))pw.push(L.manual(fmt(planVal(state,sel,"personal"))));else if(r.pAdd)pw.push(L.fromRaise(fmt(r.pAdd)));
+  if(r.pers)pw.push(L.spentLeft(fmt(r.pers),fmt(r.personalLeft)));
+  line(L.personal,"−"+fmt(r.personal),pw.join(". "));
+  if(r.emx)line(L.emX,"−"+fmt(r.emx),"","extra");
+  if(r.overflow)line(L.overLine,"−"+fmt(r.overflow),L.overWhy,"extra");
+  if(r.houseOver)line(L.houseLine,"−"+fmt(r.houseOver),L.overWhy,"extra");
+  line(L.toEm,signed(r.toEm),r.toEm!==b.toEm?L.plan(signed(b.toEm)):"","result");
+  line(L.emBal,fmt(r.em),r.em!==b.em?L.plan(fmt(b.em)):"","bal");
+  const sw=[];if(r.inst)sw.push(L.afterInst(fmt(r.inst)));if(isOv(state,sel,"inst"))sw.push(cw("inst"));if(r.schx)sw.push(L.withdrew(fmt(r.schx)));
+  line(L.schBal,fmt(r.sch),sw.join(L.sep),"bal");
+  $("mLedger").innerHTML=out.join("");
+
+  const ents=state.entries[sel]||[];
+  $("mEntries").innerHTML=ents.length?ents.map(e=>`<li><span>${esc(e.note||(e.type==="income"?L.incDef:L.expDef))}<span class="meta">${esc(e.type==="income"?L.incDef:L.paidFrom(L.src[e.source]))}</span></span><span><span class="num" style="color:var(${e.type==="income"?"--green":"--red"})">${e.type==="income"?"+":"−"}${fmt(e.amount)}</span> <button type="button" class="btn link" data-del="${esc(e.id)}">${esc(L.del)}</button></span></li>`).join(""):`<li class="empty">${esc(L.empty(M(sel)))}</li>`;
+  $("mEntries").querySelectorAll("[data-del]").forEach(bt=>bt.onclick=()=>{
+    state.entries[sel]=(state.entries[sel]||[]).filter(e=>e.id!==bt.dataset.del);
+    if(!state.entries[sel].length)delete state.entries[sel];
+    persist();render();
+  });
+  $("fSrcWrap").style.visibility=$("fType").value==="income"?"hidden":"visible";
+
+  renderEditor();
+  const R=state.raise;
+  if(document.activeElement!==$("rAmt"))$("rAmt").value=R?R.amount:"";
+  $("rFrom").value=String(R?R.from:CFG.defaultRaiseFrom);$("rSplit").value=R?R.split:"plan";
+  $("rInfo").textContent=R?L.rInfo(M(R.from),fmt(BASE.salary[R.from]+R.amount)):L.rNone;
+
+  const OPT=[1,4];let h=`<thead><tr>${L.th.map((x,k)=>`<th${OPT.includes(k)?' class="opt"':""}>${esc(x)}</th>`).join("")}</tr></thead><tbody>`;
+  rows.forEach((x,k)=>{const d=x.em-BASE_ROWS[k].em;
+    h+=`<tr class="click${x.i===sel?" sel":""}" data-i="${x.i}"><td>${esc(M(x.i))}</td><td class="n opt"><span class="num">${signed(x.toEm)}</span></td><td class="n ${x.em<0?"bad":x.em<=3000?"tight":""}"><span class="num">${fmt(x.em)}</span></td><td class="n ${d<0?"bad":""}"><span class="num">${d===0?"-":signed(d)}</span></td><td class="n opt"><span class="num">${fmt(x.personal)}</span></td><td class="n ${x.sch<0?"bad":""}"><span class="num">${fmt(x.sch)}</span></td></tr>`});
+  $("allT").innerHTML=h+"</tbody>";
+  renderHouse(rows);
+}
+
+/* ---------- month editor ---------- */
+function renderEditor(){
+  const L=t();
+  const ak=document.activeElement&&document.activeElement.dataset?document.activeElement.dataset.k:null;
+  const field=(key,label)=>{
+    const ch=isOv(state,sel,key);
+    return `<div class="ed${ch?" chg":""}"><label for="ed-${key}">${esc(label)}</label><input id="ed-${key}" data-k="${key}" type="number" inputmode="numeric" min="0" step="50" value="${val(state,sel,key)}">`+
+      (ch?`<div class="pl"><span>${esc(L.planWas(fmt(planVal(state,sel,key))))}</span><button type="button" class="btn link" data-r="${key}">${esc(L.resetOne)}</button></div>`:"")+`</div>`;
+  };
+  let h=`<div class="edh">${esc(L.gIn)}</div>`+field("salary",L.salary)+field("extra",L.fExtra);
+  h+=`<div class="edh">${esc(L.gFix)}</div>`+CFG.fixed.map((f,k)=>field("fix"+k,tx(f.name))).join("");
+  const js=jamIdx(sel);
+  if(js.length)h+=`<div class="edh">${esc(L.gJam)}</div>`+js.map(k=>field("jam"+k,tx(JAMS[k].name))).join("");
+  h+=`<div class="edh">${esc(L.gSch)}</div>`+field("school",L.fSchool)+field("schoolX",L.fSchoolX)+field("inst",L.fInst);
+  h+=`<div class="edh">${esc(L.gOther)}</div>`+field("special",L.fSpecial)+field("personal",L.personal);
+  $("oEdit").innerHTML=h;
+  if(ak){const el=$("oEdit").querySelector(`[data-k="${ak}"]`);if(el)el.focus()}
+}
+function targetMonths(key){
+  const to=$("oFwd").checked?N-1:sel;const out=[];
+  for(let i=sel;i<=to;i++){if(key.startsWith("jam")&&!jamActive(+key.slice(3),i))continue;out.push(i)}
+  return out;
+}
+function setKey(key,v){
+  for(const i of targetMonths(key)){
+    const o=state.overrides[i]||{};
+    if(v===null||v===planVal(state,i,key))delete o[key];else o[key]=v;
+    if(Object.keys(o).length)state.overrides[i]=o;else delete state.overrides[i];
+  }
+  persist();setTimeout(render,0);
+}
+$("oEdit").addEventListener("change",e=>{const k=e.target.dataset&&e.target.dataset.k;if(!k)return;const v=Math.round(parseFloat(e.target.value));setKey(k,(v>=0)?v:null)});
+$("oEdit").addEventListener("click",e=>{const k=e.target.dataset&&e.target.dataset.r;if(!k)return;setKey(k,null)});
+$("oReset").onclick=()=>{const to=$("oFwd").checked?N-1:sel;for(let i=sel;i<=to;i++)delete state.overrides[i];persist();render()};
+
+/* ---------- household ---------- */
+let lastFromPhoto=false,aiModel=null;
+function renderHouse(rows){
+  const L=t();const r=rows[hSel];
+  $("hTitle").textContent=L.hTitle(M(hSel));
+  $("hMonth").value=String(hSel);
+  if(!$("hDate").value||monthOf($("hDate").value)<0)$("hDate").value=defaultDate(hSel);
+  $("hBud").textContent=fmt(r.houseBudget);$("hSp").textContent=fmt(r.houseSpent);
+  const left=r.houseBudget-r.houseSpent;$("hLe").textContent=fmt(left);$("hLe").style.color=left<0?"var(--red)":"";
+  const pct=r.houseBudget>0?Math.min(100,r.houseSpent/r.houseBudget*100):(r.houseSpent>0?100:0);
+  $("hFill").style.width=pct+"%";$("hFill").parentElement.classList.toggle("over",r.houseOver>0);
+  $("hAlert").innerHTML=r.houseOver>0?`<p class="warn">${esc(L.hOver(fmt(r.houseOver)))}</p>`:"";
+  const list=purchases.filter(q=>q.month===hSel).sort((a,b)=>(b.date||"").localeCompare(a.date||"")||b.created-a.created);
+  $("hList").innerHTML=list.length?list.map(q=>{
+    const who=q.by?(me&&q.by===me.uid?L.hByMe:(q.byName?L.hBy(q.byName):"")):"";
+    const meta=[q.date,who].filter(Boolean).join(L.sep);
+    return `<li><span>${esc(q.item||L.hDefItem)}${q.photo?`<span class="tag">${esc(L.hFromPhoto)}</span>`:""}<span class="meta">${esc(meta)}</span></span><span><span class="num">${fmt(q.amount)}</span> <button type="button" class="btn link" data-hdel="${esc(q.id)}">${esc(L.del)}</button></span></li>`}).join(""):`<li class="empty">${esc(L.hEmpty(M(hSel)))}</li>`;
+  $("hList").querySelectorAll("[data-hdel]").forEach(b=>b.onclick=async()=>{b.disabled=true;try{await deleteDoc(doc(db,"purchases",b.dataset.hdel))}catch(e){b.disabled=false}});
+}
+$("hMonth").onchange=()=>{hSel=+$("hMonth").value;$("hDate").value=defaultDate(hSel);render()};
+$("hAdd").onclick=async()=>{
+  const L=t();
+  const amt=Math.round(parseFloat($("hAmt").value)*100)/100;
+  if(!(amt>0)){$("hErr").textContent=L.errAmt;$("hAmt").focus();return}
+  const ds=$("hDate").value,mi=monthOf(ds);
+  if(mi<0){$("hErr").textContent=L.hErrDate(M(0),M(N-1));$("hDate").focus();return}
+  $("hErr").textContent="";$("hAdd").disabled=true;
+  try{
+    await addDoc(collection(db,"purchases"),{month:mi,amount:amt,item:$("hItem").value.trim().slice(0,60),date:ds,by:me.uid,byName:(me.displayName||me.email||"").split(" ")[0],photo:lastFromPhoto,created:Date.now()});
+    $("hAmt").value="";$("hItem").value="";$("hPhotoMsg").textContent="";lastFromPhoto=false;
+    hSel=mi;render();
+  }catch(e){$("hErr").textContent=L.saveFail}
+  finally{$("hAdd").disabled=false}
+};
+async function shrink(file){
+  try{
+    const url=URL.createObjectURL(file);const img=new Image();
+    await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;img.src=url});
+    const sc=Math.min(1,1600/Math.max(img.naturalWidth,img.naturalHeight));
+    const c=document.createElement("canvas");c.width=Math.round(img.naturalWidth*sc);c.height=Math.round(img.naturalHeight*sc);
+    c.getContext("2d").drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(url);
+    return await new Promise(r=>c.toBlob(b=>r(b||file),"image/jpeg",0.85));
+  }catch(e){return file}
+}
+const toB64=blob=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(",")[1]);r.onerror=rej;r.readAsDataURL(blob)});
+async function readReceipt(blob){
+  if(!aiModel){
+    const m=await import("https://www.gstatic.com/firebasejs/12.0.0/firebase-ai.js");
+    const ai=m.getAI(app,{backend:new m.GoogleAIBackend()});
+    aiModel=m.getGenerativeModel(ai,{model:GEMINI_MODEL,generationConfig:{responseMimeType:"application/json"}});
+  }
+  const prompt=`The image is a photo of a shopping receipt or invoice from Egypt. It may be in Arabic or English. Find the final total actually paid, in Egyptian pounds. Reply with only JSON: {"total": number or null, "date": "YYYY-MM-DD" or null, "summary": string}. "summary" says what was bought in at most 5 words, written in ${lang==="ar"?"Egyptian Arabic":"English"}. Use null for any value you cannot read clearly.`;
+  const res=await aiModel.generateContent([prompt,{inlineData:{data:await toB64(blob),mimeType:blob.type||"image/jpeg"}}]);
+  return JSON.parse(res.response.text().replace(/```json|```/g,"").trim());
+}
+$("hPhotoBtn").onclick=()=>$("hPhoto").click();
+$("hPhoto").onchange=async()=>{
+  const f=$("hPhoto").files&&$("hPhoto").files[0];$("hPhoto").value="";if(!f)return;
+  const L=t(),msg=$("hPhotoMsg");
+  msg.textContent=L.hReading;$("hPhotoBtn").disabled=true;
+  try{
+    const res=await readReceipt(await shrink(f));
+    const tot=res&&+res.total;
+    if(tot>0)$("hAmt").value=Math.round(tot*100)/100;
+    if(res&&typeof res.summary==="string"&&res.summary.trim())$("hItem").value=res.summary.trim().slice(0,60);
+    if(res&&monthOf(res.date)>=0)$("hDate").value=res.date;
+    lastFromPhoto=tot>0;msg.textContent=tot>0?L.hRead:L.hReadFail;
+    if(tot>0)$("hAmt").focus();
+  }catch(e){console.error(e);msg.textContent=L.hReadFail}
+  finally{$("hPhotoBtn").disabled=false}
+};
+
+/* ---------- log + raise + reset ---------- */
+$("fType").onchange=()=>{$("fSrcWrap").style.visibility=$("fType").value==="income"?"hidden":"visible"};
+$("fAdd").onclick=()=>{
+  const amt=Math.round(parseFloat($("fAmt").value));
+  if(!(amt>0)){$("fErr").textContent=t().errAmt;$("fAmt").focus();return}
+  $("fErr").textContent="";
+  const e={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),amount:amt,note:$("fNote").value.trim().slice(0,60),type:$("fType").value,source:$("fSrc").value};
+  (state.entries[sel]=state.entries[sel]||[]).push(e);
+  $("fAmt").value="";$("fNote").value="";
+  persist();render();
+};
+function applyRaise(){
+  const a=Math.round(parseFloat($("rAmt").value));
+  state.raise=(a>0)?{amount:a,from:+$("rFrom").value,split:$("rSplit").value}:null;
+  persist();render();
+}
+$("rAmt").onchange=applyRaise;
+$("rFrom").onchange=()=>{if(state.raise)applyRaise()};
+$("rSplit").onchange=()=>{if(state.raise)applyRaise()};
+$("rClear").onclick=()=>{state.raise=null;$("rAmt").value="";persist();render()};
+$("resetAll").onclick=()=>{if(!confirm(t().confirmReset))return;state={entries:{},overrides:{},raise:null};persist();render()};
+$("expBtn").onclick=doExport;
+$("impBtn").onclick=()=>$("impFile").click();
+$("impFile").onchange=async()=>{const f=$("impFile").files&&$("impFile").files[0];$("impFile").value="";if(f)await doImport(f)};
+$("outBtn").onclick=()=>signOut(auth);
+
+/* ---------- tabs ---------- */
+function showTab(name){
+  document.querySelectorAll(".tabs [data-tab]").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===name?"true":"false"));
+  ["month","house","all","raise","plan"].forEach(n=>{$("pane-"+n).hidden=n!==name});
+  document.body.dataset.tab=name;
+  try{localStorage.setItem(TAB_KEY,name)}catch(e){}
+  if(typeof window.scrollTo==="function"&&tabReady)window.scrollTo({top:0});
+}
+let tabReady=false;
+document.querySelectorAll(".tabs [data-tab]").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+function showSub(name){
+  document.querySelectorAll("#subSeg [data-sub]").forEach(b=>b.setAttribute("aria-selected",b.dataset.sub===name?"true":"false"));
+  $("sub-log").hidden=name!=="log";$("sub-edit").hidden=name!=="edit";
+}
+document.querySelectorAll("#subSeg [data-sub]").forEach(b=>b.onclick=()=>showSub(b.dataset.sub));
+$("allT").addEventListener("click",e=>{const tr=e.target.closest("tr[data-i]");if(!tr)return;sel=+tr.dataset.i;showTab("month");render();window.scrollTo({top:0})});
+
+/* ---------- theme ---------- */
+const ACC={teal:["#0e6b6b","#e2f0ef","#5cc2bd","#16302f"],blue:["#1f5fae","#e3ecf8","#7fb0f0","#172a44"],violet:["#6a3fa8","#efe8f8","#b79af0","#2a1f40"],green:["#2f7a3e","#e4f2e6","#82cf8f","#1a3320"],rose:["#b0305c","#f9e4ec","#f08fb1","#3d1a28"]};
+let theme={mode:"auto",accent:"teal"};
+try{const v=JSON.parse(localStorage.getItem(THEME_KEY)||"null");if(v){if(["auto","light","dark"].includes(v.mode))theme.mode=v.mode;if(ACC[v.accent])theme.accent=v.accent}}catch(e){}
+const mq=window.matchMedia?window.matchMedia("(prefers-color-scheme: dark)"):null;
+function applyTheme(){
+  const root=document.documentElement;
+  if(theme.mode==="auto")root.removeAttribute("data-theme");else root.setAttribute("data-theme",theme.mode);
+  const dark=theme.mode==="dark"||(theme.mode==="auto"&&mq&&mq.matches);
+  const a=ACC[theme.accent];
+  root.style.setProperty("--teal",dark?a[2]:a[0]);root.style.setProperty("--teal-soft",dark?a[3]:a[1]);
+  document.querySelectorAll("#modeSeg [data-mode]").forEach(b=>b.setAttribute("aria-checked",b.dataset.mode===theme.mode?"true":"false"));
+  document.querySelectorAll("#swatches [data-acc]").forEach(b=>b.setAttribute("aria-checked",b.dataset.acc===theme.accent?"true":"false"));
+  const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=getComputedStyle(root).getPropertyValue("--paper").trim();
+  try{localStorage.setItem(THEME_KEY,JSON.stringify(theme))}catch(e){}
+}
+function buildSwatches(){
+  const L=t();
+  $("swatches").innerHTML=Object.keys(ACC).map(k=>`<button type="button" role="radio" data-acc="${k}" aria-label="${esc(L.accents[k])}" title="${esc(L.accents[k])}" style="background:${ACC[k][0]}"></button>`).join("");
+  $("swatches").querySelectorAll("[data-acc]").forEach(b=>b.onclick=()=>{theme.accent=b.dataset.acc;applyTheme()});
+  applyTheme();
+}
+document.querySelectorAll("#modeSeg [data-mode]").forEach(b=>b.onclick=()=>{theme.mode=b.dataset.mode;applyTheme()});
+if(mq){if(mq.addEventListener)mq.addEventListener("change",applyTheme);else if(mq.addListener)mq.addListener(applyTheme)}
+$("setBtn").onclick=()=>{const d=$("setDlg");if(d.showModal)d.showModal();else d.setAttribute("open","")};
+$("setClose").onclick=()=>{const d=$("setDlg");if(d.close)d.close();else d.removeAttribute("open")};
+$("setDlg").addEventListener("click",e=>{if(e.target===$("setDlg"))$("setClose").click()});
+$("langBtn").onclick=()=>{lang=lang==="ar"?"en":"ar";try{localStorage.setItem(LANG_KEY,lang)}catch(e){}applyLang()};
+
+/* ---------- start ---------- */
+let startTab="month";try{const v=localStorage.getItem(TAB_KEY);if(["month","house","all","raise","plan"].includes(v))startTab=v}catch(e){}
+showTab(startTab);showSub("log");tabReady=true;
+applyLang();
+if(!configured){gate("setup")}
+else{
+  gate("loading");
+  app=initializeApp(FIREBASE_CONFIG);auth=getAuth(app);db=getFirestore(app);
+  getRedirectResult(auth).catch(()=>gate("signin",true));
+  onAuthStateChanged(auth,u=>{
+    me=u;stopListeners();CFG=null;
+    if(!u){gate("signin");return}
+    gate("loading");startListeners();
+  });
+}
+
+</script>
+</body>
+</html>

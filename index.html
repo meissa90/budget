@@ -361,6 +361,51 @@ details.pe{padding:0}
 .bake{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
 .bake h3{font-size:1rem;margin:0 0 4px}
 .bake .btn{width:100%}
+.cats{margin:4px 0 14px}
+.cats-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.cats-h h3{font-size:1rem;margin:0}
+.cat{padding:8px 0;border-bottom:1px dashed var(--line)}
+.cat-top{display:flex;justify-content:space-between;gap:10px;font-size:.92rem}
+.cat-top .num{color:var(--muted);font-size:.85rem}
+.cat-bar{height:6px;border-radius:3px;background:var(--teal-soft);margin:6px 0 4px;overflow:hidden}
+.cat-bar i{display:block;height:100%;background:var(--teal);border-radius:3px;transition:width .6s var(--ease)}
+.cat-bar.warn i{background:var(--amber)}.cat-bar.over i{background:var(--red)}
+.cat-sub{font-size:.75rem;color:var(--muted)}.cat-sub.neg{color:var(--red)}
+.cat-sum{margin:8px 0 0}
+.cat-ed{border:1px solid var(--line);border-radius:14px;padding:12px;margin:0 0 14px;background:var(--paper)}
+.cat-row{display:grid;grid-template-columns:minmax(0,1fr) 100px 44px;gap:8px;margin-bottom:8px}
+.cat-row input{min-height:42px}
+.cat-ed .opts{display:flex;gap:8px;margin-top:8px}
+.cat-ed .opts .btn{flex:1}
+.catsel{display:inline-block;width:auto;min-height:0;margin-top:4px;padding:2px 8px;font-size:.75rem;border-radius:999px;background:var(--teal-soft);color:var(--teal);border:0}
+.hseg{margin-bottom:14px}
+.sec-h{font-weight:600;color:var(--muted);font-size:.82rem;padding:14px 0 4px!important;border:0!important}
+.inv{display:flex;flex-direction:column;align-items:stretch!important;gap:6px}
+.inv-main{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.inv-name{background:none;border:0;padding:0;font:inherit;font-weight:600;color:var(--ink);cursor:pointer;text-align:start}
+.chips{display:flex;gap:6px}
+.chip{flex:1;font:inherit;font-size:.8rem;padding:6px 4px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--muted);cursor:pointer;min-height:34px}
+.chip.on.s-ok{background:var(--teal-soft);color:var(--teal);border-color:var(--teal)}
+.chip.on.s-low{background:var(--amber-soft);color:var(--amber);border-color:var(--amber)}
+.chip.on.s-out{background:var(--red-soft);color:var(--red);border-color:var(--red)}
+.inv-ed{display:block!important;background:var(--paper);border-radius:12px;padding:12px!important;margin:4px 0 8px}
+.inv-ed .opts{display:flex;gap:8px}.inv-ed .opts .btn{flex:1}
+.ssum{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.ssum .lbl{display:block;font-size:.74rem;color:var(--muted);min-height:2.4em}
+.ssum b{font-size:1.2rem;font-weight:700}.ssum b.neg{color:var(--red)}
+.rec-panel h3{font-size:1rem;margin:0 0 6px}
+.rec{list-style:none;padding:0;margin:6px 0 10px}
+.rec li{display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px dashed var(--line)}
+.rec li.rec-t{font-weight:700;border-bottom:0}
+.rec.wait li{color:var(--muted)}
+.rec-panel .btn{width:100%}
+.shop{display:grid!important;grid-template-columns:minmax(0,1fr) 92px 32px;align-items:center;gap:8px}
+.shop.done .chk span{text-decoration:line-through;color:var(--muted)}
+.shop .chk{margin:0;align-items:center}
+.shop .chk input{width:22px;height:22px;min-height:0}
+.sprice{min-height:38px;padding:6px 8px}
+.shop-add{margin-top:12px}
+.shop-add .row{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
 </style>
 </head>
 <body>
@@ -454,6 +499,12 @@ details.pe{padding:0}
   </div>
 
   <div class="pane" id="pane-house" role="tabpanel" hidden>
+    <div class="seg wide hseg" id="hSeg" role="tablist">
+      <button type="button" role="tab" data-hv="exp" data-t="hvExp"></button>
+      <button type="button" role="tab" data-hv="inv" data-t="hvInv"></button>
+      <button type="button" role="tab" data-hv="list" data-t="hvList"></button>
+    </div>
+    <div id="hv-exp">
     <div class="grid">
       <div class="panel">
         <div class="hhead"><h2 id="hTitle"></h2><select id="hMonth" class="hsel"></select></div>
@@ -469,6 +520,8 @@ details.pe{padding:0}
           </div>
         </div>
         <div id="hAlert"></div>
+        <div class="cats" id="hCats"></div>
+        <div class="cat-ed" id="hCatEd" hidden></div>
         <ul class="entries" id="hList"></ul>
       </div>
       <div class="panel">
@@ -480,10 +533,50 @@ details.pe{padding:0}
           <div><label for="hAmt" data-t="amount"></label><input id="hAmt" type="number" inputmode="decimal" min="0" step="1"></div>
           <div><label for="hDate" data-t="hDate"></label><input id="hDate" type="date" min="2026-12-01" max="2027-12-31"></div>
         </div>
-        <div style="margin-bottom:10px"><label for="hItem" data-t="hItem"></label><input id="hItem" type="text" maxlength="60"></div>
+        <div class="row">
+          <div><label for="hItem" data-t="hItem"></label><input id="hItem" type="text" maxlength="60"></div>
+          <div><label for="hCat" data-t="catL"></label><select id="hCat"></select></div>
+        </div>
         <button type="button" class="btn ghost" id="hAdd" data-t="hAdd"></button>
         <p class="err" id="hErr"></p>
         <p class="save" data-t="hNote"></p>
+      </div>
+    </div>
+      </div>
+    <div id="hv-inv" hidden>
+      <div class="panel">
+        <h2 data-t="invH"></h2>
+        <p class="muted" data-t="invP"></p>
+        <div class="row">
+          <div><label for="iName" data-t="iName"></label><input id="iName" type="text" maxlength="40"></div>
+          <div><label for="iPrice" data-t="iPrice"></label><input id="iPrice" type="number" inputmode="numeric" min="0" step="5"></div>
+        </div>
+        <div class="row">
+          <div><label for="iSec" data-t="iSec"></label><select id="iSec"></select></div>
+          <div><label for="iStatus" data-t="iStatus"></label><select id="iStatus"><option value="ok" data-t="stOk"></option><option value="low" data-t="stLow"></option><option value="out" data-t="stOut"></option></select></div>
+        </div>
+        <div class="row">
+          <div><label for="iPrio" data-t="iPrio"></label><select id="iPrio"></select></div>
+          <div><label for="iCat" data-t="catL"></label><select id="iCat"></select></div>
+        </div>
+        <button type="button" class="btn" id="iAdd" data-t="iAdd" style="width:100%"></button>
+        <p class="err" id="iErr"></p>
+        <ul class="entries invl" id="invList"></ul>
+      </div>
+    </div>
+    <div id="hv-list" hidden>
+      <div class="panel" id="shopSum"></div>
+      <div class="panel rec-panel" id="shopRec"></div>
+      <div class="panel">
+        <h2 data-t="shH"></h2>
+        <ul class="entries" id="shopList"></ul>
+        <div class="row shop-add">
+          <div><input id="sName" type="text" maxlength="40" aria-label="name"></div>
+          <div class="row" style="margin:0"><input id="sPrice" type="number" inputmode="numeric" min="0" step="5" data-t-ph="iPrice"><select id="sSec"></select></div>
+        </div>
+        <button type="button" class="btn ghost" id="sAdd" data-t="sAdd" style="width:100%"></button>
+        <button type="button" class="btn" id="shopDone" style="width:100%;margin-top:12px"></button>
+        <p class="muted" data-t="shDoneP"></p>
       </div>
     </div>
   </div>
@@ -613,7 +706,19 @@ ar:{
  tabMonth:"الشهر",tabHouse:"البيت",tabAll:"الشهور",tabRaise:"الزيادة",tabPlan:"الخطة",settingsH:"الإعدادات",close:"تم",langL:"اللغة",settingsAria:"الإعدادات",subLog:"سجّل مصروف أو دخل",subEdit:"عدّل أرقام الشهر",
  allSub:"دوس على أي شهر عشان تفتح تفاصيله.",themeL:"المظهر",modeAuto:"تلقائي",modeLight:"فاتح",modeDark:"غامق",accentL:"اللون",
  accents:{teal:"أخضر مزرق",blue:"أزرق",violet:"بنفسجي",green:"أخضر",rose:"وردي"},
- hTitle:m=>"مصاريف البيت",hBudget:"الميزانية",hPct:"اتصرف منها",toastSaved:"اتحفظ",toastDeleted:"اتمسح",hSpent:"اتصرف",hLeft:"فاضل",
+ hTitle:m=>"مصاريف البيت",hBudget:"الميزانية",hvExp:"المصاريف",hvInv:"المخزون",hvList:"اللستة",invH:"عندي إيه في البيت",invP:"علّم على كل حاجة: متوفر، أو قرب يخلص، أو خلص. اللي قرب يخلص أو خلص بينزل في اللستة لوحده.",
+ iName:"الحاجة",iNamePh:"مثلًا: رز",iPrice:"السعر",iSec:"القسم",iStatus:"الحالة",iPrio:"الأهمية",iAdd:"ضيف للمخزون",invEmpty:"لسه مفيش حاجة. ضيف الحاجات اللي بتشتريها عادةً.",
+ st:{ok:"متوفر",low:"قرب يخلص",out:"خلص"},stOk:"متوفر",stLow:"قرب يخلص",stOut:"خلص",prios:{1:"ضروري",2:"مهم",3:"ممكن يستنى"},
+ secs:{kitchen:"مطبخ",fridge:"تلاجة",produce:"خضار وفاكهة",meat:"لحوم وفراخ",cleaning:"منظفات",kids:"أطفال",other:"تانية"},egp:"ج",noPrice:"من غير سعر",save:"احفظ",
+ shH:"لستة المشتريات",shTotal:"إجمالي اللستة",shLeftNow:m=>`فاضل في البيت (${m})`,shAfter:"لو اشتريت كله",shEmpty:"اللستة فاضية. علّم على حاجة «قرب يخلص» أو «خلص» في المخزون، أو ضيفها هنا.",
+ shRemove:"شيلها من اللستة",sAdd:"ضيف للستة",shDone:n=>`خلّصت السوق: سجّل ${n}`,shDoneP:"بيسجّل الحاجات اللي متعلّم عليها كمصروف بيت (مجمّعة حسب البند)، ويشيلها من اللستة، ويرجّعها «متوفر» في المخزون.",
+ shDoneConfirm:"هيتسجل اللي متعلّم عليه كمصروف بيت بالأسعار اللي مكتوبة. نكمّل؟",shDoneToast:"اتسجل المصروف",
+ recH:"أجيب إيه بالفلوس اللي فاضلة؟",recEmpty:"مفيش حاجات في اللستة.",recNoMoney:"ميزانية البيت خلصت الشهر ده. اللستة هتستنى الشهر الجاي، أو اشتري الضروري بس وهيتخصم من الطوارئ.",
+ recIntro:n=>`فاضلك ${n}. مرتبة حسب الأهمية، واللي خلص قبل اللي قرب يخلص:`,recTotal:"المجموع",recWait:"أجّل دول:",recWhyMoney:"الفلوس مش هتكفي",recWhyCat:(c,n)=>`بند ${c} فاضله ${n}`,
+ recNoPrice:n=>`فيه ${n} حاجة من غير سعر، فمتحسبتش صح. اكتب سعرها في اللستة.`,recApply:"علّم الاقتراح في اللستة",recApplied:"اتعلّم على الاقتراح",
+ catsH:"البنود",catEdit:"عدّل البنود",catAdd:"ضيف بند",catSave:"احفظ البنود",catCancel:"إلغاء",catName:"البند",catNamePh:"مثلًا: جبن",catAmt:"المبلغ",
+ catNone:"من غير بند",catOther:"باقي الميزانية",catL:"البند",catSum:(a,b)=>`موزّع ${a} من ${b}`,catOverSum:n=>`البنود أكتر من الميزانية بـ ${n}.`,catInherit:m=>`نفس بنود ${m}. لو عدلتها، التعديل هيمشي على الشهر ده واللي بعده.`,
+ catForward:"التعديل هيمشي على الشهر ده وكل الشهور اللي بعده، لحد شهر تكون عدلت بنوده.",catEmpty:"قسّم ميزانية البيت على بنود (جبن، سناكس، خضار...) عشان تعرف كل حاجة فاضلها كام.",catSaved:"البنود اتحفظت",catLeft:n=>`فاضل ${n}`,catOver:n=>`زيادة ${n}`,hPct:"اتصرف منها",toastSaved:"اتحفظ",toastDeleted:"اتمسح",hSpent:"اتصرف",hLeft:"فاضل",
  hOver:n=>`عدّيتوا ميزانية البيت بـ ${n}، والفرق اتسحب من الطوارئ.`,hAddH:"ضيف مشتريات",hPhoto:"صوّر الفاتورة أو ارفعها",
  hReading:"بقرا الفاتورة…",hRead:"اتقرت. اتأكد من المبلغ قبل ما تحفظ.",hReadFail:"مقدرتش أقرا الفاتورة. اكتب المبلغ بإيدك.",hReadingOcr:"بدوّر على الإجمالي في الصورة…",hReadOcr:"لقيت الإجمالي بس. اتأكد منه قبل ما تحفظ.",hNoTotal:"ملقتش الإجمالي",
  hItem:"اشتريت إيه",hItemPh:"مثلًا: خضار وفاكهة",hDate:"التاريخ",hAdd:"احفظ",
@@ -677,7 +782,19 @@ en:{
  tabMonth:"Month",tabHouse:"Home",tabAll:"Months",tabRaise:"Raise",tabPlan:"Plan",settingsH:"Settings",close:"Done",langL:"Language",settingsAria:"Settings",subLog:"Log spending or income",subEdit:"Edit this month",
  allSub:"Click a month to open it.",themeL:"Theme",modeAuto:"Auto",modeLight:"Light",modeDark:"Dark",accentL:"Color",
  accents:{teal:"Teal",blue:"Blue",violet:"Violet",green:"Green",rose:"Rose"},
- hTitle:m=>"Household",hBudget:"Budget",hPct:"Used",toastSaved:"Saved",toastDeleted:"Deleted",hSpent:"Spent",hLeft:"Left",
+ hTitle:m=>"Household",hBudget:"Budget",hvExp:"Spending",hvInv:"Pantry",hvList:"List",invH:"What’s in the house",invP:"Mark each item: in stock, running low, or out. Anything running low or out goes on the list automatically.",
+ iName:"Item",iNamePh:"e.g. rice",iPrice:"Price",iSec:"Section",iStatus:"Status",iPrio:"Priority",iAdd:"Add to pantry",invEmpty:"Nothing yet. Add the things you usually buy.",
+ st:{ok:"In stock",low:"Running low",out:"Out"},stOk:"In stock",stLow:"Running low",stOut:"Out",prios:{1:"Essential",2:"Important",3:"Can wait"},
+ secs:{kitchen:"Kitchen",fridge:"Fridge",produce:"Fruit & veg",meat:"Meat & poultry",cleaning:"Cleaning",kids:"Kids",other:"Other"},egp:"EGP",noPrice:"No price",save:"Save",
+ shH:"Shopping list",shTotal:"List total",shLeftNow:m=>`Left for the house (${m})`,shAfter:"If you buy it all",shEmpty:"The list is empty. Mark something “running low” or “out” in the pantry, or add it here.",
+ shRemove:"Remove from list",sAdd:"Add to list",shDone:n=>`Done shopping: record ${n}`,shDoneP:"Records the checked items as household spending (grouped by category), removes them from the list, and marks them in stock.",
+ shDoneConfirm:"The checked items will be recorded as household spending at the listed prices. Continue?",shDoneToast:"Spending recorded",
+ recH:"What should I buy with what’s left?",recEmpty:"Nothing on the list.",recNoMoney:"This month’s household budget is used up. The list can wait for next month, or buy only essentials and it comes out of the emergency fund.",
+ recIntro:n=>`You have ${n} left. Ordered by priority, with items that are out before items running low:`,recTotal:"Total",recWait:"Leave these for later:",recWhyMoney:"Not enough money",recWhyCat:(c,n)=>`${c} has ${n} left`,
+ recNoPrice:n=>`${n} item(s) have no price, so the total isn’t accurate. Add their prices in the list.`,recApply:"Check the suggestion on the list",recApplied:"Suggestion checked",
+ catsH:"Categories",catEdit:"Edit categories",catAdd:"Add category",catSave:"Save categories",catCancel:"Cancel",catName:"Category",catNamePh:"e.g. cheese",catAmt:"Amount",
+ catNone:"No category",catOther:"Rest of budget",catL:"Category",catSum:(a,b)=>`${a} of ${b} allocated`,catOverSum:n=>`Categories exceed the budget by ${n}.`,catInherit:m=>`Same categories as ${m}. Editing applies to this month and the ones after.`,
+ catForward:"Changes apply to this month and every month after, until a month with its own categories.",catEmpty:"Split the household budget into categories (cheese, snacks, vegetables...) to see what’s left in each.",catSaved:"Categories saved",catLeft:n=>`${n} left`,catOver:n=>`${n} over`,hPct:"Used",toastSaved:"Saved",toastDeleted:"Deleted",hSpent:"Spent",hLeft:"Left",
  hOver:n=>`You’re ${n} over the household budget; the difference came out of the emergency fund.`,hAddH:"Add a purchase",hPhoto:"Take or upload a receipt photo",
  hReading:"Reading the receipt…",hRead:"Done. Check the amount before saving.",hReadFail:"Couldn’t read the receipt. Enter the amount by hand.",hReadingOcr:"Looking for the total in the photo…",hReadOcr:"Found the total only. Check it before saving.",hNoTotal:"no total found",
  hItem:"What you bought",hItemPh:"e.g. groceries",hDate:"Date",hAdd:"Save",
@@ -770,11 +887,16 @@ function lastDate(){const[y,m]=ymOf(N-1);return y+"-"+pad(m)+"-"+pad(new Date(y,
 function currentIdx(){return monthOf(isoToday())}
 
 /* ---------- state ---------- */
-let state={entries:{},overrides:{},raise:null};
+let state={entries:{},overrides:{},raise:null,houseCats:{}};
 let purchases=[];
 let sel=0,hSel=0;
+function stateDoc(st){return {entries:st.entries||{},overrides:st.overrides||{},raise:st.raise||null,houseCats:st.houseCats||{},updated:Date.now()}}
 function sanitize(p){
-  const out={entries:{},overrides:{},raise:null};
+  const out={entries:{},overrides:{},raise:null,houseCats:{}};
+  if(p&&p.houseCats&&typeof p.houseCats==="object")for(const k of Object.keys(p.houseCats)){
+    const i=+k;if(!(i>=0&&i<N)||!Array.isArray(p.houseCats[k]))continue;
+    out.houseCats[i]=p.houseCats[k].filter(c=>c&&String(c.name||"").trim()).slice(0,30).map(c=>({id:String(c.id||Math.random().toString(36).slice(2,9)),name:String(c.name).trim().slice(0,30),amount:Math.max(0,Math.round(+c.amount||0))}));
+  }
   if(p&&p.raise&&typeof p.raise==="object"){const R=p.raise;const a=Math.round(+R.amount),f=Math.round(+R.from);
     if(a>0&&f>=0&&f<N)out.raise={amount:a,from:f,split:["plan","emergency","personal"].includes(R.split)?R.split:"plan"};}
   if(p&&p.entries&&typeof p.entries==="object")for(const k of Object.keys(p.entries)){
@@ -798,7 +920,7 @@ function persist(){
   setSave("saving");clearTimeout(saveTimer);
   saveTimer=setTimeout(async()=>{
     const snapshot=JSON.parse(JSON.stringify(state));
-    try{await setDoc(doc(db,"state","main"),{entries:snapshot.entries,overrides:snapshot.overrides,raise:snapshot.raise||null,updated:Date.now()});setSave("saved")}
+    try{await setDoc(doc(db,"state","main"),stateDoc(snapshot));setSave("saved")}
     catch(e){setSave("saveFail")}
     finally{saveTimer=null}
   },600);
@@ -842,8 +964,12 @@ function startListeners(){
     rawState=sn.exists()?sn.data():{};
     if(CFG){state=sanitize(rawState);render()}
   },denied));
+  unsubs.push(onSnapshot(collection(db,"pantry"),qs=>{
+    pantry=qs.docs.map(d=>{const x=d.data()||{};return{id:d.id,name:String(x.name||"").slice(0,40),price:Math.max(0,+x.price||0),sec:SECS.includes(x.sec)?x.sec:"other",prio:[1,2,3].includes(+x.prio)?+x.prio:2,cat:String(x.cat||""),status:["ok","low","out"].includes(x.status)?x.status:"ok",need:!!x.need,checked:!!x.checked}}).filter(p=>p.name);
+    if(CFG)render();
+  },denied));
   unsubs.push(onSnapshot(collection(db,"purchases"),qs=>{
-    purchases=qs.docs.map(d=>{const x=d.data()||{};return{id:d.id,month:Math.round(+x.month),amount:+x.amount,item:String(x.item||"").slice(0,60),date:String(x.date||""),by:String(x.by||""),byName:String(x.byName||""),photo:!!x.photo,created:+x.created||0}})
+    purchases=qs.docs.map(d=>{const x=d.data()||{};return{id:d.id,month:Math.round(+x.month),amount:+x.amount,item:String(x.item||"").slice(0,60),date:String(x.date||""),by:String(x.by||""),byName:String(x.byName||""),photo:!!x.photo,cat:String(x.cat||""),created:+x.created||0}})
       .filter(q=>q.month>=0&&q.amount>0);
     if(CFG)render();
   },denied));
@@ -883,10 +1009,10 @@ async function doImport(file){
       if(delta!==0){
         const sh=o=>{const n={};for(const k of Object.keys(o||{})){const j=+k+delta;if(j>=0)n[j]=o[k]}return n};
         const st=JSON.parse(JSON.stringify(state));
-        st.entries=sh(st.entries);st.overrides=sh(st.overrides);
+        st.entries=sh(st.entries);st.overrides=sh(st.overrides);st.houseCats=sh(st.houseCats);
         if(st.raise)st.raise.from=Math.max(0,st.raise.from+delta);
         state=st;rawState=st;
-        batch.set(doc(db,"state","main"),{entries:st.entries,overrides:st.overrides,raise:st.raise||null,updated:Date.now()});
+        batch.set(doc(db,"state","main"),stateDoc(st));
         purchases.forEach(q=>batch.set(doc(db,"purchases",q.id),{month:q.month+delta},{merge:true}));
         sel=Math.max(0,sel+delta);hSel=Math.max(0,hSel+delta);
       }
@@ -902,7 +1028,7 @@ async function doImport(file){
     const batch=writeBatch(db);
     old.docs.forEach(d=>batch.delete(d.ref));
     batch.set(doc(db,"config","plan"),JSON.parse(JSON.stringify(data.config)));
-    batch.set(doc(db,"state","main"),{entries:st.entries,overrides:st.overrides,raise:st.raise||null,updated:Date.now()});
+    batch.set(doc(db,"state","main"),stateDoc(st));
     (Array.isArray(data.purchases)?data.purchases:[]).slice(0,400).forEach(q=>{
       const mi=Math.round(+q.month),amt=+q.amount;if(!(mi>=0&&mi<N&&amt>0))return;
       batch.set(doc(collection(db,"purchases")),{month:mi,amount:amt,item:String(q.item||"").slice(0,60),date:String(q.date||""),by:String(q.by||""),byName:String(q.byName||""),photo:!!q.photo,created:+q.created||Date.now()});
@@ -1188,7 +1314,7 @@ async function writePlan(cfg){
   const st=JSON.parse(JSON.stringify(state));
   const batch=writeBatch(db);
   batch.set(doc(db,"config","plan"),JSON.parse(JSON.stringify(cfg)));
-  batch.set(doc(db,"state","main"),{entries:st.entries,overrides:st.overrides,raise:st.raise||null,updated:Date.now()});
+  batch.set(doc(db,"state","main"),stateDoc(st));
   await batch.commit();
 }
 $("addBtn").onclick=async()=>{
@@ -1278,6 +1404,192 @@ $("oFwd").addEventListener("change",()=>{
 });
 $("oReset").onclick=()=>{const to=$("oFwd").checked?N-1:sel;for(let i=sel;i<=to;i++)delete state.overrides[i];persist();render()};
 
+/* ---------- household categories ---------- */
+let catEditing=null;
+function catsFor(i){
+  const hc=state.houseCats||{};
+  for(let j=i;j>=0;j--)if(Array.isArray(hc[j]))return {list:hc[j],from:j};
+  return {list:[],from:-1};
+}
+function renderCats(r){
+  const L=t(),box=$("hCats");
+  const {list,from}=catsFor(hSel);
+  const mine=purchases.filter(q=>q.month===hSel);
+  const spentBy=id=>mine.reduce((a,q)=>a+(q.cat===id?q.amount:0),0);
+  const known=new Set(list.map(c=>c.id));
+  const uncat=mine.reduce((a,q)=>a+(known.has(q.cat)?0:q.amount),0);
+  const alloc=list.reduce((a,c)=>a+c.amount,0);
+  let h=`<div class="cats-h"><h3>${esc(L.catsH)}</h3><button type="button" class="btn link" id="catEditBtn">${esc(L.catEdit)}</button></div>`;
+  if(!list.length)h+=`<p class="muted">${esc(L.catEmpty)}</p>`;
+  else{
+    const bar=(name,sp,amt)=>{const pct=amt>0?Math.min(100,sp/amt*100):(sp>0?100:0);const over=sp>amt;const left=amt-sp;
+      return `<div class="cat"><div class="cat-top"><span>${esc(name)}</span><span class="num">${fmt(sp)} / ${fmt(amt)}</span></div><div class="cat-bar${over?" over":pct>=85?" warn":""}"><i style="width:${pct}%"></i></div><div class="cat-sub ${over?"neg":""}">${esc(over?L.catOver(fmt(-left)):L.catLeft(fmt(left)))}</div></div>`};
+    h+=list.map(c=>bar(c.name,spentBy(c.id),c.amount)).join("");
+    const rest=r.houseBudget-alloc;
+    if(rest>0||uncat>0)h+=bar(L.catOther,uncat,Math.max(0,rest));
+    h+=`<p class="muted cat-sum">${esc(L.catSum(fmt(alloc),fmt(r.houseBudget)))}</p>`;
+    if(alloc>r.houseBudget)h+=`<p class="caution">${esc(L.catOverSum(fmt(alloc-r.houseBudget)))}</p>`;
+    if(from!==hSel&&from>=0)h+=`<p class="muted">${esc(L.catInherit(M(from)))}</p>`;
+  }
+  box.innerHTML=h;
+  $("catEditBtn").onclick=()=>{catEditing={month:hSel,list:JSON.parse(JSON.stringify(list))};if(!catEditing.list.length)catEditing.list.push({id:Math.random().toString(36).slice(2,9),name:"",amount:0});renderCatEd(r)};
+  const cur=$("hCat").value;
+  $("hCat").innerHTML=`<option value="">${esc(L.catNone)}</option>`+list.map(c=>`<option value="${esc(c.id)}">${esc(c.name)}</option>`).join("");
+  $("hCat").value=list.some(c=>c.id===cur)?cur:"";
+  if(catEditing&&catEditing.month!==hSel)catEditing=null;
+  if(!catEditing||!$("hCatEd").contains(document.activeElement))renderCatEd(r);
+}
+function renderCatEd(r){
+  const L=t(),ed=$("hCatEd");
+  if(!catEditing){ed.hidden=true;ed.innerHTML="";return}
+  ed.hidden=false;
+  const sum=catEditing.list.reduce((a,c)=>a+(+c.amount||0),0);
+  ed.innerHTML=`<p class="muted">${esc(L.catForward)}</p>`+catEditing.list.map((c,k)=>`<div class="cat-row"><input type="text" maxlength="30" data-cn="${k}" value="${esc(c.name)}" placeholder="${esc(L.catNamePh)}" aria-label="${esc(L.catName)}"><input type="number" inputmode="numeric" min="0" step="50" data-ca="${k}" value="${c.amount||""}" placeholder="0" aria-label="${esc(L.catAmt)}"><button type="button" class="iconbtn" data-cd="${k}" aria-label="${esc(L.del)}">✕</button></div>`).join("")+
+    `<p class="muted" id="catEdSum">${esc(L.catSum(fmt(sum),fmt(r.houseBudget)))}</p>`+
+    `<div class="opts"><button type="button" class="btn ghost" id="catAddBtn">${esc(L.catAdd)}</button></div>`+
+    `<div class="opts"><button type="button" class="btn" id="catSaveBtn">${esc(L.catSave)}</button><button type="button" class="btn link" id="catCancelBtn">${esc(L.catCancel)}</button></div>`;
+  ed.querySelectorAll("[data-cn]").forEach(el=>el.oninput=()=>{catEditing.list[+el.dataset.cn].name=el.value});
+  ed.querySelectorAll("[data-ca]").forEach(el=>el.oninput=()=>{catEditing.list[+el.dataset.ca].amount=Math.max(0,Math.round(+el.value||0));const s2=catEditing.list.reduce((a,c)=>a+(+c.amount||0),0);$("catEdSum").textContent=L.catSum(fmt(s2),fmt(r.houseBudget))});
+  ed.querySelectorAll("[data-cd]").forEach(el=>el.onclick=()=>{catEditing.list.splice(+el.dataset.cd,1);renderCatEd(r)});
+  $("catAddBtn").onclick=()=>{catEditing.list.push({id:Math.random().toString(36).slice(2,9),name:"",amount:0});renderCatEd(r);const ins=ed.querySelectorAll("[data-cn]");if(ins.length)ins[ins.length-1].focus()};
+  $("catCancelBtn").onclick=()=>{catEditing=null;renderCatEd(r)};
+  $("catSaveBtn").onclick=()=>{
+    const clean=catEditing.list.filter(c=>String(c.name||"").trim()).map(c=>({id:c.id,name:String(c.name).trim().slice(0,30),amount:Math.max(0,Math.round(+c.amount||0))}));
+    state.houseCats=state.houseCats||{};state.houseCats[catEditing.month]=clean;
+    catEditing=null;persist();render();toast(L.catSaved);
+  };
+}
+
+/* ---------- pantry & shopping list ---------- */
+const SECS=["kitchen","fridge","produce","meat","cleaning","kids","other"];
+const PRIOS=[1,2,3];
+let pantry=[],invEditing=null,hView="exp";
+const pUpd=(id,patch)=>setDoc(doc(db,"pantry",id),Object.assign({},patch,{updated:Date.now()}),{merge:true});
+function showHView(v){
+  hView=v;
+  document.querySelectorAll("#hSeg [data-hv]").forEach(b=>b.setAttribute("aria-selected",b.dataset.hv===v?"true":"false"));
+  $("hv-exp").hidden=v!=="exp";$("hv-inv").hidden=v!=="inv";$("hv-list").hidden=v!=="list";
+  try{localStorage.setItem("budget-plan-hview",v)}catch(e){}
+  render();
+}
+document.querySelectorAll("#hSeg [data-hv]").forEach(b=>b.onclick=()=>showHView(b.dataset.hv));
+function secName(k){return t().secs[k]||t().secs.other}
+function fillSelects(){
+  const L=t(),cl=catsFor(hSel).list;
+  const secOpts=SECS.map(k=>`<option value="${k}">${esc(L.secs[k])}</option>`).join("");
+  const prOpts=PRIOS.map(p=>`<option value="${p}">${esc(L.prios[p])}</option>`).join("");
+  const catOpts=`<option value="">${esc(L.catNone)}</option>`+cl.map(c=>`<option value="${esc(c.id)}">${esc(c.name)}</option>`).join("");
+  for(const [id,html] of [["iSec",secOpts],["iPrio",prOpts],["iCat",catOpts],["sSec",secOpts]]){const el=$(id);const v=el.value;el.innerHTML=html;if(v&&[...el.options].some(o=>o.value===v))el.value=v}
+  if(!$("iPrio").value)$("iPrio").value="2";
+}
+function renderPantry(rows){
+  const L=t();if(!$("invList"))return;
+  fillSelects();
+  $("iName").placeholder=L.iNamePh;$("sName").placeholder=L.iNamePh;$("sPrice").placeholder=L.iPrice;
+  // inventory grouped by section
+  const bySec={};pantry.forEach(p=>{(bySec[p.sec]=bySec[p.sec]||[]).push(p)});
+  const cl=catsFor(hSel).list;
+  let h="";
+  for(const k of SECS){
+    const items=(bySec[k]||[]).sort((a,b)=>a.name.localeCompare(b.name,"ar"));if(!items.length)continue;
+    h+=`<li class="sec-h">${esc(secName(k))}</li>`;
+    for(const p of items){
+      const chips=["ok","low","out"].map(s=>`<button type="button" class="chip s-${s}${p.status===s?" on":""}" data-ist="${esc(p.id)}" data-s="${s}">${esc(L.st[s])}</button>`).join("");
+      h+=`<li class="inv"><div class="inv-main"><button type="button" class="inv-name" data-iedit="${esc(p.id)}">${esc(p.name)}</button><span class="meta">${p.price?fmt(p.price)+" "+esc(L.egp):esc(L.noPrice)} · ${esc(L.prios[p.prio])}</span></div><div class="chips">${chips}</div></li>`;
+      if(invEditing===p.id){
+        h+=`<li class="inv-ed"><div class="row"><div><label>${esc(L.iName)}</label><input id="eName" type="text" maxlength="40" value="${esc(p.name)}"></div><div><label>${esc(L.iPrice)}</label><input id="ePrice" type="number" inputmode="numeric" min="0" step="5" value="${p.price||""}"></div></div>
+        <div class="row"><div><label>${esc(L.iSec)}</label><select id="eSec">${SECS.map(s=>`<option value="${s}"${s===p.sec?" selected":""}>${esc(L.secs[s])}</option>`).join("")}</select></div><div><label>${esc(L.iPrio)}</label><select id="ePrio">${PRIOS.map(x=>`<option value="${x}"${x===p.prio?" selected":""}>${esc(L.prios[x])}</option>`).join("")}</select></div></div>
+        <div style="margin-bottom:8px"><label>${esc(L.catL)}</label><select id="eCat"><option value="">${esc(L.catNone)}</option>${cl.map(c=>`<option value="${esc(c.id)}"${c.id===p.cat?" selected":""}>${esc(c.name)}</option>`).join("")}</select></div>
+        <div class="opts"><button type="button" class="btn" id="eSave">${esc(L.save)}</button><button type="button" class="btn link danger" id="eDel">${esc(L.del)}</button><button type="button" class="btn link" id="eCancel">${esc(L.catCancel)}</button></div></li>`;
+      }
+    }
+  }
+  $("invList").innerHTML=h||`<li class="empty">${esc(L.invEmpty)}</li>`;
+  $("invList").querySelectorAll("[data-ist]").forEach(b=>b.onclick=()=>{const s=b.dataset.s,p=pantry.find(x=>x.id===b.dataset.ist);if(!p)return;pUpd(p.id,{status:s,need:s!=="ok",checked:s==="ok"?false:p.checked})});
+  $("invList").querySelectorAll("[data-iedit]").forEach(b=>b.onclick=()=>{invEditing=invEditing===b.dataset.iedit?null:b.dataset.iedit;renderPantry(rows)});
+  if($("eSave")){
+    const id=invEditing;
+    $("eSave").onclick=async()=>{const name=$("eName").value.trim().slice(0,40);if(!name)return;await pUpd(id,{name,price:Math.max(0,Math.round(+$("ePrice").value||0)),sec:$("eSec").value,prio:+$("ePrio").value,cat:$("eCat").value});invEditing=null;toast(L.toastSaved)};
+    $("eDel").onclick=async()=>{await deleteDoc(doc(db,"pantry",id));invEditing=null;toast(L.toastDeleted)};
+    $("eCancel").onclick=()=>{invEditing=null;renderPantry(rows)};
+  }
+  renderShop(rows);
+}
+function recommend(need,left,rows){
+  const cl=catsFor(hSel).list;const mine=purchases.filter(q=>q.month===hSel);
+  const catLeft={};cl.forEach(c=>{catLeft[c.id]=c.amount-mine.reduce((a,q)=>a+(q.cat===c.id?q.amount:0),0)});
+  const order=need.slice().sort((a,b)=>(a.prio-b.prio)||((a.status==="out"?0:1)-(b.status==="out"?0:1))||(a.price-b.price));
+  const buy=[],wait=[];let money=left;
+  for(const p of order){
+    const price=p.price||0;
+    if(p.cat&&p.cat in catLeft&&price>catLeft[p.cat]){wait.push({p,why:"cat",n:Math.max(0,catLeft[p.cat]),c:cl.find(c=>c.id===p.cat).name});continue}
+    if(price>money){wait.push({p,why:"money"});continue}
+    buy.push(p);money-=price;if(p.cat&&p.cat in catLeft)catLeft[p.cat]-=price;
+  }
+  return {buy,wait,spend:left-money};
+}
+function renderShop(rows){
+  const L=t(),r=rows[hSel];
+  const need=pantry.filter(p=>p.need);
+  const total=need.reduce((a,p)=>a+(p.price||0),0);
+  const left=r.houseBudget-r.houseSpent;
+  const checked=need.filter(p=>p.checked),ctot=checked.reduce((a,p)=>a+(p.price||0),0);
+  $("shopSum").innerHTML=`<div class="ssum"><div><span class="lbl">${esc(L.shTotal)}</span><b class="num">${fmt(total)}</b></div><div><span class="lbl">${esc(L.shLeftNow(M(hSel)))}</span><b class="num">${fmt(left)}</b></div><div><span class="lbl">${esc(L.shAfter)}</span><b class="num ${left-total<0?"neg":""}">${fmt(left-total)}</b></div></div>`;
+  // recommendation
+  let rh=`<h3>${esc(L.recH)}</h3>`;
+  if(!need.length)rh+=`<p class="muted">${esc(L.recEmpty)}</p>`;
+  else if(left<=0)rh+=`<p class="caution">${esc(L.recNoMoney)}</p>`;
+  else{
+    const rec=recommend(need,left,rows);
+    const noPrice=need.filter(p=>!p.price).length;
+    rh+=`<p>${esc(L.recIntro(fmt(left)))}</p>`;
+    if(rec.buy.length)rh+=`<ul class="rec">`+rec.buy.map(p=>`<li><span>${esc(p.name)} <span class="meta">${esc(L.prios[p.prio])}${p.status==="out"?" · "+esc(L.st.out):""}</span></span><span class="num">${fmt(p.price||0)}</span></li>`).join("")+`<li class="rec-t"><span>${esc(L.recTotal)}</span><span class="num">${fmt(rec.spend)}</span></li></ul>`;
+    if(rec.wait.length)rh+=`<p class="muted">${esc(L.recWait)}</p><ul class="rec wait">`+rec.wait.map(w=>`<li><span>${esc(w.p.name)} <span class="meta">${esc(w.why==="cat"?L.recWhyCat(w.c,fmt(w.n)):L.recWhyMoney)}</span></span><span class="num">${fmt(w.p.price||0)}</span></li>`).join("")+`</ul>`;
+    if(noPrice)rh+=`<p class="caution">${esc(L.recNoPrice(noPrice))}</p>`;
+    rh+=`<button type="button" class="btn ghost" id="recApply">${esc(L.recApply)}</button>`;
+    $("shopRec").innerHTML=rh;
+    $("recApply").onclick=async()=>{const ids=new Set(rec.buy.map(p=>p.id));const b=writeBatch(db);need.forEach(p=>b.set(doc(db,"pantry",p.id),{checked:ids.has(p.id),updated:Date.now()},{merge:true}));await b.commit();toast(L.recApplied)};
+  }
+  if(!need.length||left<=0)$("shopRec").innerHTML=rh;
+  // list grouped by section
+  const bySec={};need.forEach(p=>{(bySec[p.sec]=bySec[p.sec]||[]).push(p)});
+  let h="";
+  for(const k of SECS){const items=bySec[k];if(!items)continue;
+    h+=`<li class="sec-h">${esc(secName(k))}</li>`+items.map(p=>`<li class="shop${p.checked?" done":""}"><label class="chk"><input type="checkbox" data-sck="${esc(p.id)}"${p.checked?" checked":""}><span>${esc(p.name)}${p.status==="out"?` <span class="tag">${esc(L.st.out)}</span>`:p.status==="low"?` <span class="tag">${esc(L.st.low)}</span>`:""}</span></label><input class="sprice" type="number" inputmode="numeric" min="0" step="5" data-spr="${esc(p.id)}" value="${p.price||""}" placeholder="${esc(L.iPrice)}"><button type="button" class="btn link" data-srm="${esc(p.id)}" aria-label="${esc(L.shRemove)}">✕</button></li>`).join("");
+  }
+  $("shopList").innerHTML=h||`<li class="empty">${esc(L.shEmpty)}</li>`;
+  $("shopList").querySelectorAll("[data-sck]").forEach(c=>c.onchange=()=>pUpd(c.dataset.sck,{checked:c.checked}));
+  $("shopList").querySelectorAll("[data-spr]").forEach(i=>i.onchange=()=>pUpd(i.dataset.spr,{price:Math.max(0,Math.round(+i.value||0))}));
+  $("shopList").querySelectorAll("[data-srm]").forEach(b=>b.onclick=()=>pUpd(b.dataset.srm,{need:false,checked:false}));
+  $("shopDone").textContent=L.shDone(fmt(ctot));$("shopDone").disabled=!checked.length;
+}
+$("iAdd").onclick=async()=>{
+  const L=t(),name=$("iName").value.trim().slice(0,40);if(!name){$("iErr").textContent=L.addErrName;$("iName").focus();return}
+  $("iErr").textContent="";
+  await addDoc(collection(db,"pantry"),{name,price:Math.max(0,Math.round(+$("iPrice").value||0)),sec:$("iSec").value||"kitchen",prio:+$("iPrio").value||2,cat:$("iCat").value||"",status:$("iStatus").value,need:$("iStatus").value!=="ok",checked:false,updated:Date.now()});
+  $("iName").value="";$("iPrice").value="";toast(L.toastSaved);$("iName").focus();
+};
+$("sAdd").onclick=async()=>{
+  const L=t(),name=$("sName").value.trim().slice(0,40);if(!name){$("sName").focus();return}
+  const ex=pantry.find(p=>p.name.trim()===name);
+  if(ex)await pUpd(ex.id,{need:true,status:ex.status==="ok"?"low":ex.status,price:$("sPrice").value?Math.max(0,Math.round(+$("sPrice").value)):ex.price});
+  else await addDoc(collection(db,"pantry"),{name,price:Math.max(0,Math.round(+$("sPrice").value||0)),sec:$("sSec").value||"kitchen",prio:2,cat:"",status:"out",need:true,checked:false,updated:Date.now()});
+  $("sName").value="";$("sPrice").value="";toast(L.toastSaved);
+};
+$("shopDone").onclick=async()=>{
+  const L=t(),checked=pantry.filter(p=>p.need&&p.checked);if(!checked.length)return;
+  if(!confirm(L.shDoneConfirm))return;
+  const td=isoToday();const ds=monthOf(td)===hSel?td:defaultDate(hSel);const mi=monthOf(ds);
+  const groups={};checked.forEach(p=>{(groups[p.cat||""]=groups[p.cat||""]||[]).push(p)});
+  const b=writeBatch(db);const created=Date.now();let k=0;
+  for(const cat of Object.keys(groups)){
+    const g=groups[cat],amt=g.reduce((a,p)=>a+(p.price||0),0);if(amt<=0)continue;
+    b.set(doc(collection(db,"purchases")),{month:mi,amount:amt,item:g.map(p=>p.name).join("، ").slice(0,60),date:ds,by:me.uid,byName:(me.displayName||me.email||"").split(" ")[0],photo:false,cat,created:created+(k++)});
+  }
+  checked.forEach(p=>b.set(doc(db,"pantry",p.id),{status:"ok",need:false,checked:false,updated:Date.now()},{merge:true}));
+  await b.commit();toast(L.shDoneToast);
+};
+
 /* ---------- household ---------- */
 let lastFromPhoto=false,aiModel=null;
 function renderHouse(rows){
@@ -1292,11 +1604,15 @@ function renderHouse(rows){
   ring.classList.toggle("over",r.houseOver>0);ring.classList.toggle("warn",r.houseOver<=0&&pct>=85);
   $("hPct").textContent=Math.round(r.houseBudget>0?r.houseSpent/r.houseBudget*100:0)+"%";
   $("hAlert").innerHTML=r.houseOver>0?`<p class="warn">${esc(L.hOver(fmt(r.houseOver)))}</p>`:"";
+  renderCats(r);
+  renderPantry(rows);
+  const cl=catsFor(hSel).list;
   const list=purchases.filter(q=>q.month===hSel).sort((a,b)=>(b.date||"").localeCompare(a.date||"")||b.created-a.created);
   $("hList").innerHTML=list.length?list.map(q=>{
     const who=q.by?(me&&q.by===me.uid?L.hByMe:(q.byName?L.hBy(q.byName):"")):"";
     const meta=[q.date,who].filter(Boolean).join(L.sep);
-    return `<li${q.created===newPurchase?' class="new"':""}><span>${esc(q.item||L.hDefItem)}${q.photo?`<span class="tag">${esc(L.hFromPhoto)}</span>`:""}<span class="meta">${esc(meta)}</span></span><span><span class="num">${fmt(q.amount)}</span> <button type="button" class="btn link" data-hdel="${esc(q.id)}">${esc(L.del)}</button></span></li>`}).join(""):`<li class="empty">${esc(L.hEmpty(M(hSel)))}</li>`;
+    return `<li${q.created===newPurchase?' class="new"':""}><span>${esc(q.item||L.hDefItem)}${q.photo?`<span class="tag">${esc(L.hFromPhoto)}</span>`:""}<span class="meta">${esc(meta)}</span>${cl.length?`<select class="catsel" data-hcat="${esc(q.id)}" aria-label="${esc(L.catL)}"><option value="">${esc(L.catNone)}</option>${cl.map(c=>`<option value="${esc(c.id)}"${c.id===q.cat?" selected":""}>${esc(c.name)}</option>`).join("")}</select>`:""}</span><span><span class="num">${fmt(q.amount)}</span> <button type="button" class="btn link" data-hdel="${esc(q.id)}">${esc(L.del)}</button></span></li>`}).join(""):`<li class="empty">${esc(L.hEmpty(M(hSel)))}</li>`;
+  $("hList").querySelectorAll("[data-hcat]").forEach(sl=>sl.onchange=async()=>{try{await setDoc(doc(db,"purchases",sl.dataset.hcat),{cat:sl.value},{merge:true})}catch(e){}});
   $("hList").querySelectorAll("[data-hdel]").forEach(b=>b.onclick=async()=>{b.disabled=true;try{await deleteDoc(doc(db,"purchases",b.dataset.hdel));toast(t().toastDeleted)}catch(e){b.disabled=false}});
 }
 $("hMonth").onchange=()=>{hSel=+$("hMonth").value;$("hDate").value=defaultDate(hSel);render()};
@@ -1309,7 +1625,7 @@ $("hAdd").onclick=async()=>{
   $("hErr").textContent="";$("hAdd").disabled=true;
   try{
     const created=Date.now();newPurchase=created;
-    await addDoc(collection(db,"purchases"),{month:mi,amount:amt,item:$("hItem").value.trim().slice(0,60),date:ds,by:me.uid,byName:(me.displayName||me.email||"").split(" ")[0],photo:lastFromPhoto,created});
+    await addDoc(collection(db,"purchases"),{month:mi,amount:amt,item:$("hItem").value.trim().slice(0,60),date:ds,by:me.uid,byName:(me.displayName||me.email||"").split(" ")[0],photo:lastFromPhoto,cat:$("hCat").value||"",created});
     toast(t().toastSaved);
     $("hAmt").value="";$("hItem").value="";$("hPhotoMsg").textContent="";lastFromPhoto=false;
     hSel=mi;render();
@@ -1331,7 +1647,7 @@ let aiMod=null,aiInst=null;
 const MODEL_KEY="budget-plan-model";
 async function readReceipt(blob){
   if(!aiMod){aiMod=await import("https://www.gstatic.com/firebasejs/12.0.0/firebase-ai.js");aiInst=aiMod.getAI(app,{backend:new aiMod.GoogleAIBackend()})}
-  const prompt=`The image is a photo of a shopping receipt or invoice from Egypt. It may be in Arabic or English. Find the final total actually paid, in Egyptian pounds. Reply with only JSON: {"total": number or null, "date": "YYYY-MM-DD" or null, "summary": string}. "summary" says what was bought in at most 5 words, written in ${lang==="ar"?"Egyptian Arabic":"English"}. Use null for any value you cannot read clearly.`;
+  const prompt=`The image is a photo of a shopping receipt or invoice from Egypt. It may be in Arabic or English. Find the final total actually paid, in Egyptian pounds. Reply with only JSON: {"total": number or null, "date": "YYYY-MM-DD" or null, "summary": string}. "summary" says what was bought in at most 5 words, written in ${lang==="ar"?"Egyptian Arabic":"English"}. Use null for any value you cannot read clearly.${(()=>{const cl=catsFor(monthOf($("hDate").value)>=0?monthOf($("hDate").value):hSel).list;return cl.length?` Also add "category": the one name from this list that best fits the purchase, or null: ${JSON.stringify(cl.map(c=>c.name))}.`:""})()}`;
   const part={inlineData:{data:await toB64(blob),mimeType:blob.type||"image/jpeg"}};
   let saved=null;try{saved=localStorage.getItem(MODEL_KEY)}catch(e){}
   const order=saved&&GEMINI_MODELS.includes(saved)?[saved].concat(GEMINI_MODELS.filter(m=>m!==saved)):GEMINI_MODELS;
@@ -1390,6 +1706,7 @@ $("hPhoto").onchange=async()=>{
     const tot=res&&+res.total;
     if(res&&typeof res.summary==="string"&&res.summary.trim())$("hItem").value=res.summary.trim().slice(0,60);
     if(res&&monthOf(res.date)>=0)$("hDate").value=res.date;
+    if(res&&typeof res.category==="string"){const c=catsFor(monthOf($("hDate").value)>=0?monthOf($("hDate").value):hSel).list.find(x=>x.name===res.category.trim());if(c)$("hCat").value=c.id}
     if(tot>0){$("hAmt").value=Math.round(tot*100)/100;lastFromPhoto=true;msg.textContent=L.hRead;$("hAmt").focus();return}
     why=L.hNoTotal;
   }catch(e){console.error(e);why=errText(e)}
@@ -1422,7 +1739,7 @@ $("rAmt").onchange=applyRaise;
 $("rFrom").onchange=()=>{if(state.raise)applyRaise()};
 $("rSplit").onchange=()=>{if(state.raise)applyRaise()};
 $("rClear").onclick=()=>{state.raise=null;$("rAmt").value="";persist();render()};
-$("resetAll").onclick=()=>{if(!confirm(t().confirmReset))return;state={entries:{},overrides:{},raise:null};persist();render()};
+$("resetAll").onclick=()=>{if(!confirm(t().confirmReset))return;state={entries:{},overrides:{},raise:null,houseCats:state.houseCats||{}};persist();render()};
 $("expBtn").onclick=doExport;
 $("impBtn").onclick=()=>{importMode="full";$("impFile").click()};
 $("impPlanBtn").onclick=()=>{importMode="plan";$("impFile").click()};
@@ -1478,7 +1795,7 @@ $("langBtn").onclick=()=>{lang=lang==="ar"?"en":"ar";try{localStorage.setItem(LA
 
 /* ---------- start ---------- */
 let startTab="month";try{const v=localStorage.getItem(TAB_KEY);if(["month","house","all","raise","plan"].includes(v))startTab=v}catch(e){}
-showTab(startTab);showSub("log");tabReady=true;
+showTab(startTab);showSub("log");tabReady=true;try{const hv=localStorage.getItem("budget-plan-hview");if(["exp","inv","list"].includes(hv))hView=hv}catch(e){}document.querySelectorAll("#hSeg [data-hv]").forEach(b=>b.setAttribute("aria-selected",b.dataset.hv===hView?"true":"false"));$("hv-exp").hidden=hView!=="exp";$("hv-inv").hidden=hView!=="inv";$("hv-list").hidden=hView!=="list";
 applyLang();
 if(!configured){gate("setup")}
 else{

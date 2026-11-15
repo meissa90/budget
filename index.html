@@ -427,6 +427,26 @@ details.pe{padding:0}
   -webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 24px),transparent);mask-image:linear-gradient(to bottom,#000 calc(100% - 24px),transparent)}
 .plog li:first-child{border-top:0}
 .plog li:last-child{padding-bottom:20px}
+.cats-card{border:1px solid var(--line);border-radius:16px;background:var(--paper);margin:4px 0 14px;overflow:hidden}
+.cats-card .cats-h{padding:10px 14px;border-bottom:1px solid var(--line);margin:0}
+.cats-tools{display:flex;align-items:center;gap:10px}
+.seg.mini{padding:2px}.seg.mini button{padding:4px 8px;min-height:30px;display:flex;align-items:center}
+.cats-body{max-height:min(55vh,420px);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:10px 12px 18px;
+  -webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 22px),transparent);mask-image:linear-gradient(to bottom,#000 calc(100% - 22px),transparent)}
+.cats-body .crings{margin:0}
+.cats-body .cring{background:var(--card)}
+.cbars .cat{padding:9px 2px}
+.cbars .cat:last-child{border-bottom:0}
+.cat-top .cat-nm{font-weight:600}
+.cat-sub{display:flex;justify-content:space-between;gap:8px}
+.cat-sub .neg{color:var(--red)}
+.cat-bar i{transition:width .8s var(--ease)}
+.pctv{font-weight:700;color:var(--teal);font-size:.8rem}
+.pctv.pw{color:var(--amber)}.pctv.po{color:var(--red)}
+.cat-bar.pw i{background:var(--amber)}.cat-bar.po i{background:var(--red)}
+.cring-s .pctv{font-size:.74rem}
+.cats-f{padding:8px 14px 12px;border-top:1px solid var(--line);font-size:.85rem}
+.cats-f p{margin:6px 0 0}
 </style>
 </head>
 <body>
@@ -520,12 +540,6 @@ details.pe{padding:0}
   </div>
 
   <div class="pane" id="pane-house" role="tabpanel" hidden>
-    <div class="seg wide hseg" id="hSeg" role="tablist">
-      <button type="button" role="tab" data-hv="exp" data-t="hvExp"></button>
-      <button type="button" role="tab" data-hv="inv" data-t="hvInv"></button>
-      <button type="button" role="tab" data-hv="list" data-t="hvList"></button>
-    </div>
-    <div id="hv-exp">
     <div class="grid">
       <div class="panel">
         <div class="hhead"><h2 id="hTitle"></h2><select id="hMonth" class="hsel"></select></div>
@@ -566,44 +580,7 @@ details.pe{padding:0}
         <p class="save" data-t="hNote"></p>
       </div>
     </div>
-      </div>
-    <div id="hv-inv" hidden>
-      <div class="panel">
-        <h2 data-t="invH"></h2>
-        <p class="muted" data-t="invP"></p>
-        <div class="row">
-          <div><label for="iName" data-t="iName"></label><input id="iName" type="text" maxlength="40"></div>
-          <div><label for="iPrice" data-t="iPrice"></label><input id="iPrice" type="number" inputmode="numeric" min="0" step="5"></div>
-        </div>
-        <div class="row">
-          <div><label for="iSec" data-t="iSec"></label><select id="iSec"></select></div>
-          <div><label for="iStatus" data-t="iStatus"></label><select id="iStatus"><option value="ok" data-t="stOk"></option><option value="low" data-t="stLow"></option><option value="out" data-t="stOut"></option></select></div>
-        </div>
-        <div class="row">
-          <div><label for="iPrio" data-t="iPrio"></label><select id="iPrio"></select></div>
-          <div><label for="iCat" data-t="catL"></label><select id="iCat"></select></div>
-        </div>
-        <button type="button" class="btn" id="iAdd" data-t="iAdd" style="width:100%"></button>
-        <p class="err" id="iErr"></p>
-        <ul class="entries invl" id="invList"></ul>
-      </div>
     </div>
-    <div id="hv-list" hidden>
-      <div class="panel" id="shopSum"></div>
-      <div class="panel rec-panel" id="shopRec"></div>
-      <div class="panel">
-        <h2 data-t="shH"></h2>
-        <ul class="entries" id="shopList"></ul>
-        <div class="row shop-add">
-          <div><input id="sName" type="text" maxlength="40" aria-label="name"></div>
-          <div class="row" style="margin:0"><input id="sPrice" type="number" inputmode="numeric" min="0" step="5" data-t-ph="iPrice"><select id="sSec"></select></div>
-        </div>
-        <button type="button" class="btn ghost" id="sAdd" data-t="sAdd" style="width:100%"></button>
-        <button type="button" class="btn" id="shopDone" style="width:100%;margin-top:12px"></button>
-        <p class="muted" data-t="shDoneP"></p>
-      </div>
-    </div>
-  </div>
 
   <div class="pane" id="pane-all" role="tabpanel" hidden>
     <p class="sub" data-t="allSub"></p>
@@ -742,7 +719,7 @@ ar:{
  recNoPrice:n=>`فيه ${n} حاجة من غير سعر، فمتحسبتش صح. اكتب سعرها في اللستة.`,recApply:"علّم الاقتراح في اللستة",recApplied:"اتعلّم على الاقتراح",
  plogH:"سجل المشتريات",plogMeta:(n,s)=>`${n} ${n<=10?"مشتريات":"مشترى"} · ${s}`,catsH:"البنود",catEdit:"عدّل البنود",catAdd:"ضيف بند",catSave:"احفظ البنود",catCancel:"إلغاء",catName:"البند",catNamePh:"مثلًا: جبن",catAmt:"المبلغ",
  catNone:"من غير بند",catOther:"باقي الميزانية",catL:"البند",catSum:(a,b)=>`موزّع ${a} من ${b}`,catOverSum:n=>`البنود أكتر من الميزانية بـ ${n}.`,catInherit:m=>`نفس بنود ${m}. لو عدلتها، التعديل هيمشي على الشهر ده واللي بعده.`,
- catForward:"التعديل هيمشي على الشهر ده وكل الشهور اللي بعده، لحد شهر تكون عدلت بنوده.",catEmpty:"قسّم ميزانية البيت على بنود (جبن، سناكس، خضار...) عشان تعرف كل حاجة فاضلها كام.",catSaved:"البنود اتحفظت",catLeft:n=>`فاضل ${n}`,catLeftW:"فاضل",catOverW:"زيادة",catOver:n=>`زيادة ${n}`,hPct:"اتصرف منها",toastSaved:"اتحفظ",toastDeleted:"اتمسح",hSpent:"اتصرف",hLeft:"فاضل",
+ catForward:"التعديل هيمشي على الشهر ده وكل الشهور اللي بعده، لحد شهر تكون عدلت بنوده.",catEmpty:"قسّم ميزانية البيت على بنود (جبن، سناكس، خضار...) عشان تعرف كل حاجة فاضلها كام.",catSaved:"البنود اتحفظت",catLeft:n=>`فاضل ${n}`,catLeftW:"فاضل",catModeRing:"دواير",catModeBar:"خطوط",catOverW:"زيادة",catOver:n=>`زيادة ${n}`,hPct:"اتصرف منها",toastSaved:"اتحفظ",toastDeleted:"اتمسح",hSpent:"اتصرف",hLeft:"فاضل",
  hOver:n=>`عدّيتوا ميزانية البيت بـ ${n}، والفرق اتسحب من الطوارئ.`,hAddH:"ضيف مشتريات",hPhoto:"صوّر الفاتورة أو ارفعها",
  hReading:"بقرا الفاتورة…",hRead:"اتقرت. اتأكد من المبلغ قبل ما تحفظ.",hReadFail:"مقدرتش أقرا الفاتورة. اكتب المبلغ بإيدك.",hReadingOcr:"بدوّر على الإجمالي في الصورة…",hReadOcr:"لقيت الإجمالي بس. اتأكد منه قبل ما تحفظ.",hNoTotal:"ملقتش الإجمالي",
  hItem:"اشتريت إيه",hItemPh:"مثلًا: خضار وفاكهة",hDate:"التاريخ",hAdd:"احفظ",
@@ -818,7 +795,7 @@ en:{
  recNoPrice:n=>`${n} item(s) have no price, so the total isn’t accurate. Add their prices in the list.`,recApply:"Check the suggestion on the list",recApplied:"Suggestion checked",
  plogH:"Purchase log",plogMeta:(n,s)=>`${n} purchase${n===1?"":"s"} · ${s}`,catsH:"Categories",catEdit:"Edit categories",catAdd:"Add category",catSave:"Save categories",catCancel:"Cancel",catName:"Category",catNamePh:"e.g. cheese",catAmt:"Amount",
  catNone:"No category",catOther:"Rest of budget",catL:"Category",catSum:(a,b)=>`${a} of ${b} allocated`,catOverSum:n=>`Categories exceed the budget by ${n}.`,catInherit:m=>`Same categories as ${m}. Editing applies to this month and the ones after.`,
- catForward:"Changes apply to this month and every month after, until a month with its own categories.",catEmpty:"Split the household budget into categories (cheese, snacks, vegetables...) to see what’s left in each.",catSaved:"Categories saved",catLeft:n=>`${n} left`,catLeftW:"left",catOverW:"over",catOver:n=>`${n} over`,hPct:"Used",toastSaved:"Saved",toastDeleted:"Deleted",hSpent:"Spent",hLeft:"Left",
+ catForward:"Changes apply to this month and every month after, until a month with its own categories.",catEmpty:"Split the household budget into categories (cheese, snacks, vegetables...) to see what’s left in each.",catSaved:"Categories saved",catLeft:n=>`${n} left`,catLeftW:"left",catModeRing:"Rings",catModeBar:"Bars",catOverW:"over",catOver:n=>`${n} over`,hPct:"Used",toastSaved:"Saved",toastDeleted:"Deleted",hSpent:"Spent",hLeft:"Left",
  hOver:n=>`You’re ${n} over the household budget; the difference came out of the emergency fund.`,hAddH:"Add a purchase",hPhoto:"Take or upload a receipt photo",
  hReading:"Reading the receipt…",hRead:"Done. Check the amount before saving.",hReadFail:"Couldn’t read the receipt. Enter the amount by hand.",hReadingOcr:"Looking for the total in the photo…",hReadOcr:"Found the total only. Check it before saving.",hNoTotal:"no total found",
  hItem:"What you bought",hItemPh:"e.g. groceries",hDate:"Date",hAdd:"Save",
@@ -987,10 +964,6 @@ function startListeners(){
     if(saveTimer)return;
     rawState=sn.exists()?sn.data():{};
     if(CFG){state=sanitize(rawState);render()}
-  },denied));
-  unsubs.push(onSnapshot(collection(db,"pantry"),qs=>{
-    pantry=qs.docs.map(d=>{const x=d.data()||{};return{id:d.id,name:String(x.name||"").slice(0,40),price:Math.max(0,+x.price||0),sec:SECS.includes(x.sec)?x.sec:"other",prio:[1,2,3].includes(+x.prio)?+x.prio:2,cat:String(x.cat||""),status:["ok","low","out"].includes(x.status)?x.status:"ok",need:!!x.need,checked:!!x.checked}}).filter(p=>p.name);
-    if(CFG)render();
   },denied));
   unsubs.push(onSnapshot(collection(db,"purchases"),qs=>{
     purchases=qs.docs.map(d=>{const x=d.data()||{};return{id:d.id,month:Math.round(+x.month),amount:+x.amount,item:String(x.item||"").slice(0,60),date:String(x.date||""),by:String(x.by||""),byName:String(x.byName||""),photo:!!x.photo,cat:String(x.cat||""),created:+x.created||0}})
@@ -1430,6 +1403,7 @@ $("oReset").onclick=()=>{const to=$("oFwd").checked?N-1:sel;for(let i=sel;i<=to;
 
 /* ---------- household categories ---------- */
 let catEditing=null;const catPrev={};
+function catMode(){try{const m=localStorage.getItem("budget-plan-catmode");if(m==="bar"||m==="ring")return m}catch(e){}return "ring"}
 function catsFor(i){
   const hc=state.houseCats||{};
   for(let j=i;j>=0;j--)if(Array.isArray(hc[j]))return {list:hc[j],from:j};
@@ -1443,25 +1417,34 @@ function renderCats(r){
   const known=new Set(list.map(c=>c.id));
   const uncat=mine.reduce((a,q)=>a+(known.has(q.cat)?0:q.amount),0);
   const alloc=list.reduce((a,c)=>a+c.amount,0);
-  let h=`<div class="cats-h"><h3>${esc(L.catsH)}</h3><button type="button" class="btn link" id="catEditBtn">${esc(L.catEdit)}</button></div>`;
-  if(!list.length)h+=`<p class="muted">${esc(L.catEmpty)}</p>`;
+  const mode=catMode();
+  let h=`<div class="cats-card"><div class="cats-h"><h3>${esc(L.catsH)}</h3><div class="cats-tools">${list.length?`<div class="seg mini" role="radiogroup"><button type="button" role="radio" data-cm="ring" aria-checked="${mode==="ring"}" aria-label="${esc(L.catModeRing)}"><svg viewBox="0 0 20 20" width="16" height="16"><circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="2.4"/></svg></button><button type="button" role="radio" data-cm="bar" aria-checked="${mode==="bar"}" aria-label="${esc(L.catModeBar)}"><svg viewBox="0 0 20 20" width="16" height="16"><path d="M3 6h14M3 10h10M3 14h12" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button></div>`:""}<button type="button" class="btn link" id="catEditBtn">${esc(L.catEdit)}</button></div></div>`;
+  if(!list.length)h+=`<p class="muted" style="padding:0 14px 12px">${esc(L.catEmpty)}</p>`;
   else{
     const C=2*Math.PI*34;
-    const ring=(key,name,sp,amt)=>{const pct=amt>0?Math.min(100,sp/amt*100):(sp>0?100:0);const over=sp>amt;const left=amt-sp;
-      const prev=catPrev[key]!=null?catPrev[key]:0;catPrev[key]=pct;
-      return `<div class="cring"><div class="cring-w"><svg viewBox="0 0 80 80" aria-hidden="true"><circle class="cr-bg" cx="40" cy="40" r="34"/><circle class="cr-fg${over?" over":pct>=85?" warn":""}" cx="40" cy="40" r="34" style="stroke-dasharray:${C.toFixed(2)};stroke-dashoffset:${(C*(1-prev/100)).toFixed(2)}" data-to="${(C*(1-pct/100)).toFixed(2)}"/></svg>
-        <div class="cring-c"><b class="num${over?" neg":""}">${fmt(Math.abs(left))}</b><span>${esc(over?L.catOverW:L.catLeftW)}</span></div></div>
-        <div class="cring-n">${esc(name)}</div><div class="cring-s"><span class="num">${fmt(sp)} / ${fmt(amt)}</span></div></div>`};
-    h+=`<div class="crings">`+list.map(c=>ring(c.id,c.name,spentBy(c.id),c.amount)).join("");
+    const calc=(sp,amt)=>{const raw=amt>0?sp/amt*100:(sp>0?100:0);return{raw,pct:Math.min(100,raw),over:sp>amt,left:amt-sp}};
+    const cls=c=>c.over?" over":c.pct>=85?" warn":"";
+    const k2=c=>c.over?" po":c.pct>=85?" pw":"";
+    const ring=(key,name,sp,amt)=>{const c=calc(sp,amt);
+      const prev=catPrev[key]!=null?catPrev[key]:0;catPrev[key]=c.pct;
+      return `<div class="cring"><div class="cring-w"><svg viewBox="0 0 80 80" aria-hidden="true"><circle class="cr-bg" cx="40" cy="40" r="34"/><circle class="cr-fg${cls(c)}" cx="40" cy="40" r="34" style="stroke-dasharray:${C.toFixed(2)};stroke-dashoffset:${(C*(1-prev/100)).toFixed(2)}" data-to="${(C*(1-c.pct/100)).toFixed(2)}"/></svg>
+        <div class="cring-c"><b class="num${c.over?" neg":""}">${fmt(Math.abs(c.left))}</b><span>${esc(c.over?L.catOverW:L.catLeftW)}</span></div></div>
+        <div class="cring-n">${esc(name)}</div><div class="cring-s"><span class="num">${fmt(sp)} / ${fmt(amt)}</span> · <span class="pctv${k2(c)}">${Math.round(c.raw)}%</span></div></div>`};
+    const bar=(key,name,sp,amt)=>{const c=calc(sp,amt);
+      const prev=catPrev["b"+key]!=null?catPrev["b"+key]:0;catPrev["b"+key]=c.pct;
+      return `<div class="cat"><div class="cat-top"><span class="cat-nm">${esc(name)}</span><span class="pctv${k2(c)}">${Math.round(c.raw)}%</span></div><div class="cat-bar${k2(c)}"><i style="width:${prev}%" data-w="${c.pct}"></i></div><div class="cat-sub"><span class="num">${fmt(sp)} / ${fmt(amt)}</span><span class="${c.over?"neg":""}">${esc(c.over?L.catOver(fmt(-c.left)):L.catLeft(fmt(c.left)))}</span></div></div>`};
+    const one=mode==="bar"?bar:ring;
     const rest=r.houseBudget-alloc;
-    if(rest>0||uncat>0)h+=ring("_rest",L.catOther,uncat,Math.max(0,rest));
-    h+=`</div>`;
-    h+=`<p class="muted cat-sum">${esc(L.catSum(fmt(alloc),fmt(r.houseBudget)))}</p>`;
+    h+=`<div class="cats-body"><div class="${mode==="bar"?"cbars":"crings"}">`+list.map(c=>one(c.id,c.name,spentBy(c.id),c.amount)).join("")+((rest>0||uncat>0)?one("_rest",L.catOther,uncat,Math.max(0,rest)):"")+`</div></div>`;
+    h+=`<div class="cats-f"><span class="muted">${esc(L.catSum(fmt(alloc),fmt(r.houseBudget)))}</span>`;
     if(alloc>r.houseBudget)h+=`<p class="caution">${esc(L.catOverSum(fmt(alloc-r.houseBudget)))}</p>`;
     if(from!==hSel&&from>=0)h+=`<p class="muted">${esc(L.catInherit(M(from)))}</p>`;
+    h+=`</div>`;
   }
+  h+=`</div>`;
   box.innerHTML=h;
-  requestAnimationFrame(()=>requestAnimationFrame(()=>box.querySelectorAll(".cr-fg[data-to]").forEach(c=>{c.style.strokeDashoffset=c.dataset.to})));
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{box.querySelectorAll(".cr-fg[data-to]").forEach(c=>{c.style.strokeDashoffset=c.dataset.to});box.querySelectorAll(".cat-bar i[data-w]").forEach(i=>{i.style.width=i.dataset.w+"%"})}));
+  box.querySelectorAll("[data-cm]").forEach(b=>b.onclick=()=>{try{localStorage.setItem("budget-plan-catmode",b.dataset.cm)}catch(e){}renderCats(r)});
   $("catEditBtn").onclick=()=>{catEditing={month:hSel,list:JSON.parse(JSON.stringify(list))};if(!catEditing.list.length)catEditing.list.push({id:Math.random().toString(36).slice(2,9),name:"",amount:0});renderCatEd(r)};
   const cur=$("hCat").value;
   $("hCat").innerHTML=`<option value="">${esc(L.catNone)}</option>`+list.map(c=>`<option value="${esc(c.id)}">${esc(c.name)}</option>`).join("");
@@ -1490,136 +1473,6 @@ function renderCatEd(r){
   };
 }
 
-/* ---------- pantry & shopping list ---------- */
-const SECS=["kitchen","fridge","produce","meat","cleaning","kids","other"];
-const PRIOS=[1,2,3];
-let pantry=[],invEditing=null,hView="exp";
-const pUpd=(id,patch)=>setDoc(doc(db,"pantry",id),Object.assign({},patch,{updated:Date.now()}),{merge:true});
-function showHView(v){
-  hView=v;
-  document.querySelectorAll("#hSeg [data-hv]").forEach(b=>b.setAttribute("aria-selected",b.dataset.hv===v?"true":"false"));
-  $("hv-exp").hidden=v!=="exp";$("hv-inv").hidden=v!=="inv";$("hv-list").hidden=v!=="list";
-  try{localStorage.setItem("budget-plan-hview",v)}catch(e){}
-  render();
-}
-document.querySelectorAll("#hSeg [data-hv]").forEach(b=>b.onclick=()=>showHView(b.dataset.hv));
-function secName(k){return t().secs[k]||t().secs.other}
-function fillSelects(){
-  const L=t(),cl=catsFor(hSel).list;
-  const secOpts=SECS.map(k=>`<option value="${k}">${esc(L.secs[k])}</option>`).join("");
-  const prOpts=PRIOS.map(p=>`<option value="${p}">${esc(L.prios[p])}</option>`).join("");
-  const catOpts=`<option value="">${esc(L.catNone)}</option>`+cl.map(c=>`<option value="${esc(c.id)}">${esc(c.name)}</option>`).join("");
-  for(const [id,html] of [["iSec",secOpts],["iPrio",prOpts],["iCat",catOpts],["sSec",secOpts]]){const el=$(id);const v=el.value;el.innerHTML=html;if(v&&[...el.options].some(o=>o.value===v))el.value=v}
-  if(!$("iPrio").value)$("iPrio").value="2";
-}
-function renderPantry(rows){
-  const L=t();if(!$("invList"))return;
-  fillSelects();
-  $("iName").placeholder=L.iNamePh;$("sName").placeholder=L.iNamePh;$("sPrice").placeholder=L.iPrice;
-  // inventory grouped by section
-  const bySec={};pantry.forEach(p=>{(bySec[p.sec]=bySec[p.sec]||[]).push(p)});
-  const cl=catsFor(hSel).list;
-  let h="";
-  for(const k of SECS){
-    const items=(bySec[k]||[]).sort((a,b)=>a.name.localeCompare(b.name,"ar"));if(!items.length)continue;
-    h+=`<li class="sec-h">${esc(secName(k))}</li>`;
-    for(const p of items){
-      const chips=["ok","low","out"].map(s=>`<button type="button" class="chip s-${s}${p.status===s?" on":""}" data-ist="${esc(p.id)}" data-s="${s}">${esc(L.st[s])}</button>`).join("");
-      h+=`<li class="inv"><div class="inv-main"><button type="button" class="inv-name" data-iedit="${esc(p.id)}">${esc(p.name)}</button><span class="meta">${p.price?fmt(p.price)+" "+esc(L.egp):esc(L.noPrice)} · ${esc(L.prios[p.prio])}</span></div><div class="chips">${chips}</div></li>`;
-      if(invEditing===p.id){
-        h+=`<li class="inv-ed"><div class="row"><div><label>${esc(L.iName)}</label><input id="eName" type="text" maxlength="40" value="${esc(p.name)}"></div><div><label>${esc(L.iPrice)}</label><input id="ePrice" type="number" inputmode="numeric" min="0" step="5" value="${p.price||""}"></div></div>
-        <div class="row"><div><label>${esc(L.iSec)}</label><select id="eSec">${SECS.map(s=>`<option value="${s}"${s===p.sec?" selected":""}>${esc(L.secs[s])}</option>`).join("")}</select></div><div><label>${esc(L.iPrio)}</label><select id="ePrio">${PRIOS.map(x=>`<option value="${x}"${x===p.prio?" selected":""}>${esc(L.prios[x])}</option>`).join("")}</select></div></div>
-        <div style="margin-bottom:8px"><label>${esc(L.catL)}</label><select id="eCat"><option value="">${esc(L.catNone)}</option>${cl.map(c=>`<option value="${esc(c.id)}"${c.id===p.cat?" selected":""}>${esc(c.name)}</option>`).join("")}</select></div>
-        <div class="opts"><button type="button" class="btn" id="eSave">${esc(L.save)}</button><button type="button" class="btn link danger" id="eDel">${esc(L.del)}</button><button type="button" class="btn link" id="eCancel">${esc(L.catCancel)}</button></div></li>`;
-      }
-    }
-  }
-  $("invList").innerHTML=h||`<li class="empty">${esc(L.invEmpty)}</li>`;
-  $("invList").querySelectorAll("[data-ist]").forEach(b=>b.onclick=()=>{const s=b.dataset.s,p=pantry.find(x=>x.id===b.dataset.ist);if(!p)return;pUpd(p.id,{status:s,need:s!=="ok",checked:s==="ok"?false:p.checked})});
-  $("invList").querySelectorAll("[data-iedit]").forEach(b=>b.onclick=()=>{invEditing=invEditing===b.dataset.iedit?null:b.dataset.iedit;renderPantry(rows)});
-  if($("eSave")){
-    const id=invEditing;
-    $("eSave").onclick=async()=>{const name=$("eName").value.trim().slice(0,40);if(!name)return;await pUpd(id,{name,price:Math.max(0,Math.round(+$("ePrice").value||0)),sec:$("eSec").value,prio:+$("ePrio").value,cat:$("eCat").value});invEditing=null;toast(L.toastSaved)};
-    $("eDel").onclick=async()=>{await deleteDoc(doc(db,"pantry",id));invEditing=null;toast(L.toastDeleted)};
-    $("eCancel").onclick=()=>{invEditing=null;renderPantry(rows)};
-  }
-  renderShop(rows);
-}
-function recommend(need,left,rows){
-  const cl=catsFor(hSel).list;const mine=purchases.filter(q=>q.month===hSel);
-  const catLeft={};cl.forEach(c=>{catLeft[c.id]=c.amount-mine.reduce((a,q)=>a+(q.cat===c.id?q.amount:0),0)});
-  const order=need.slice().sort((a,b)=>(a.prio-b.prio)||((a.status==="out"?0:1)-(b.status==="out"?0:1))||(a.price-b.price));
-  const buy=[],wait=[];let money=left;
-  for(const p of order){
-    const price=p.price||0;
-    if(p.cat&&p.cat in catLeft&&price>catLeft[p.cat]){wait.push({p,why:"cat",n:Math.max(0,catLeft[p.cat]),c:cl.find(c=>c.id===p.cat).name});continue}
-    if(price>money){wait.push({p,why:"money"});continue}
-    buy.push(p);money-=price;if(p.cat&&p.cat in catLeft)catLeft[p.cat]-=price;
-  }
-  return {buy,wait,spend:left-money};
-}
-function renderShop(rows){
-  const L=t(),r=rows[hSel];
-  const need=pantry.filter(p=>p.need);
-  const total=need.reduce((a,p)=>a+(p.price||0),0);
-  const left=r.houseBudget-r.houseSpent;
-  const checked=need.filter(p=>p.checked),ctot=checked.reduce((a,p)=>a+(p.price||0),0);
-  $("shopSum").innerHTML=`<div class="ssum"><div><span class="lbl">${esc(L.shTotal)}</span><b class="num">${fmt(total)}</b></div><div><span class="lbl">${esc(L.shLeftNow(M(hSel)))}</span><b class="num">${fmt(left)}</b></div><div><span class="lbl">${esc(L.shAfter)}</span><b class="num ${left-total<0?"neg":""}">${fmt(left-total)}</b></div></div>`;
-  // recommendation
-  let rh=`<h3>${esc(L.recH)}</h3>`;
-  if(!need.length)rh+=`<p class="muted">${esc(L.recEmpty)}</p>`;
-  else if(left<=0)rh+=`<p class="caution">${esc(L.recNoMoney)}</p>`;
-  else{
-    const rec=recommend(need,left,rows);
-    const noPrice=need.filter(p=>!p.price).length;
-    rh+=`<p>${esc(L.recIntro(fmt(left)))}</p>`;
-    if(rec.buy.length)rh+=`<ul class="rec">`+rec.buy.map(p=>`<li><span>${esc(p.name)} <span class="meta">${esc(L.prios[p.prio])}${p.status==="out"?" · "+esc(L.st.out):""}</span></span><span class="num">${fmt(p.price||0)}</span></li>`).join("")+`<li class="rec-t"><span>${esc(L.recTotal)}</span><span class="num">${fmt(rec.spend)}</span></li></ul>`;
-    if(rec.wait.length)rh+=`<p class="muted">${esc(L.recWait)}</p><ul class="rec wait">`+rec.wait.map(w=>`<li><span>${esc(w.p.name)} <span class="meta">${esc(w.why==="cat"?L.recWhyCat(w.c,fmt(w.n)):L.recWhyMoney)}</span></span><span class="num">${fmt(w.p.price||0)}</span></li>`).join("")+`</ul>`;
-    if(noPrice)rh+=`<p class="caution">${esc(L.recNoPrice(noPrice))}</p>`;
-    rh+=`<button type="button" class="btn ghost" id="recApply">${esc(L.recApply)}</button>`;
-    $("shopRec").innerHTML=rh;
-    $("recApply").onclick=async()=>{const ids=new Set(rec.buy.map(p=>p.id));const b=writeBatch(db);need.forEach(p=>b.set(doc(db,"pantry",p.id),{checked:ids.has(p.id),updated:Date.now()},{merge:true}));await b.commit();toast(L.recApplied)};
-  }
-  if(!need.length||left<=0)$("shopRec").innerHTML=rh;
-  // list grouped by section
-  const bySec={};need.forEach(p=>{(bySec[p.sec]=bySec[p.sec]||[]).push(p)});
-  let h="";
-  for(const k of SECS){const items=bySec[k];if(!items)continue;
-    h+=`<li class="sec-h">${esc(secName(k))}</li>`+items.map(p=>`<li class="shop${p.checked?" done":""}"><label class="chk"><input type="checkbox" data-sck="${esc(p.id)}"${p.checked?" checked":""}><span>${esc(p.name)}${p.status==="out"?` <span class="tag">${esc(L.st.out)}</span>`:p.status==="low"?` <span class="tag">${esc(L.st.low)}</span>`:""}</span></label><input class="sprice" type="number" inputmode="numeric" min="0" step="5" data-spr="${esc(p.id)}" value="${p.price||""}" placeholder="${esc(L.iPrice)}"><button type="button" class="btn link" data-srm="${esc(p.id)}" aria-label="${esc(L.shRemove)}">✕</button></li>`).join("");
-  }
-  $("shopList").innerHTML=h||`<li class="empty">${esc(L.shEmpty)}</li>`;
-  $("shopList").querySelectorAll("[data-sck]").forEach(c=>c.onchange=()=>pUpd(c.dataset.sck,{checked:c.checked}));
-  $("shopList").querySelectorAll("[data-spr]").forEach(i=>i.onchange=()=>pUpd(i.dataset.spr,{price:Math.max(0,Math.round(+i.value||0))}));
-  $("shopList").querySelectorAll("[data-srm]").forEach(b=>b.onclick=()=>pUpd(b.dataset.srm,{need:false,checked:false}));
-  $("shopDone").textContent=L.shDone(fmt(ctot));$("shopDone").disabled=!checked.length;
-}
-$("iAdd").onclick=async()=>{
-  const L=t(),name=$("iName").value.trim().slice(0,40);if(!name){$("iErr").textContent=L.addErrName;$("iName").focus();return}
-  $("iErr").textContent="";
-  await addDoc(collection(db,"pantry"),{name,price:Math.max(0,Math.round(+$("iPrice").value||0)),sec:$("iSec").value||"kitchen",prio:+$("iPrio").value||2,cat:$("iCat").value||"",status:$("iStatus").value,need:$("iStatus").value!=="ok",checked:false,updated:Date.now()});
-  $("iName").value="";$("iPrice").value="";toast(L.toastSaved);$("iName").focus();
-};
-$("sAdd").onclick=async()=>{
-  const L=t(),name=$("sName").value.trim().slice(0,40);if(!name){$("sName").focus();return}
-  const ex=pantry.find(p=>p.name.trim()===name);
-  if(ex)await pUpd(ex.id,{need:true,status:ex.status==="ok"?"low":ex.status,price:$("sPrice").value?Math.max(0,Math.round(+$("sPrice").value)):ex.price});
-  else await addDoc(collection(db,"pantry"),{name,price:Math.max(0,Math.round(+$("sPrice").value||0)),sec:$("sSec").value||"kitchen",prio:2,cat:"",status:"out",need:true,checked:false,updated:Date.now()});
-  $("sName").value="";$("sPrice").value="";toast(L.toastSaved);
-};
-$("shopDone").onclick=async()=>{
-  const L=t(),checked=pantry.filter(p=>p.need&&p.checked);if(!checked.length)return;
-  if(!confirm(L.shDoneConfirm))return;
-  const td=isoToday();const ds=monthOf(td)===hSel?td:defaultDate(hSel);const mi=monthOf(ds);
-  const groups={};checked.forEach(p=>{(groups[p.cat||""]=groups[p.cat||""]||[]).push(p)});
-  const b=writeBatch(db);const created=Date.now();let k=0;
-  for(const cat of Object.keys(groups)){
-    const g=groups[cat],amt=g.reduce((a,p)=>a+(p.price||0),0);if(amt<=0)continue;
-    b.set(doc(collection(db,"purchases")),{month:mi,amount:amt,item:g.map(p=>p.name).join("، ").slice(0,60),date:ds,by:me.uid,byName:(me.displayName||me.email||"").split(" ")[0],photo:false,cat,created:created+(k++)});
-  }
-  checked.forEach(p=>b.set(doc(db,"pantry",p.id),{status:"ok",need:false,checked:false,updated:Date.now()},{merge:true}));
-  await b.commit();toast(L.shDoneToast);
-};
-
 /* ---------- household ---------- */
 let lastFromPhoto=false,aiModel=null;
 function renderHouse(rows){
@@ -1635,7 +1488,6 @@ function renderHouse(rows){
   $("hPct").textContent=Math.round(r.houseBudget>0?r.houseSpent/r.houseBudget*100:0)+"%";
   $("hAlert").innerHTML=r.houseOver>0?`<p class="warn">${esc(L.hOver(fmt(r.houseOver)))}</p>`:"";
   renderCats(r);
-  renderPantry(rows);
   const cl=catsFor(hSel).list;
   const list=purchases.filter(q=>q.month===hSel).sort((a,b)=>(b.date||"").localeCompare(a.date||"")||b.created-a.created);
   $("plogMeta").textContent=list.length?L.plogMeta(list.length,fmt(list.reduce((a,q)=>a+q.amount,0))):"";
@@ -1826,7 +1678,7 @@ $("langBtn").onclick=()=>{lang=lang==="ar"?"en":"ar";try{localStorage.setItem(LA
 
 /* ---------- start ---------- */
 let startTab="month";try{const v=localStorage.getItem(TAB_KEY);if(["month","house","all","raise","plan"].includes(v))startTab=v}catch(e){}
-showTab(startTab);showSub("log");tabReady=true;try{const hv=localStorage.getItem("budget-plan-hview");if(["exp","inv","list"].includes(hv))hView=hv}catch(e){}document.querySelectorAll("#hSeg [data-hv]").forEach(b=>b.setAttribute("aria-selected",b.dataset.hv===hView?"true":"false"));$("hv-exp").hidden=hView!=="exp";$("hv-inv").hidden=hView!=="inv";$("hv-list").hidden=hView!=="list";
+showTab(startTab);showSub("log");tabReady=true;
 applyLang();
 if(!configured){gate("setup")}
 else{

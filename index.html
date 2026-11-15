@@ -420,6 +420,13 @@ details.pe{padding:0}
 .cring-n{font-weight:600;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cring-s{font-size:.74rem;color:var(--muted)}
 @media (max-width:640px){.crings{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.plog-card{border:1px solid var(--line);border-radius:16px;background:var(--paper);margin-top:12px;overflow:hidden}
+.plog-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:12px 14px 8px;border-bottom:1px solid var(--line)}
+.plog-h h3{margin:0;font-size:1rem}
+.plog{max-height:min(52vh,380px);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;margin:0!important;padding:0 14px!important;
+  -webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 24px),transparent);mask-image:linear-gradient(to bottom,#000 calc(100% - 24px),transparent)}
+.plog li:first-child{border-top:0}
+.plog li:last-child{padding-bottom:20px}
 </style>
 </head>
 <body>
@@ -536,7 +543,10 @@ details.pe{padding:0}
         <div id="hAlert"></div>
         <div class="cats" id="hCats"></div>
         <div class="cat-ed" id="hCatEd" hidden></div>
-        <ul class="entries" id="hList"></ul>
+        <div class="plog-card">
+          <div class="plog-h"><h3 data-t="plogH"></h3><span class="muted" id="plogMeta"></span></div>
+          <ul class="entries plog" id="hList"></ul>
+        </div>
       </div>
       <div class="panel">
         <h2 data-t="hAddH"></h2>
@@ -730,7 +740,7 @@ ar:{
  recH:"أجيب إيه بالفلوس اللي فاضلة؟",recEmpty:"مفيش حاجات في اللستة.",recNoMoney:"ميزانية البيت خلصت الشهر ده. اللستة هتستنى الشهر الجاي، أو اشتري الضروري بس وهيتخصم من الطوارئ.",
  recIntro:n=>`فاضلك ${n}. مرتبة حسب الأهمية، واللي خلص قبل اللي قرب يخلص:`,recTotal:"المجموع",recWait:"أجّل دول:",recWhyMoney:"الفلوس مش هتكفي",recWhyCat:(c,n)=>`بند ${c} فاضله ${n}`,
  recNoPrice:n=>`فيه ${n} حاجة من غير سعر، فمتحسبتش صح. اكتب سعرها في اللستة.`,recApply:"علّم الاقتراح في اللستة",recApplied:"اتعلّم على الاقتراح",
- catsH:"البنود",catEdit:"عدّل البنود",catAdd:"ضيف بند",catSave:"احفظ البنود",catCancel:"إلغاء",catName:"البند",catNamePh:"مثلًا: جبن",catAmt:"المبلغ",
+ plogH:"سجل المشتريات",plogMeta:(n,s)=>`${n} ${n<=10?"مشتريات":"مشترى"} · ${s}`,catsH:"البنود",catEdit:"عدّل البنود",catAdd:"ضيف بند",catSave:"احفظ البنود",catCancel:"إلغاء",catName:"البند",catNamePh:"مثلًا: جبن",catAmt:"المبلغ",
  catNone:"من غير بند",catOther:"باقي الميزانية",catL:"البند",catSum:(a,b)=>`موزّع ${a} من ${b}`,catOverSum:n=>`البنود أكتر من الميزانية بـ ${n}.`,catInherit:m=>`نفس بنود ${m}. لو عدلتها، التعديل هيمشي على الشهر ده واللي بعده.`,
  catForward:"التعديل هيمشي على الشهر ده وكل الشهور اللي بعده، لحد شهر تكون عدلت بنوده.",catEmpty:"قسّم ميزانية البيت على بنود (جبن، سناكس، خضار...) عشان تعرف كل حاجة فاضلها كام.",catSaved:"البنود اتحفظت",catLeft:n=>`فاضل ${n}`,catLeftW:"فاضل",catOverW:"زيادة",catOver:n=>`زيادة ${n}`,hPct:"اتصرف منها",toastSaved:"اتحفظ",toastDeleted:"اتمسح",hSpent:"اتصرف",hLeft:"فاضل",
  hOver:n=>`عدّيتوا ميزانية البيت بـ ${n}، والفرق اتسحب من الطوارئ.`,hAddH:"ضيف مشتريات",hPhoto:"صوّر الفاتورة أو ارفعها",
@@ -806,7 +816,7 @@ en:{
  recH:"What should I buy with what’s left?",recEmpty:"Nothing on the list.",recNoMoney:"This month’s household budget is used up. The list can wait for next month, or buy only essentials and it comes out of the emergency fund.",
  recIntro:n=>`You have ${n} left. Ordered by priority, with items that are out before items running low:`,recTotal:"Total",recWait:"Leave these for later:",recWhyMoney:"Not enough money",recWhyCat:(c,n)=>`${c} has ${n} left`,
  recNoPrice:n=>`${n} item(s) have no price, so the total isn’t accurate. Add their prices in the list.`,recApply:"Check the suggestion on the list",recApplied:"Suggestion checked",
- catsH:"Categories",catEdit:"Edit categories",catAdd:"Add category",catSave:"Save categories",catCancel:"Cancel",catName:"Category",catNamePh:"e.g. cheese",catAmt:"Amount",
+ plogH:"Purchase log",plogMeta:(n,s)=>`${n} purchase${n===1?"":"s"} · ${s}`,catsH:"Categories",catEdit:"Edit categories",catAdd:"Add category",catSave:"Save categories",catCancel:"Cancel",catName:"Category",catNamePh:"e.g. cheese",catAmt:"Amount",
  catNone:"No category",catOther:"Rest of budget",catL:"Category",catSum:(a,b)=>`${a} of ${b} allocated`,catOverSum:n=>`Categories exceed the budget by ${n}.`,catInherit:m=>`Same categories as ${m}. Editing applies to this month and the ones after.`,
  catForward:"Changes apply to this month and every month after, until a month with its own categories.",catEmpty:"Split the household budget into categories (cheese, snacks, vegetables...) to see what’s left in each.",catSaved:"Categories saved",catLeft:n=>`${n} left`,catLeftW:"left",catOverW:"over",catOver:n=>`${n} over`,hPct:"Used",toastSaved:"Saved",toastDeleted:"Deleted",hSpent:"Spent",hLeft:"Left",
  hOver:n=>`You’re ${n} over the household budget; the difference came out of the emergency fund.`,hAddH:"Add a purchase",hPhoto:"Take or upload a receipt photo",
@@ -1628,6 +1638,7 @@ function renderHouse(rows){
   renderPantry(rows);
   const cl=catsFor(hSel).list;
   const list=purchases.filter(q=>q.month===hSel).sort((a,b)=>(b.date||"").localeCompare(a.date||"")||b.created-a.created);
+  $("plogMeta").textContent=list.length?L.plogMeta(list.length,fmt(list.reduce((a,q)=>a+q.amount,0))):"";
   $("hList").innerHTML=list.length?list.map(q=>{
     const who=q.by?(me&&q.by===me.uid?L.hByMe:(q.byName?L.hBy(q.byName):"")):"";
     const meta=[q.date,who].filter(Boolean).join(L.sep);

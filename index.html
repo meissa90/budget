@@ -447,6 +447,8 @@ details.pe{padding:0}
 .cring-s .pctv{font-size:.74rem}
 .cats-f{padding:8px 14px 12px;border-top:1px solid var(--line);font-size:.85rem}
 .cats-f p{margin:6px 0 0}
+.cat-sheet{max-height:88vh;overflow-y:auto;overscroll-behavior:contain}
+.cat-sheet .cat-ed{border:0;padding:0;background:none;margin:0}
 </style>
 </head>
 <body>
@@ -474,6 +476,10 @@ details.pe{padding:0}
     <div class="srow"><span data-t="accentL"></span><div class="sw" id="swatches" role="radiogroup"></div></div>
     <div class="srow col"><span id="who" class="muted"></span><button type="button" class="btn ghost" id="outBtn" data-t="signOut"></button></div>
     <div class="srow col"><button class="btn link danger" id="resetAll" type="button" data-t="resetAll"></button></div>
+  </dialog>
+  <dialog id="hCatDlg" class="sheet cat-sheet">
+    <div class="sheet-h"><h2 data-t="catEdit"></h2><button type="button" class="iconbtn" id="catDlgClose" data-t="catCancel"></button></div>
+    <div class="cat-ed" id="hCatEd"></div>
   </dialog>
 
   <section class="hero glow" aria-live="polite">
@@ -556,7 +562,6 @@ details.pe{padding:0}
         </div>
         <div id="hAlert"></div>
         <div class="cats" id="hCats"></div>
-        <div class="cat-ed" id="hCatEd" hidden></div>
         <div class="plog-card">
           <div class="plog-h"><h3 data-t="plogH"></h3><span class="muted" id="plogMeta"></span></div>
           <ul class="entries plog" id="hList"></ul>
@@ -1452,10 +1457,13 @@ function renderCats(r){
   if(catEditing&&catEditing.month!==hSel)catEditing=null;
   if(!catEditing||!$("hCatEd").contains(document.activeElement))renderCatEd(r);
 }
+$("catDlgClose").onclick=()=>{catEditing=null;const d=$("hCatDlg");if(d.close)d.close();else d.removeAttribute("open")};
+$("hCatDlg").addEventListener("close",()=>{catEditing=null});
 function renderCatEd(r){
   const L=t(),ed=$("hCatEd");
-  if(!catEditing){ed.hidden=true;ed.innerHTML="";return}
-  ed.hidden=false;
+  const dlg=$("hCatDlg");
+  if(!catEditing){ed.innerHTML="";if(dlg.open){if(dlg.close)dlg.close();else dlg.removeAttribute("open")}return}
+  if(!dlg.open){if(dlg.showModal)dlg.showModal();else dlg.setAttribute("open","")}
   const sum=catEditing.list.reduce((a,c)=>a+(+c.amount||0),0);
   ed.innerHTML=`<p class="muted">${esc(L.catForward)}</p>`+catEditing.list.map((c,k)=>`<div class="cat-row"><input type="text" maxlength="30" data-cn="${k}" value="${esc(c.name)}" placeholder="${esc(L.catNamePh)}" aria-label="${esc(L.catName)}"><input type="number" inputmode="numeric" min="0" step="50" data-ca="${k}" value="${c.amount||""}" placeholder="0" aria-label="${esc(L.catAmt)}"><button type="button" class="iconbtn" data-cd="${k}" aria-label="${esc(L.del)}">✕</button></div>`).join("")+
     `<p class="muted" id="catEdSum">${esc(L.catSum(fmt(sum),fmt(r.houseBudget)))}</p>`+

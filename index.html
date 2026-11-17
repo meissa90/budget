@@ -449,6 +449,18 @@ details.pe{padding:0}
 .cats-f p{margin:6px 0 0}
 .cat-sheet{max-height:88vh;overflow-y:auto;overscroll-behavior:contain}
 .cat-sheet .cat-ed{border:0;padding:0;background:none;margin:0}
+.who-tag{display:inline-block;font-size:.72rem;font-weight:600;padding:1px 8px;border-radius:999px;margin-inline-end:6px;background:var(--teal-soft);color:var(--teal)}
+.who-tag.p1{background:color-mix(in srgb,#b79af0 22%,transparent);color:#8b63d6}
+.who-tag.p2{background:var(--amber-soft);color:var(--amber)}
+.who-tag.p3{background:color-mix(in srgb,#f08fb1 22%,transparent);color:#c2447a}
+:root[data-theme="dark"] .who-tag.p1{color:#c7b0f5}:root[data-theme="dark"] .who-tag.p3{color:#f5a3c0}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .who-tag.p1{color:#c7b0f5}:root:not([data-theme="light"]) .who-tag.p3{color:#f5a3c0}}
+.plog-who{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;padding:8px 14px;border-bottom:1px solid var(--line);font-size:.85rem}
+.plog-who:empty{display:none}
+.plog-who .num{margin-inline-end:8px;font-weight:600}
+.person{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 10px;align-items:center;margin-top:8px}
+.person input{min-height:40px}
+.person .pe{grid-column:2;font-size:.75rem}
 </style>
 </head>
 <body>
@@ -474,6 +486,7 @@ details.pe{padding:0}
         <button type="button" role="radio" data-mode="dark" data-t="modeDark"></button>
       </div></div>
     <div class="srow"><span data-t="accentL"></span><div class="sw" id="swatches" role="radiogroup"></div></div>
+    <div class="srow col"><span data-t="peopleH"></span><p class="muted" data-t="peopleP" style="margin:0"></p><div id="peopleList"></div></div>
     <div class="srow col"><span id="who" class="muted"></span><button type="button" class="btn ghost" id="outBtn" data-t="signOut"></button></div>
     <div class="srow col"><button class="btn link danger" id="resetAll" type="button" data-t="resetAll"></button></div>
   </dialog>
@@ -564,6 +577,7 @@ details.pe{padding:0}
         <div class="cats" id="hCats"></div>
         <div class="plog-card">
           <div class="plog-h"><h3 data-t="plogH"></h3><span class="muted" id="plogMeta"></span></div>
+          <div class="plog-who" id="plogWho"></div>
           <ul class="entries plog" id="hList"></ul>
         </div>
       </div>
@@ -722,7 +736,7 @@ ar:{
  recH:"أجيب إيه بالفلوس اللي فاضلة؟",recEmpty:"مفيش حاجات في اللستة.",recNoMoney:"ميزانية البيت خلصت الشهر ده. اللستة هتستنى الشهر الجاي، أو اشتري الضروري بس وهيتخصم من الطوارئ.",
  recIntro:n=>`فاضلك ${n}. مرتبة حسب الأهمية، واللي خلص قبل اللي قرب يخلص:`,recTotal:"المجموع",recWait:"أجّل دول:",recWhyMoney:"الفلوس مش هتكفي",recWhyCat:(c,n)=>`بند ${c} فاضله ${n}`,
  recNoPrice:n=>`فيه ${n} حاجة من غير سعر، فمتحسبتش صح. اكتب سعرها في اللستة.`,recApply:"علّم الاقتراح في اللستة",recApplied:"اتعلّم على الاقتراح",
- plogH:"سجل المشتريات",plogMeta:(n,s)=>`${n} ${n<=10?"مشتريات":"مشترى"} · ${s}`,catsH:"البنود",catEdit:"عدّل البنود",catAdd:"ضيف بند",catSave:"احفظ البنود",catCancel:"إلغاء",catName:"البند",catNamePh:"مثلًا: جبن",catAmt:"المبلغ",
+ plogH:"سجل المشتريات",peopleH:"الأسماء",peopleP:"الاسم اللي بيظهر جنب كل مشترى.",plogMeta:(n,s)=>`${n} ${n<=10?"مشتريات":"مشترى"} · ${s}`,catsH:"البنود",catEdit:"عدّل البنود",catAdd:"ضيف بند",catSave:"احفظ البنود",catCancel:"إلغاء",catName:"البند",catNamePh:"مثلًا: جبن",catAmt:"المبلغ",
  catNone:"من غير بند",catOther:"باقي الميزانية",catL:"البند",catSum:(a,b)=>`موزّع ${a} من ${b}`,catOverSum:n=>`البنود أكتر من الميزانية بـ ${n}.`,catInherit:m=>`نفس بنود ${m}. لو عدلتها، التعديل هيمشي على الشهر ده واللي بعده.`,
  catForward:"التعديل هيمشي على الشهر ده وكل الشهور اللي بعده، لحد شهر تكون عدلت بنوده.",catEmpty:"قسّم ميزانية البيت على بنود (جبن، سناكس، خضار...) عشان تعرف كل حاجة فاضلها كام.",catSaved:"البنود اتحفظت",catLeft:n=>`فاضل ${n}`,catLeftW:"فاضل",catModeRing:"دواير",catModeBar:"خطوط",catOverW:"زيادة",catOver:n=>`زيادة ${n}`,hPct:"اتصرف منها",toastSaved:"اتحفظ",toastDeleted:"اتمسح",hSpent:"اتصرف",hLeft:"فاضل",
  hOver:n=>`عدّيتوا ميزانية البيت بـ ${n}، والفرق اتسحب من الطوارئ.`,hAddH:"ضيف مشتريات",hPhoto:"صوّر الفاتورة أو ارفعها",
@@ -798,7 +812,7 @@ en:{
  recH:"What should I buy with what’s left?",recEmpty:"Nothing on the list.",recNoMoney:"This month’s household budget is used up. The list can wait for next month, or buy only essentials and it comes out of the emergency fund.",
  recIntro:n=>`You have ${n} left. Ordered by priority, with items that are out before items running low:`,recTotal:"Total",recWait:"Leave these for later:",recWhyMoney:"Not enough money",recWhyCat:(c,n)=>`${c} has ${n} left`,
  recNoPrice:n=>`${n} item(s) have no price, so the total isn’t accurate. Add their prices in the list.`,recApply:"Check the suggestion on the list",recApplied:"Suggestion checked",
- plogH:"Purchase log",plogMeta:(n,s)=>`${n} purchase${n===1?"":"s"} · ${s}`,catsH:"Categories",catEdit:"Edit categories",catAdd:"Add category",catSave:"Save categories",catCancel:"Cancel",catName:"Category",catNamePh:"e.g. cheese",catAmt:"Amount",
+ plogH:"Purchase log",peopleH:"Names",peopleP:"The name shown next to each purchase.",plogMeta:(n,s)=>`${n} purchase${n===1?"":"s"} · ${s}`,catsH:"Categories",catEdit:"Edit categories",catAdd:"Add category",catSave:"Save categories",catCancel:"Cancel",catName:"Category",catNamePh:"e.g. cheese",catAmt:"Amount",
  catNone:"No category",catOther:"Rest of budget",catL:"Category",catSum:(a,b)=>`${a} of ${b} allocated`,catOverSum:n=>`Categories exceed the budget by ${n}.`,catInherit:m=>`Same categories as ${m}. Editing applies to this month and the ones after.`,
  catForward:"Changes apply to this month and every month after, until a month with its own categories.",catEmpty:"Split the household budget into categories (cheese, snacks, vegetables...) to see what’s left in each.",catSaved:"Categories saved",catLeft:n=>`${n} left`,catLeftW:"left",catModeRing:"Rings",catModeBar:"Bars",catOverW:"over",catOver:n=>`${n} over`,hPct:"Used",toastSaved:"Saved",toastDeleted:"Deleted",hSpent:"Spent",hLeft:"Left",
  hOver:n=>`You’re ${n} over the household budget; the difference came out of the emergency fund.`,hAddH:"Add a purchase",hPhoto:"Take or upload a receipt photo",
@@ -957,6 +971,11 @@ function stopListeners(){unsubs.forEach(u=>{try{u()}catch(e){}});unsubs=[]}
 function startListeners(){
   stopListeners();
   const denied=e=>{if(e&&e.code==="permission-denied")gate("denied")};
+  setDoc(doc(db,"people",me.uid),{email:me.email||"",gname:(me.displayName||"").split(" ")[0],updated:Date.now()},{merge:true}).catch(()=>{});
+  unsubs.push(onSnapshot(collection(db,"people"),qs=>{
+    people={};qs.docs.forEach(d=>{const x=d.data()||{};people[d.id]={email:String(x.email||""),name:String(x.name||"").slice(0,20),gname:String(x.gname||"").slice(0,20)}});
+    renderPeople();if(CFG)render();
+  },()=>{}));
   unsubs.push(onSnapshot(doc(db,"config","plan"),sn=>{
     if(!sn.exists()){gate("import");return}
     const c=sn.data();if(!validConfig(c)){gate("import");return}
@@ -977,6 +996,9 @@ function startListeners(){
   },denied));
 }
 let rawState={};
+let people={};
+function personName(uid,fallback){const p=people[uid];return (p&&(p.name||p.gname))||fallback||(p&&p.email?p.email.split("@")[0]:"")||"؟"}
+function personIdx(uid){return Object.keys(people).sort().indexOf(uid)}
 function showApp(){
   if(rawState&&CFG)state=sanitize(rawState);
   $("gate").hidden=true;$("app").hidden=false;
@@ -1406,6 +1428,14 @@ $("oFwd").addEventListener("change",()=>{
 });
 $("oReset").onclick=()=>{const to=$("oFwd").checked?N-1:sel;for(let i=sel;i<=to;i++)delete state.overrides[i];persist();render()};
 
+/* ---------- people names ---------- */
+function renderPeople(){
+  const box=$("peopleList");if(!box)return;
+  const ids=Object.keys(people).sort();
+  box.innerHTML=ids.map(id=>`<div class="person"><span class="who-tag p${ids.indexOf(id)%4}">${esc(personName(id))}</span><input type="text" maxlength="20" data-pn="${esc(id)}" value="${esc(people[id].name||people[id].gname||"")}"><span class="muted pe">${esc(people[id].email)}</span></div>`).join("");
+  box.querySelectorAll("[data-pn]").forEach(i=>i.onchange=()=>{const v=i.value.trim().slice(0,20);setDoc(doc(db,"people",i.dataset.pn),{name:v,updated:Date.now()},{merge:true}).then(()=>toast(t().toastSaved)).catch(()=>{})});
+}
+
 /* ---------- household categories ---------- */
 let catEditing=null;const catPrev={};
 function catMode(){try{const m=localStorage.getItem("budget-plan-catmode");if(m==="bar"||m==="ring")return m}catch(e){}return "ring"}
@@ -1499,10 +1529,12 @@ function renderHouse(rows){
   const cl=catsFor(hSel).list;
   const list=purchases.filter(q=>q.month===hSel).sort((a,b)=>(b.date||"").localeCompare(a.date||"")||b.created-a.created);
   $("plogMeta").textContent=list.length?L.plogMeta(list.length,fmt(list.reduce((a,q)=>a+q.amount,0))):"";
+  const byP={};list.forEach(q=>{const k=q.by||"_";byP[k]=(byP[k]||0)+q.amount});
+  $("plogWho").innerHTML=Object.keys(byP).length>1||(Object.keys(byP).length===1&&list.length)?Object.keys(byP).map(k=>`<span class="who-tag p${Math.max(0,personIdx(k))%4}">${esc(personName(k,(list.find(q=>(q.by||"_")===k)||{}).byName))}</span><span class="num">${fmt(byP[k])}</span>`).join(""):"";
   $("hList").innerHTML=list.length?list.map(q=>{
-    const who=q.by?(me&&q.by===me.uid?L.hByMe:(q.byName?L.hBy(q.byName):"")):"";
-    const meta=[q.date,who].filter(Boolean).join(L.sep);
-    return `<li${q.created===newPurchase?' class="new"':""}><span>${esc(q.item||L.hDefItem)}${q.photo?`<span class="tag">${esc(L.hFromPhoto)}</span>`:""}<span class="meta">${esc(meta)}</span>${cl.length?`<select class="catsel" data-hcat="${esc(q.id)}" aria-label="${esc(L.catL)}"><option value="">${esc(L.catNone)}</option>${cl.map(c=>`<option value="${esc(c.id)}"${c.id===q.cat?" selected":""}>${esc(c.name)}</option>`).join("")}</select>`:""}</span><span><span class="num">${fmt(q.amount)}</span> <button type="button" class="btn link" data-hdel="${esc(q.id)}">${esc(L.del)}</button></span></li>`}).join(""):`<li class="empty">${esc(L.hEmpty(M(hSel)))}</li>`;
+    const meta=q.date;
+    const whoTag=q.by?`<span class="who-tag p${Math.max(0,personIdx(q.by))%4}">${esc(personName(q.by,q.byName))}</span>`:"";
+    return `<li${q.created===newPurchase?' class="new"':""}><span>${esc(q.item||L.hDefItem)}${q.photo?`<span class="tag">${esc(L.hFromPhoto)}</span>`:""}<span class="meta">${whoTag}${esc(meta)}</span>${cl.length?`<select class="catsel" data-hcat="${esc(q.id)}" aria-label="${esc(L.catL)}"><option value="">${esc(L.catNone)}</option>${cl.map(c=>`<option value="${esc(c.id)}"${c.id===q.cat?" selected":""}>${esc(c.name)}</option>`).join("")}</select>`:""}</span><span><span class="num">${fmt(q.amount)}</span> <button type="button" class="btn link" data-hdel="${esc(q.id)}">${esc(L.del)}</button></span></li>`}).join(""):`<li class="empty">${esc(L.hEmpty(M(hSel)))}</li>`;
   $("hList").querySelectorAll("[data-hcat]").forEach(sl=>sl.onchange=async()=>{try{await setDoc(doc(db,"purchases",sl.dataset.hcat),{cat:sl.value},{merge:true})}catch(e){}});
   $("hList").querySelectorAll("[data-hdel]").forEach(b=>b.onclick=async()=>{b.disabled=true;try{await deleteDoc(doc(db,"purchases",b.dataset.hdel));toast(t().toastDeleted)}catch(e){b.disabled=false}});
 }

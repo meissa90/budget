@@ -461,6 +461,13 @@ details.pe{padding:0}
 .person{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 10px;align-items:center;margin-top:8px}
 .person input{min-height:40px}
 .person .pe{grid-column:2;font-size:.75rem}
+.paywrap{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 0 4px}
+.paywrap .lbl{font-size:.85rem;color:var(--muted)}
+.paynote{margin:4px 0 10px;font-size:.8rem;min-height:0}
+.paynote:empty{display:none}
+.tag.card{background:var(--amber-soft);color:var(--amber);border-color:transparent}
+.cardinfo{margin:0 0 10px;padding:8px 12px;border-radius:10px;background:var(--amber-soft);color:var(--amber);font-size:.85rem}
+.carddue{color:var(--amber)}
 </style>
 </head>
 <body>
@@ -574,6 +581,7 @@ details.pe{padding:0}
           </div>
         </div>
         <div id="hAlert"></div>
+        <div id="hCardInfo"></div>
         <div class="cats" id="hCats"></div>
         <div class="plog-card">
           <div class="plog-h"><h3 data-t="plogH"></h3><span class="muted" id="plogMeta"></span></div>
@@ -594,6 +602,13 @@ details.pe{padding:0}
           <div><label for="hItem" data-t="hItem"></label><input id="hItem" type="text" maxlength="60"></div>
           <div><label for="hCat" data-t="catL"></label><select id="hCat"></select></div>
         </div>
+        <div class="paywrap"><span class="lbl" data-t="payL"></span>
+          <div class="seg" id="paySeg" role="radiogroup">
+            <button type="button" role="radio" data-pay="cash" aria-checked="true" data-t="payCash"></button>
+            <button type="button" role="radio" data-pay="card" aria-checked="false" data-t="payCard"></button>
+          </div>
+        </div>
+        <p class="muted paynote" id="payNote"></p>
         <button type="button" class="btn ghost" id="hAdd" data-t="hAdd"></button>
         <p class="err" id="hErr"></p>
         <p class="save" data-t="hNote"></p>
@@ -736,7 +751,7 @@ ar:{
  recH:"أجيب إيه بالفلوس اللي فاضلة؟",recEmpty:"مفيش حاجات في اللستة.",recNoMoney:"ميزانية البيت خلصت الشهر ده. اللستة هتستنى الشهر الجاي، أو اشتري الضروري بس وهيتخصم من الطوارئ.",
  recIntro:n=>`فاضلك ${n}. مرتبة حسب الأهمية، واللي خلص قبل اللي قرب يخلص:`,recTotal:"المجموع",recWait:"أجّل دول:",recWhyMoney:"الفلوس مش هتكفي",recWhyCat:(c,n)=>`بند ${c} فاضله ${n}`,
  recNoPrice:n=>`فيه ${n} حاجة من غير سعر، فمتحسبتش صح. اكتب سعرها في اللستة.`,recApply:"علّم الاقتراح في اللستة",recApplied:"اتعلّم على الاقتراح",
- plogH:"سجل المشتريات",peopleH:"الأسماء",peopleP:"الاسم اللي بيظهر جنب كل مشترى.",plogMeta:(n,s)=>`${n} ${n<=10?"مشتريات":"مشترى"} · ${s}`,catsH:"البنود",catEdit:"عدّل البنود",catAdd:"ضيف بند",catSave:"احفظ البنود",catCancel:"إلغاء",catName:"البند",catNamePh:"مثلًا: جبن",catAmt:"المبلغ",
+ plogH:"سجل المشتريات",payL:"اتدفع",payCash:"كاش",payCard:"💳 كارد",payNoteCard:m=>`مش هيتخصم من فلوس الشهر ده. هيتخصم من مصروف البيت في ${m}، لأن فاتورته بتتدفع قبل 25 ${m.split(" ")[0]}.`,payNoteLast:"ده آخر شهر في الخطة، فالسداد مش هيظهر.",cardTag:m=>`💳 يتدفع ${m}`,cardDueRow:m=>`💳 سداد كارد ${m}`,cardInfoDue:(n,m)=>`فيه ${n} سداد كارد من ${m} داخلين في مصروف الشهر ده.`,cardInfoNext:(n,m)=>`فيه ${n} اتصرفوا بالكارد الشهر ده، وهيتخصموا من ${m}.`,peopleH:"الأسماء",peopleP:"الاسم اللي بيظهر جنب كل مشترى.",plogMeta:(n,s)=>`${n} ${n<=10?"مشتريات":"مشترى"} · ${s}`,catsH:"البنود",catEdit:"عدّل البنود",catAdd:"ضيف بند",catSave:"احفظ البنود",catCancel:"إلغاء",catName:"البند",catNamePh:"مثلًا: جبن",catAmt:"المبلغ",
  catNone:"من غير بند",catOther:"باقي الميزانية",catL:"البند",catSum:(a,b)=>`موزّع ${a} من ${b}`,catOverSum:n=>`البنود أكتر من الميزانية بـ ${n}.`,catInherit:m=>`نفس بنود ${m}. لو عدلتها، التعديل هيمشي على الشهر ده واللي بعده.`,
  catForward:"التعديل هيمشي على الشهر ده وكل الشهور اللي بعده، لحد شهر تكون عدلت بنوده.",catEmpty:"قسّم ميزانية البيت على بنود (جبن، سناكس، خضار...) عشان تعرف كل حاجة فاضلها كام.",catSaved:"البنود اتحفظت",catLeft:n=>`فاضل ${n}`,catLeftW:"فاضل",catModeRing:"دواير",catModeBar:"خطوط",catOverW:"زيادة",catOver:n=>`زيادة ${n}`,hPct:"اتصرف منها",toastSaved:"اتحفظ",toastDeleted:"اتمسح",hSpent:"اتصرف",hLeft:"فاضل",
  hOver:n=>`عدّيتوا ميزانية البيت بـ ${n}، والفرق اتسحب من الطوارئ.`,hAddH:"ضيف مشتريات",hPhoto:"صوّر الفاتورة أو ارفعها",
@@ -812,7 +827,7 @@ en:{
  recH:"What should I buy with what’s left?",recEmpty:"Nothing on the list.",recNoMoney:"This month’s household budget is used up. The list can wait for next month, or buy only essentials and it comes out of the emergency fund.",
  recIntro:n=>`You have ${n} left. Ordered by priority, with items that are out before items running low:`,recTotal:"Total",recWait:"Leave these for later:",recWhyMoney:"Not enough money",recWhyCat:(c,n)=>`${c} has ${n} left`,
  recNoPrice:n=>`${n} item(s) have no price, so the total isn’t accurate. Add their prices in the list.`,recApply:"Check the suggestion on the list",recApplied:"Suggestion checked",
- plogH:"Purchase log",peopleH:"Names",peopleP:"The name shown next to each purchase.",plogMeta:(n,s)=>`${n} purchase${n===1?"":"s"} · ${s}`,catsH:"Categories",catEdit:"Edit categories",catAdd:"Add category",catSave:"Save categories",catCancel:"Cancel",catName:"Category",catNamePh:"e.g. cheese",catAmt:"Amount",
+ plogH:"Purchase log",payL:"Paid by",payCash:"Cash",payCard:"💳 Card",payNoteCard:m=>`Not taken from this month’s money. It comes out of the ${m} household budget, since the card bill is due by the 25th.`,payNoteLast:"This is the last month in the plan, so the repayment won’t show.",cardTag:m=>`💳 due ${m}`,cardDueRow:m=>`💳 Card repayment from ${m}`,cardInfoDue:(n,m)=>`${n} of card repayment from ${m} is counted in this month’s spending.`,cardInfoNext:(n,m)=>`${n} was spent on the card this month and will come out of ${m}.`,peopleH:"Names",peopleP:"The name shown next to each purchase.",plogMeta:(n,s)=>`${n} purchase${n===1?"":"s"} · ${s}`,catsH:"Categories",catEdit:"Edit categories",catAdd:"Add category",catSave:"Save categories",catCancel:"Cancel",catName:"Category",catNamePh:"e.g. cheese",catAmt:"Amount",
  catNone:"No category",catOther:"Rest of budget",catL:"Category",catSum:(a,b)=>`${a} of ${b} allocated`,catOverSum:n=>`Categories exceed the budget by ${n}.`,catInherit:m=>`Same categories as ${m}. Editing applies to this month and the ones after.`,
  catForward:"Changes apply to this month and every month after, until a month with its own categories.",catEmpty:"Split the household budget into categories (cheese, snacks, vegetables...) to see what’s left in each.",catSaved:"Categories saved",catLeft:n=>`${n} left`,catLeftW:"left",catModeRing:"Rings",catModeBar:"Bars",catOverW:"over",catOver:n=>`${n} over`,hPct:"Used",toastSaved:"Saved",toastDeleted:"Deleted",hSpent:"Spent",hLeft:"Left",
  hOver:n=>`You’re ${n} over the household budget; the difference came out of the emergency fund.`,hAddH:"Add a purchase",hPhoto:"Take or upload a receipt photo",
@@ -885,12 +900,14 @@ function compute(st,purch){
     }
     const overflow=Math.max(0,pers-personal);
     const houseBudget=v("fix"+CFG.houseIdx);
-    const houseSpent=purch.reduce((a,q)=>a+(q.month===i?q.amount:0),0);
+    const houseCard=purch.reduce((a,q)=>a+(q.month===i&&q.pay==="card"?q.amount:0),0);
+    const cardDue=purch.reduce((a,q)=>a+(q.month===i-1&&q.pay==="card"?q.amount:0),0);
+    const houseSpent=purch.reduce((a,q)=>a+(q.month===i&&q.pay!=="card"?q.amount:0),0)+cardDue;
     const houseOver=Math.max(0,houseSpent-houseBudget);
     const toEm=salary+extra+inc-fixTot-jam-school-schoolX-special-personal-emx-overflow-houseOver;
     em+=toEm;
     sch=sch+school+schoolX-schx-inst;
-    rows.push({i,houseBudget,houseSpent,houseOver,salary,personal,extra,school,schoolX,special,inst,fixTot,rz:d.rz,pAdd:d.pAdd,inc,pers,emx,schx,overflow,jam,toEm,em,sch,personalLeft:Math.max(0,personal-pers),
+    rows.push({i,houseBudget,houseSpent,houseOver,houseCard,cardDue,salary,personal,extra,school,schoolX,special,inst,fixTot,rz:d.rz,pAdd:d.pAdd,inc,pers,emx,schx,overflow,jam,toEm,em,sch,personalLeft:Math.max(0,personal-pers),
       changed:ents.length>0||Object.keys(o).length>0});
   }
   return rows;
@@ -990,7 +1007,7 @@ function startListeners(){
     if(CFG){state=sanitize(rawState);render()}
   },denied));
   unsubs.push(onSnapshot(collection(db,"purchases"),qs=>{
-    purchases=qs.docs.map(d=>{const x=d.data()||{};return{id:d.id,month:Math.round(+x.month),amount:+x.amount,item:String(x.item||"").slice(0,60),date:String(x.date||""),by:String(x.by||""),byName:String(x.byName||""),photo:!!x.photo,cat:String(x.cat||""),created:+x.created||0}})
+    purchases=qs.docs.map(d=>{const x=d.data()||{};return{id:d.id,month:Math.round(+x.month),amount:+x.amount,item:String(x.item||"").slice(0,60),date:String(x.date||""),by:String(x.by||""),byName:String(x.byName||""),photo:!!x.photo,cat:String(x.cat||""),pay:x.pay==="card"?"card":"cash",created:+x.created||0}})
       .filter(q=>q.month>=0&&q.amount>0);
     if(CFG)render();
   },denied));
@@ -1528,16 +1545,27 @@ function renderHouse(rows){
   renderCats(r);
   const cl=catsFor(hSel).list;
   const list=purchases.filter(q=>q.month===hSel).sort((a,b)=>(b.date||"").localeCompare(a.date||"")||b.created-a.created);
+  {const ci=[];if(r.cardDue>0)ci.push(L.cardInfoDue(fmt(r.cardDue),M(hSel-1)));if(r.houseCard>0&&hSel+1<N)ci.push(L.cardInfoNext(fmt(r.houseCard),M(hSel+1)));
+   $("hCardInfo").innerHTML=ci.map(x=>`<p class="cardinfo">${esc(x)}</p>`).join("");}
+  renderPay();
   $("plogMeta").textContent=list.length?L.plogMeta(list.length,fmt(list.reduce((a,q)=>a+q.amount,0))):"";
   const byP={};list.forEach(q=>{const k=q.by||"_";byP[k]=(byP[k]||0)+q.amount});
   $("plogWho").innerHTML=Object.keys(byP).length>1||(Object.keys(byP).length===1&&list.length)?Object.keys(byP).map(k=>`<span class="who-tag p${Math.max(0,personIdx(k))%4}">${esc(personName(k,(list.find(q=>(q.by||"_")===k)||{}).byName))}</span><span class="num">${fmt(byP[k])}</span>`).join(""):"";
   $("hList").innerHTML=list.length?list.map(q=>{
     const meta=q.date;
     const whoTag=q.by?`<span class="who-tag p${Math.max(0,personIdx(q.by))%4}">${esc(personName(q.by,q.byName))}</span>`:"";
-    return `<li${q.created===newPurchase?' class="new"':""}><span>${esc(q.item||L.hDefItem)}${q.photo?`<span class="tag">${esc(L.hFromPhoto)}</span>`:""}<span class="meta">${whoTag}${esc(meta)}</span>${cl.length?`<select class="catsel" data-hcat="${esc(q.id)}" aria-label="${esc(L.catL)}"><option value="">${esc(L.catNone)}</option>${cl.map(c=>`<option value="${esc(c.id)}"${c.id===q.cat?" selected":""}>${esc(c.name)}</option>`).join("")}</select>`:""}</span><span><span class="num">${fmt(q.amount)}</span> <button type="button" class="btn link" data-hdel="${esc(q.id)}">${esc(L.del)}</button></span></li>`}).join(""):`<li class="empty">${esc(L.hEmpty(M(hSel)))}</li>`;
+    return `<li${q.created===newPurchase?' class="new"':""}><span>${esc(q.item||L.hDefItem)}${q.photo?`<span class="tag">${esc(L.hFromPhoto)}</span>`:""}${q.pay==="card"&&hSel+1<N?`<span class="tag card">${esc(L.cardTag(M(hSel+1)))}</span>`:""}<span class="meta">${whoTag}${esc(meta)}</span>${cl.length?`<select class="catsel" data-hcat="${esc(q.id)}" aria-label="${esc(L.catL)}"><option value="">${esc(L.catNone)}</option>${cl.map(c=>`<option value="${esc(c.id)}"${c.id===q.cat?" selected":""}>${esc(c.name)}</option>`).join("")}</select>`:""}</span><span><span class="num">${fmt(q.amount)}</span> <button type="button" class="btn link" data-hdel="${esc(q.id)}">${esc(L.del)}</button></span></li>`}).join("")+(r.cardDue>0?`<li class="carddue"><span>${esc(L.cardDueRow(M(hSel-1)))}</span><span class="num">${fmt(r.cardDue)}</span></li>`:""):(r.cardDue>0?`<li class="carddue"><span>${esc(L.cardDueRow(M(hSel-1)))}</span><span class="num">${fmt(r.cardDue)}</span></li>`:`<li class="empty">${esc(L.hEmpty(M(hSel)))}</li>`);
   $("hList").querySelectorAll("[data-hcat]").forEach(sl=>sl.onchange=async()=>{try{await setDoc(doc(db,"purchases",sl.dataset.hcat),{cat:sl.value},{merge:true})}catch(e){}});
   $("hList").querySelectorAll("[data-hdel]").forEach(b=>b.onclick=async()=>{b.disabled=true;try{await deleteDoc(doc(db,"purchases",b.dataset.hdel));toast(t().toastDeleted)}catch(e){b.disabled=false}});
 }
+let payMode="cash";
+function renderPay(){
+  document.querySelectorAll("#paySeg [data-pay]").forEach(b=>b.setAttribute("aria-checked",b.dataset.pay===payMode?"true":"false"));
+  const L=t(),mi=monthOf($("hDate").value)>=0?monthOf($("hDate").value):hSel;
+  $("payNote").textContent=payMode==="card"?(mi+1<N?L.payNoteCard(M(mi+1)):L.payNoteLast):"";
+}
+document.querySelectorAll("#paySeg [data-pay]").forEach(b=>b.onclick=()=>{payMode=b.dataset.pay;renderPay()});
+$("hDate").addEventListener("change",renderPay);
 $("hMonth").onchange=()=>{hSel=+$("hMonth").value;$("hDate").value=defaultDate(hSel);render()};
 $("hAdd").onclick=async()=>{
   const L=t();
@@ -1548,9 +1576,9 @@ $("hAdd").onclick=async()=>{
   $("hErr").textContent="";$("hAdd").disabled=true;
   try{
     const created=Date.now();newPurchase=created;
-    await addDoc(collection(db,"purchases"),{month:mi,amount:amt,item:$("hItem").value.trim().slice(0,60),date:ds,by:me.uid,byName:(me.displayName||me.email||"").split(" ")[0],photo:lastFromPhoto,cat:$("hCat").value||"",created});
+    await addDoc(collection(db,"purchases"),{month:mi,amount:amt,item:$("hItem").value.trim().slice(0,60),date:ds,by:me.uid,byName:(me.displayName||me.email||"").split(" ")[0],photo:lastFromPhoto,cat:$("hCat").value||"",pay:payMode,created});
     toast(t().toastSaved);
-    $("hAmt").value="";$("hItem").value="";$("hPhotoMsg").textContent="";lastFromPhoto=false;
+    $("hAmt").value="";$("hItem").value="";$("hPhotoMsg").textContent="";lastFromPhoto=false;payMode="cash";renderPay();
     hSel=mi;render();
   }catch(e){$("hErr").textContent=L.saveFail}
   finally{$("hAdd").disabled=false}
